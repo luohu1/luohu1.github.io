@@ -1,0 +1,592 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – Website</title>
+    <link>/</link>
+    <description>Recent content on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 15 Jul 2020 22:32:13 +0800</lastBuildDate>
+    
+	  <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+      
+    
+    
+    <item>
+      <title>Blog: Monitoring</title>
+      <link>/blog/2022/06/22/monitoring/</link>
+      <pubDate>Wed, 22 Jun 2022 16:22:17 +0800</pubDate>
+      
+      <guid>/blog/2022/06/22/monitoring/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;运行环境&#34;&gt;运行环境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;CentOS 7.9.2009&lt;/li&gt;
+&lt;li&gt;Docker 19.03.15&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;命令片段&#34;&gt;命令片段&lt;/h2&gt;
+&lt;p&gt;运行环境&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -it -d --privileged --name monitoring centos:7 /usr/sbin/init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker &lt;span style=&#34;color:#a2f&#34;&gt;exec&lt;/span&gt; -it monitoring bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;yum install -y bash-completion git vim-enhanced curl wget
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mkdir /data
+
+wget https://objects.githubusercontent.com/github-production-release-asset-2e65be/6838921/85b84831-f125-4491-bf9b-5928b5edae01?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220622%2Fus-east-1%2Fs3%2Faws4_request&amp;amp;X-Amz-Date=20220622T083108Z&amp;amp;X-Amz-Expires=300&amp;amp;X-Amz-Signature=272353bb4e9e85227018b4cbb4511b36a4767948e5fe5d894bce2cb59d15cafd&amp;amp;X-Amz-SignedHeaders=host&amp;amp;actor_id=15220555&amp;amp;key_id=0&amp;amp;repo_id=6838921&amp;amp;response-content-disposition=attachment%3B%20filename%3Dprometheus-2.36.2.linux-amd64.tar.gz&amp;amp;response-content-type=application%2Foctet-stream
+
+https://github.com/prometheus/prometheus/releases/download/v2.36.2/prometheus-2.36.2.linux-amd64.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: How to Write Go Code</title>
+      <link>/blog/2020/07/28/how-to-write-go-code/</link>
+      <pubDate>Tue, 28 Jul 2020 16:58:24 +0800</pubDate>
+      
+      <guid>/blog/2020/07/28/how-to-write-go-code/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;介绍&#34;&gt;介绍&lt;/h2&gt;
+&lt;p&gt;本文档演示了模块内部简单 Go 软件包的开发，并介绍了 &lt;a href=&#34;https://golang.org/cmd/go/&#34;&gt;go 工具&lt;/a&gt;，这是获取、构建和安装 Go 模块、软件包和命令的标准方法。&lt;/p&gt;
+&lt;p&gt;注意：本文档假定您使用的是 Go 1.13 或更高版本，并且未设置 &lt;code&gt;GO111MODULE&lt;/code&gt; 环境变量。如果您正在寻找本文档的较早的 pre-modules 版本，它在&lt;a href=&#34;https://golang.org/doc/gopath_code.html&#34;&gt;这里&lt;/a&gt;存档。&lt;/p&gt;
+&lt;h2 id=&#34;代码组织&#34;&gt;代码组织&lt;/h2&gt;
+&lt;p&gt;Go 程序被组织到 package 中。&lt;em&gt;package&lt;/em&gt; 是同一目录中一起编译的源文件的集合。在一个源文件中定义的函数、类型、变量和常量对于同一 package 中的所有其他源文件可见。&lt;/p&gt;
+&lt;p&gt;一个存储库（repository）包含一个或多个模块（module）。&lt;em&gt;模块&lt;/em&gt; 是一起发布的相关 Go 软件包的集合。Go 存储库通常仅包含一个模块，位于存储库的根目录。在那里名为 &lt;code&gt;go.mod&lt;/code&gt; 的文件声明了&lt;em&gt;模块路径&lt;/em&gt;：模块内所有软件包的导入路径前缀。该模块包含了在包含其 &lt;code&gt;go.mod&lt;/code&gt; 文件的目录以及该目录的子目录中包含的软件包，直至包含另一个 &lt;code&gt;go.mod&lt;/code&gt; 文件（如果有）的下一个子目录。&lt;/p&gt;
+&lt;p&gt;请注意，在构建代码之前，无需将代码发布到远程存储库。可以在本地定义模块，而不必属于存储库。但是，像您有一天要发布的代码一样组织代码是一种好习惯。&lt;/p&gt;
+&lt;p&gt;每个模块的路径不仅充当其软件包的导入路径前缀，而且还指示 go 命令应该在哪里下载它。例如，为了下载模块 &lt;code&gt;golang.org/x/tools&lt;/code&gt;，go 命令将查询 &lt;code&gt;https://golang.org/x/tools&lt;/code&gt; 所指示的存储库（&lt;a href=&#34;https://golang.org/cmd/go/#hdr-Relative_import_paths&#34;&gt;此处&lt;/a&gt;有更多说明）。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;导入路径&lt;/em&gt; 是用于导入软件包的字符串。包的导入路径是其模块路径及其在模块中的子目录。例如，模块 &lt;code&gt;github.com/google/go-cmp&lt;/code&gt; 包含了一个在目录 &lt;code&gt;cmp/&lt;/code&gt; 中的包。该软件包的导入路径为 &lt;code&gt;github.com/google/go-cmp/cmp&lt;/code&gt;。标准库中的软件包没有模块路径前缀。&lt;/p&gt;
+&lt;h2 id=&#34;您的第一个程序&#34;&gt;您的第一个程序&lt;/h2&gt;
+&lt;p&gt;要编译和运行一个简单的程序，首先选择一个模块路径（我们将使用 &lt;code&gt;example.com/user/hello&lt;/code&gt;），然后创建一个 &lt;code&gt;go.mod&lt;/code&gt; 文件声明该路径：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ mkdir hello &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# 或者，如果它已经在版本控制中，则将其克隆。&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;cd&lt;/span&gt; hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go mod init example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go: creating new go.mod: module example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat go.mod
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;module example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go 1.14
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Go 源文件中的第一条语句必须是 &lt;code&gt;package name&lt;/code&gt;。可执行命令必须始终使用 &lt;code&gt;package main&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;接下来，在该目录中创建一个名为 &lt;code&gt;hello.go&lt;/code&gt; 的文件，其中包含以下Go 代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#00a000&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello, world.&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;现在，您可以使用 &lt;code&gt;go&lt;/code&gt; 工具构建并安装该程序：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;此命令构建 &lt;code&gt;hello&lt;/code&gt; 命令，生成一个可执行二进制文件。然后，将该二进制文件安装为 &lt;code&gt;$HOME/go/bin/hello&lt;/code&gt;（或在Windows下为 &lt;code&gt;%USERPROFILE%\go\bin\hello.exe&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;安装目录由 &lt;code&gt;GOPATH&lt;/code&gt; 和 &lt;code&gt;GOBIN&lt;/code&gt; &lt;a href=&#34;https://golang.org/cmd/go/#hdr-Environment_variables&#34;&gt;环境变量&lt;/a&gt;控制。如果设置了 &lt;code&gt;GOBIN&lt;/code&gt;，则二进制文件将安装到该目录。如果设置了 &lt;code&gt;GOPATH&lt;/code&gt;，二进制文件将安装到 &lt;code&gt;GOPATH&lt;/code&gt; 列表中第一个目录的 &lt;code&gt;bin&lt;/code&gt; 子目录中。否则，二进制文件将安装到默认 &lt;code&gt;GOPATH&lt;/code&gt; 的 &lt;code&gt;bin&lt;/code&gt; 子目录（&lt;code&gt;$HOME/go&lt;/code&gt; 或 &lt;code&gt;%USERPROFILE%\go&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;您可以使用 &lt;code&gt;go env&lt;/code&gt; 命令为以后的 &lt;code&gt;go&lt;/code&gt; 命令便捷地设置环境变量的默认值：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go env -w &lt;span style=&#34;color:#b8860b&#34;&gt;GOBIN&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;/somewhere/else/bin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;要取消设置先前由 &lt;code&gt;go env -w&lt;/code&gt; 设置的变量，请使用 &lt;code&gt;go env -u&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go env -u GOBIN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;类似 &lt;code&gt;go install&lt;/code&gt; 之类的命令适用于包含当前工作目录的模块的上下文。如果工作目录不在 &lt;code&gt;example.com/user/hello&lt;/code&gt; 模块内，则 &lt;code&gt;go install&lt;/code&gt; 可能会失败。&lt;/p&gt;
+&lt;p&gt;为了方便起见，&lt;code&gt;go&lt;/code&gt; 命令接受相对于工作目录的路径，如果没有给出其他路径，则默认使用当前工作目录中的软件包。因此，在我们的工作目录中，以下命令都是等效的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;接下来，让我们运行该程序以确保其正常工作。为了更加方便，我们将安装目录添加到 &lt;code&gt;PATH&lt;/code&gt; 中，以使运行二进制文件变得容易：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Windows 用户应该参考 https://github.com/golang/go/wiki/SettingGOPATH&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# 来设置 ％PATH％。&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#b8860b&#34;&gt;PATH&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;$PATH&lt;/span&gt;:&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;dirname &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;go list -f &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;{{.Target}}&amp;#39;&lt;/span&gt; .&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hello, world.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果您在使用源代码控制系统，那么现在正是初始化存储库，添加文件并提交第一个更改的好时机。同样，此步骤是可选的：您无需使用源代码控制来编写Go代码。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Initialized empty Git repository in /home/user/hello/.git/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git add go.mod hello.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git commit -m &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;initial commit&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;master &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;root-commit&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; 0b4507d&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; initial commit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; file changed, &lt;span style=&#34;color:#666&#34;&gt;7&lt;/span&gt; insertion&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;+&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; create mode &lt;span style=&#34;color:#666&#34;&gt;100644&lt;/span&gt; go.mod hello.go
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;go&lt;/code&gt; 命令通过请求相应的 HTTPS URL 并读取 HTML 响应中嵌入的元数据来查找包含给定模块路径的存储库（请参阅 &lt;code&gt;go help importpath&lt;/code&gt;）。许多托管服务已经为包含 Go 代码的存储库提供了该元数据，因此使您的模块可供其他人使用的最简单方法通常是使其模块路径与存储库的URL相匹配。&lt;/p&gt;
+&lt;h3 id=&#34;从您的模块导入包&#34;&gt;从您的模块导入包&lt;/h3&gt;
+&lt;p&gt;让我们编写一个 &lt;code&gt;morestrings&lt;/code&gt; 包，并在 &lt;code&gt;hello&lt;/code&gt; 程序中使用它。首先，为名为 &lt;code&gt;$HOME/hello/morestrings&lt;/code&gt; 的包创建一个目录，然后在该目录中创建一个名为 &lt;code&gt;reverse.go&lt;/code&gt; 的文件，其中包含以下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// 包 morestrings 实现了额外的功能来操纵 UTF-8
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// 编码的字符串，超出标准 &amp;#34;strings&amp;#34; 包中提供的字符串。
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;package&lt;/span&gt; morestrings
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// ReverseRunes 返回其参数字符串，从左向右以符文方向反转。
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;ReverseRunes&lt;/span&gt;(s &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;string&lt;/span&gt;) &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;string&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	r &lt;span style=&#34;color:#666&#34;&gt;:=&lt;/span&gt; []&lt;span style=&#34;color:#a2f&#34;&gt;rune&lt;/span&gt;(s)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; i, j &lt;span style=&#34;color:#666&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#a2f&#34;&gt;len&lt;/span&gt;(r)&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#a2f&#34;&gt;len&lt;/span&gt;(r)&lt;span style=&#34;color:#666&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;; i, j = i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, j&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		r[i], r[j] = r[j], r[i]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a2f&#34;&gt;string&lt;/span&gt;(r)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;因为我们的 &lt;code&gt;ReverseRunes&lt;/code&gt; 函数以大写字母开头，所以它是 &lt;a href=&#34;https://golang.org/ref/spec#Exported_identifiers&#34;&gt;exported&lt;/a&gt;，并且可以在导入 &lt;code&gt;morestrings&lt;/code&gt; 包的其他包中使用。&lt;/p&gt;
+&lt;p&gt;让我们测试一下使用 &lt;code&gt;go build&lt;/code&gt; 编译该软件包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;cd&lt;/span&gt; &lt;span style=&#34;color:#b8860b&#34;&gt;$HOME&lt;/span&gt;/hello/morestrings
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go build
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这不会产生输出文件。而是将已编译的程序包保存在本地构建缓存中。&lt;/p&gt;
+&lt;p&gt;确认 &lt;code&gt;morestrings&lt;/code&gt; 软件包已生成后，让我们从 &lt;code&gt;hello&lt;/code&gt; 程序中使用它。为此，请修改原始的 &lt;code&gt;$HOME/hello/hello.go&lt;/code&gt; 以使用 morestrings 包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;example.com/user/hello/morestrings&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#00a000&#34;&gt;Println&lt;/span&gt;(morestrings.&lt;span style=&#34;color:#00a000&#34;&gt;ReverseRunes&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;!oG ,olleH&amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装 &lt;code&gt;hello&lt;/code&gt; 程序：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行新版本的程序，您应该看到一条新的反向的消息：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hello, Go!
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;从远程模块导入包&#34;&gt;从远程模块导入包&lt;/h3&gt;
+&lt;p&gt;导入路径可以描述如何使用版本控制系统（例如 Git 或 Mercurial）获取软件包源代码。&lt;code&gt;go&lt;/code&gt; 工具使用此属性来自动从远程存储库获取软件包。例如，要在您的程序中使用 &lt;code&gt;github.com/google/go-cmp/cmp&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;example.com/user/hello/morestrings&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;github.com/google/go-cmp/cmp&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#00a000&#34;&gt;Println&lt;/span&gt;(morestrings.&lt;span style=&#34;color:#00a000&#34;&gt;ReverseRunes&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;!oG ,olleH&amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#00a000&#34;&gt;Println&lt;/span&gt;(cmp.&lt;span style=&#34;color:#00a000&#34;&gt;Diff&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello World&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello Go&amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;当您运行诸如 &lt;code&gt;go install&lt;/code&gt;、&lt;code&gt;go build&lt;/code&gt; 或 &lt;code&gt;go run&lt;/code&gt; 之类的命令时，&lt;code&gt;go&lt;/code&gt; 命令将自动下载远程模块并将其版本记录在您的 &lt;code&gt;go.mod&lt;/code&gt; 文件中：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go install example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go: finding module &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; package github.com/google/go-cmp/cmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go: downloading github.com/google/go-cmp v0.4.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go: found github.com/google/go-cmp/cmp in github.com/google/go-cmp v0.4.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hello, Go!
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  string&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;- 	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello World&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;+ 	&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello Go&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat go.mod
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;module example.com/user/hello
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go 1.14
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;require github.com/google/go-cmp v0.4.0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;模块依赖项将自动下载到 &lt;code&gt;GOPATH&lt;/code&gt; 环境变量指示的目录的 &lt;code&gt;pkg/mod&lt;/code&gt; 子目录中。这些给定版本的模块的下载内容在 &lt;code&gt;require&lt;/code&gt; 该版本的所有其他模块之间共享，因此 &lt;code&gt;go&lt;/code&gt; 命令将这些文件和目录标记为只读。要删除所有下载的模块，可以通过给 &lt;code&gt;go clean&lt;/code&gt; 传递 &lt;code&gt;-modcache&lt;/code&gt; 标志：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go clean -modcache
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;测试&#34;&gt;测试&lt;/h2&gt;
+&lt;p&gt;Go 具有由 &lt;code&gt;go test&lt;/code&gt; 命令和 &lt;code&gt;testing&lt;/code&gt; 包组成的轻量级测试框架。&lt;/p&gt;
+&lt;p&gt;通过创建一个名称以 &lt;code&gt;_test.go&lt;/code&gt; 结尾的文件来编写测试，该文件包含名为 &lt;code&gt;TestXXX&lt;/code&gt; 且具有 &lt;code&gt;func (t *testing.T)&lt;/code&gt; 签名的函数。测试框架运行每个这样的函数；如果该函数调用了诸如 &lt;code&gt;t.Error&lt;/code&gt; 或 &lt;code&gt;t.Fail&lt;/code&gt; 之类的失败函数，则认为测试已失败。&lt;/p&gt;
+&lt;p&gt;通过创建包含以下 Go 代码的文件 &lt;code&gt;$HOME/hello/morestrings/reverse_test.go&lt;/code&gt;，将测试添加到 &lt;code&gt;morestrings&lt;/code&gt; 包中。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;package&lt;/span&gt; morestrings
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;testing&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;TestReverseRunes&lt;/span&gt;(t &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;testing.T) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cases &lt;span style=&#34;color:#666&#34;&gt;:=&lt;/span&gt; []&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		in, want &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		{&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello, world&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;dlrow ,olleH&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		{&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Hello, 世界&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;界世 ,olleH&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		{&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; _, c &lt;span style=&#34;color:#666&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;range&lt;/span&gt; cases {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		got &lt;span style=&#34;color:#666&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;ReverseRunes&lt;/span&gt;(c.in)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; got &lt;span style=&#34;color:#666&#34;&gt;!=&lt;/span&gt; c.want {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			t.&lt;span style=&#34;color:#00a000&#34;&gt;Errorf&lt;/span&gt;(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;ReverseRunes(%q) == %q, want %q&amp;#34;&lt;/span&gt;, c.in, got, c.want)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后使用 &lt;code&gt;go test&lt;/code&gt; 运行测试：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ go &lt;span style=&#34;color:#a2f&#34;&gt;test&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;PASS
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ok  	example.com/user/morestrings 0.165s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行 &lt;code&gt;go help test&lt;/code&gt; 和查看 &lt;a href=&#34;https://golang.org/pkg/testing/&#34;&gt;testing package documentation&lt;/a&gt; 以获取更多详细信息。&lt;/p&gt;
+&lt;h2 id=&#34;下一步&#34;&gt;下一步&lt;/h2&gt;
+&lt;p&gt;订阅 &lt;a href=&#34;https://groups.google.com/group/golang-announce&#34;&gt;golang-announce&lt;/a&gt; 邮件列表，以便在发布新的 Go 稳定版时收到通知。&lt;/p&gt;
+&lt;p&gt;有关编写清晰，惯用的 Go 代码的提示，请参见 &lt;a href=&#34;https://golang.org/doc/effective_go.html&#34;&gt;Effective Go&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;参加 &lt;a href=&#34;https://tour.golang.org/&#34;&gt;A Tour of Go&lt;/a&gt; 以正确地学习 Go 语言。&lt;/p&gt;
+&lt;p&gt;请访问&lt;a href=&#34;https://golang.org/doc/#articles&#34;&gt;文档页面&lt;/a&gt;，获取有关 Go 语言及其库和工具的一系列深入文章。&lt;/p&gt;
+&lt;h2 id=&#34;获得帮助&#34;&gt;获得帮助&lt;/h2&gt;
+&lt;p&gt;要获得实时帮助，请在社区运行的 &lt;a href=&#34;https://gophers.slack.com/messages/general/&#34;&gt;gophers Slack server&lt;/a&gt; 中询问有用的 gopher（在&lt;a href=&#34;https://invite.slack.golangbridge.org/&#34;&gt;此处&lt;/a&gt;获取邀请）。&lt;/p&gt;
+&lt;p&gt;用于讨论 Go 语言的官方邮件列表是 &lt;a href=&#34;https://groups.google.com/group/golang-nuts&#34;&gt;Go Nuts&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;使用 &lt;a href=&#34;https://golang.org/issue&#34;&gt;Go 问题跟踪器&lt;/a&gt;报告错误。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: Introducing Operators</title>
+      <link>/blog/2020/07/28/introducing-operators/</link>
+      <pubDate>Tue, 28 Jul 2020 13:12:05 +0800</pubDate>
+      
+      <guid>/blog/2020/07/28/introducing-operators/</guid>
+      <description>
+        
+        
+        &lt;blockquote&gt;
+&lt;p&gt;此文章为 &lt;a href=&#34;https://coreos.com/blog/introducing-operators.html&#34;&gt;CoreOS Blog：Introducing Operators&lt;/a&gt; 的译文。原文由 &lt;em&gt;Brandon Philips&lt;/em&gt; 在 2016 年 11 月 3 日发表。文章内容已经过时，因此仅作为理解 Operator 的参考文章。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;网站可靠性工程师（SRE）是通过编写软件来操作应用程序的人。他们是工程师，是开发者，他们知道如何专门为特定应用程序域开发软件。所产生的软件已在其中编程了应用程序的操作领域知识。我们的团队一直在 Kubernetes 社区中忙于设计和实施此概念，以在 Kubernetes 上可靠地创建、配置和管理复杂的应用程序实例。&lt;/p&gt;
+&lt;p&gt;我们称这种新的软件类别为操作员。Operator 是特定于应用程序的控制器，它扩展了 Kubernetes API 以代表 Kubernetes 用户创建、配置和管理复杂的有状态应用程序实例。它建立在 Kubernetes 基本资源和控制器概念的基础上，但包括领域或特定应用程序的知识，可自动执行常见任务。&lt;/p&gt;
+&lt;h2 id=&#34;无状态容易有状态很难&#34;&gt;无状态容易，有状态很难&lt;/h2&gt;
+&lt;p&gt;借助 Kubernetes，即可相对轻松地管理和扩展 Web 应用程序、移动后端和开箱即用的 API 服务。为什么呢？因为这些应用程序通常是无状态的，因此基本的 Kubernetes API（例如 Deployments）可以在没有其他知识的情况下进行扩展并从故障中恢复。&lt;/p&gt;
+&lt;p&gt;更大的挑战是管理有状态的应用程序，例如数据库、缓存和监控系统。这些系统需要应用程序领域知识来正确扩展、升级和重新配置，同时防止数据丢失或不可用。我们希望将此特定于应用程序的操作知识编码到软件中，以利用强大的 Kubernetes 抽象来正确地运行和管理应用程序。&lt;/p&gt;
+&lt;p&gt;Operator 是一种软件，它对该领域知识进行了编码，并通过&lt;a href=&#34;http://kubernetes.io/docs/user-guide/thirdpartyresources/&#34;&gt;第三方资源&lt;/a&gt;机制扩展 Kubernetes API，使用户能够创建、配置和管理应用程序。像 Kubernetes 的内置资源一样，Operator 不仅管理应用程序的单个实例，而且管理整个集群中的多个实例。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/Overview-etcd_0.png&#34; alt=&#34;Overview-etcd_0&#34;&gt;&lt;/p&gt;
+&lt;p&gt;为了在运行中代码演示 Operator 的概念，如今我们有两个具体的示例公开为了开源项目：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://coreos.com/blog/introducing-the-etcd-operator.html&#34;&gt;&lt;em&gt;etcd Operator&lt;/em&gt;&lt;/a&gt; 创建、配置和管理 etcd 集群。etcd 是 CoreOS 引入的一种可靠的分布式键值存储，用于维持分布式系统中最关键的数据，并且是 Kubernetes 本身的主要配置数据存储。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://coreos.com/blog/the-prometheus-operator.html&#34;&gt;&lt;em&gt;Prometheus Operator&lt;/em&gt;&lt;/a&gt; 创建、配置和管理 Prometheus 监控实例。Prometheus 是功能强大的监控、指标和警报工具，并且是 CoreOS 团队支持的 Cloud Native Computing Foundation（CNCF）项目。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;如何构建-operator&#34;&gt;如何构建 Operator？&lt;/h2&gt;
+&lt;p&gt;Operator 基于 Kubernetes 的两个核心概念：资源和控制器。例如，内置的 &lt;a href=&#34;http://kubernetes.io/docs/user-guide/replicasets/&#34;&gt;&lt;em&gt;ReplicaSet&lt;/em&gt;&lt;/a&gt; 资源使用户可以设置要运行的 Pod 的期望数量，并且 Kubernetes 内部的控制器通过创建或删除正在运行的 Pod 来确保 ReplicaSet 资源中设置的期望状态保持为 true。Kubernetes 中有许多以这种方式工作的基本控制器和资源，其中包括 &lt;a href=&#34;http://kubernetes.io/docs/user-guide/services/&#34;&gt;Services&lt;/a&gt;、&lt;a href=&#34;http://kubernetes.io/docs/user-guide/deployments/&#34;&gt;Deployments&lt;/a&gt; 和 &lt;a href=&#34;http://kubernetes.io/docs/admin/daemons/&#34;&gt;Daemon Sets&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/RS-before.png&#34; alt=&#34;RS-before&#34;&gt;&lt;/p&gt;
+&lt;p&gt;示例1a：单个 Pod 正在运行，并且用户将期望的 Pod 数量更新为3。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/RS-scaled.png&#34; alt=&#34;RS-scaled&#34;&gt;&lt;/p&gt;
+&lt;p&gt;示例1b：过了一会儿，Kubernetes 内部的控制器创建了新的 Pod 来满足用户的要求。&lt;/p&gt;
+&lt;p&gt;Operator 以 Kubernetes 基本资源和控制器概念为基础，并添加了一组知识或配置，以使 Operator 可以执行常见的应用程序任务。例如，当手动扩展 etcd 集群时，用户必须执行几个步骤：为新的 etcd 成员创建 DNS 名称，启动新的 etcd 实例，然后使用 etcd 管理工具（&lt;code&gt;etcdctl member add&lt;/code&gt;）来告知现有群集有关此新成员的信息。取而代之的是，用户可以使用 &lt;em&gt;etcd Operator&lt;/em&gt; 将 etcd 群集大小字段简单地增加 1。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/Operator-scale.png&#34; alt=&#34;Operator-scale&#34;&gt;&lt;/p&gt;
+&lt;p&gt;示例2：备份由用户使用 kubectl 触发。&lt;/p&gt;
+&lt;p&gt;Operator 可能处理的其他复杂管理任务的示例包括安全协调应用程序升级、配置到异地存储的备份、通过原生 Kubernetes API 进行服务发现、应用程序 TLS 证书配置和灾难恢复。&lt;/p&gt;
+&lt;h2 id=&#34;如何创建-operator&#34;&gt;如何创建 Operator？&lt;/h2&gt;
+&lt;p&gt;Operator 本质上是特定于应用程序的，因此艰苦的工作是将所有应用程序操作领域知识编码为合理的配置资源和控制循环。在构建 Operator 时，我们发现了一些常见的模式，这些模式我们认为对任何应用程序都很重要的：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Operator 应将其作为单个部署进行安装，例如 &lt;code&gt;kubectl create -f https://coreos.com/operators/etcd/latest/deployment.yaml&lt;/code&gt;，并且安装后无需执行任何其他操作。&lt;/li&gt;
+&lt;li&gt;Operator 在安装到 Kubernetes 中时应创建新的第三方类型。用户将使用此第三方类型创建新的应用程序实例。&lt;/li&gt;
+&lt;li&gt;Operator 应尽可能利用诸如 Services 和 Replica Sets 之类的内置 Kubernetes 原语，以利用经过良好测试和理解的代码。&lt;/li&gt;
+&lt;li&gt;Operator 应向后兼容，并始终理解用户创建的资源的先前版本。&lt;/li&gt;
+&lt;li&gt;Operator 应该被设计为无论 Operator 是否已停止或删除，应用程序实例都可以继续运行而不会受到影响。&lt;/li&gt;
+&lt;li&gt;Operator 应使用户能够声明期望版本，并基于期望版本协调应用程序升级。不升级软件是操作 bug 和安全问题的常见根源，Operator 可以帮助用户更自信地解决此负担。&lt;/li&gt;
+&lt;li&gt;Operator 应使用 &amp;ldquo;Chaos Monkey&amp;rdquo; 测试套件进行测试，该套件模拟了 Pod、配置和网络的潜在故障。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;operator-发展方向&#34;&gt;Operator 发展方向&lt;/h2&gt;
+&lt;p&gt;今天，CoreOS 推出的 etcd Operator 和 Prometheus Operator 展示了 Kubernetes 平台的强大功能。去年，我们与更广泛的 Kubernetes 社区一起工作，专注于使 Kubernetes 稳定、安全、易于管理和快速安装。&lt;/p&gt;
+&lt;p&gt;现在，在奠定了 Kubernetes 的基础之后，我们的新重点是建立在之上的系统：扩展 Kubernetes 使其具有新功能的软件。我们设想了一个未来，用户将在其 Kubernetes 集群上安装 Postgres Operator、Cassandra Operator 或 Redis Operator，并操作这些程序的可伸缩实例，就像它们今天轻松部署其无状态 Web 应用程序的副本一样。&lt;/p&gt;
+&lt;p&gt;要了解更多信息，请深入 GitHub 仓库，在我们的[社区频道上讨论，或者 11 月 8 日星期二在 &lt;a href=&#34;https://tectonic.com/blog/kubecon-preview.html&#34;&gt;KubeCon&lt;/a&gt; 上与 CoreOS 团队进行交流。不要错过太平洋时间 11 月 8 日星期二下午 5:25 的主题演讲，在这里我将介绍 Operator 和其他 Kubernetes 主题。&lt;/p&gt;
+&lt;h2 id=&#34;faq&#34;&gt;FAQ&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Q：这与 StatefulSets（以前称为 PetSets）有何不同？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：StatefulSets 旨在为集群中的应用程序提供支持，这些应用程序需要集群为其提供“有状态资源”，例如静态 IP 和存储。需要这种更具有状态部署模型的应用程序仍需要 Operator 自动的根据故障，备份或重新配置采取行动。因此，需要这些部署属性的应用程序的 Operator 可以使用 StatefulSet，而不是利用 ReplicaSet 或 Deployment。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：这与 Puppet 或 Chef 之类的配置管理有何不同？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：容器和 Kubernetes 是最大的差异，它使 Operator 成为可能。通过这两种技术，使用 Kubernetes API 部署新软件、协调分布式配置以及检查多主机系统状态，这是一致且容易的。Operator 以一种对应用程序使用者有用的方式将这些原语粘合在一起；它不仅涉及配置，还涉及整个实时应用程序状态。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：这与 Helm 有何不同？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：Helm 是用于将多个 Kubernetes 资源打包到一个包中的工具。将多个应用程序打包在一起的概念和使用 Operator 主动管理应用程序是互补的。例如，traefik 是一个负载均衡器，可以将 etcd 用作其后端数据库。您可以创建一个 Helm Chart，将部署 traefik Deployment 和 etcd 集群实例放在一起。etcd 集群稍后将由 etcd Operator 进行部署和管理。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：Kubernetes 新手该怎么办？这意味着什么？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：对于新用户来说，除了使他们部署复杂的应用程序（例如 etcd、Prometheus和未来的其他应用）更容易以外，这将不会改变任何东西，除非它使他们将来更容易部署诸如etcd，Prometheus等复杂的应用程序。我们建议的 Kubernetes 入门路径仍然是 &lt;a href=&#34;https://github.com/kubernetes/minikube&#34;&gt;minikube&lt;/a&gt;，&lt;a href=&#34;http://kubernetes.io/docs/user-guide/kubectl/kubectl_run/&#34;&gt;kubectl run&lt;/a&gt;，然后也许开始使用 Prometheus Operator 来监控使用 &lt;code&gt;kubectl run&lt;/code&gt; 部署的应用程序。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：如今 etcd Operator 和 Prometheus Operator 的代码是可用的吗？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：是的！可以在 GitHub 上的 &lt;a href=&#34;https://github.com/coreos/etcd-operator&#34;&gt;https://github.com/coreos/etcd-operator&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/coreos/prometheus-operator&#34;&gt;https://github.com/coreos/prometheus-operator&lt;/a&gt; 上找到他们。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：您是否有其他 Operator 的计划？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：是的，将来可能会这样。我们也希望看到社区也建立了新的 Operator。让我们知道您接下来还想看到其他哪些 Operator。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：Operator 如何帮助保护集群？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：不升级软件是操作 bug 和安全问题的常见根源，Operator 可以帮助用户更自信地解决正确升级的负担。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Q：Operator 可以帮助灾难恢复吗？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A：Operator 可以轻松地定期备份应用程序状态并从备份中恢复以前的状态。我们希望该功能将成为 Operator 的常见功能，它使用户能够轻松地从备份部署新实例。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: Prometheus Operator</title>
+      <link>/blog/2020/07/27/prometheus-operator/</link>
+      <pubDate>Mon, 27 Jul 2020 13:51:23 +0800</pubDate>
+      
+      <guid>/blog/2020/07/27/prometheus-operator/</guid>
+      <description>
+        
+        
+        &lt;blockquote&gt;
+&lt;p&gt;此文章为 &lt;a href=&#34;https://coreos.com/blog/the-prometheus-operator.html&#34;&gt;CoreOS Blog：The Prometheus Operator&lt;/a&gt; 的译文。原文由 &lt;em&gt;Fabian Reinartz&lt;/em&gt; 在 2016 年 11 月 3 日发表。文章内容已经过时，因此仅作为理解 Operator 的参考文章。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;**Note: 这篇文章中的说明已过期。**要尝试 Prometheus Operator，请查看最新的 &lt;a href=&#34;https://coreos.com/operators/prometheus/docs/latest/user-guides/getting-started.html&#34;&gt;Prometheus 文档&lt;/a&gt; ，以获取最新的入门指南。&lt;/p&gt;
+&lt;p&gt;今天，CoreOS 推出了一种全新的软件类别，被称为 &lt;a href=&#34;https://coreos.com/blog/introducing-operators.html&#34;&gt;Operators&lt;/a&gt;，并且还将引入两个 Operator 作为开源项目，一个用于 etcd，另一个用于 Prometheus。在本文中，我们将概述 Operator 对于 Prometheus（Kubernetes 的监控系统）的重要性。&lt;/p&gt;
+&lt;p&gt;Operator 以 Kubernetes 基本资源和控制器概念为基础，但包括应用程序领域知识以执行常见任务。它们最终将帮助您专注于期望的配置，而不是手动部署和生命周期管理的细节。&lt;/p&gt;
+&lt;p&gt;Prometheus 是 Kubernetes 的近亲：Google 引入了 Kubernetes 作为其 Borg 集群系统的开源后代，Prometheus 来分享 Borgmon（与 Borg 配套的监控系统）的基本设计理念。如今，Prometheus 和 Kubernetes 都由 Cloud Native Computing Foundation（CNCF）管理。在技术层面上，Kubernetes 以原生 Prometheus 格式导出其所有内部指标。&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-operator整合-kubernetes-和-prometheus-的最佳方法&#34;&gt;Prometheus Operator：整合 Kubernetes 和 Prometheus 的最佳方法&lt;/h2&gt;
+&lt;p&gt;Prometheus Operator 只需一个命令行即可轻松安装，并且允许用户使用简单的声明性配置来配置和管理Prometheus实例，该配置将作为响应来创建，配置和管理Prometheus监视实例。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/Overview-prometheus_0.png&#34; alt=&#34;Overview-prometheus_0&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Prometheus Operator 安装后，将提供以下功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;创建/销毁：使用 Operator 轻松为您的 Kubernetes 命名空间，特定的应用程序或团队启动 Prometheus 实例。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;简单配置：从原生 Kubernetes 资源配置 Prometheus 的基础知识，例如版本、持久性、保留策略和副本。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过标签的目标服务：基于熟悉的 Kubernetes 标签查询自动生成监控目标配置；无需学习 Prometheus 特定的配置语言。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;请注意，Prometheus Operator 正在大量开发中，请关注 &lt;a href=&#34;https://github.com/coreos/prometheus-operator&#34;&gt;GitHub上的项目&lt;/a&gt; 以获取最新信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;工作原理&#34;&gt;工作原理&lt;/h2&gt;
+&lt;p&gt;Operator 的核心思想是将 Prometheus 实例的部署与它们所监视的实体的配置分离。为此，定义了两个&lt;a href=&#34;http://kubernetes.io/docs/user-guide/thirdpartyresources/&#34;&gt;第三方资源&lt;/a&gt;（TPR）：&lt;code&gt;Prometheus&lt;/code&gt; 和 &lt;code&gt;ServiceMonitor&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;Operator 始终确保对于群集中的每个 &lt;code&gt;Prometheus&lt;/code&gt; 资源，一组具有期望配置的 Prometheus server 正在运行。这涉及到诸如数据保留时间、持久卷声明、副本数量、Prometheus 版本和 Alertmanager 实例向谁发送警报等方面。每个 Prometheus 实例都与各自的配置配对，该配置指定要向哪些监控目标抓取指标以及使用哪些参数。&lt;/p&gt;
+&lt;p&gt;用户可以手动指定此配置，也可以让 Operator 根据第二个TPR &lt;code&gt;ServiceMonitor&lt;/code&gt; 生成它。&lt;code&gt;ServiceMonitor&lt;/code&gt; 资源指定如何从一组以通用方式公开指标的服务中检索指标。&lt;code&gt;Prometheus&lt;/code&gt; 资源对象可以通过其标签动态包含 &lt;code&gt;ServiceMonitor&lt;/code&gt; 对象。Operator 配置 Prometheus 实例去监控该实例中包括的 &lt;code&gt;ServiceMonitor&lt;/code&gt; 所覆盖的所有服务，并使此配置与群集中发生的任何更改保持同步。&lt;/p&gt;
+&lt;p&gt;Operator 封装了 Prometheus 领域知识的很大一部分，并且仅显示了对监控系统最终用户有意义的方面。这是一种强大的方法，可以使组织中所有团队的工程师以这种自主且灵活的方式运行他们的监控。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/p1.png&#34; alt=&#34;p1&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-operator-in-action&#34;&gt;Prometheus Operator in Action&lt;/h2&gt;
+&lt;p&gt;我们将通过创建 Prometheus 实例和一些要监视的服务来逐步演示 Prometheus Operator。让我们从部署第一个 Prometheus 实例开始。&lt;/p&gt;
+&lt;p&gt;首先，您需要一个运行中的 Kubernetes 集群，该集群版本为 v1.3.x 或 v1.4.x 并且启用了 alpha API（请注意，v1.5.0+ 的群集不适用于此博客文章中使用的 Prometheus Operator 版本；有关如何在新版本的 Kubernetes 上运行的最新信息，请参见Prometheus Operator &lt;a href=&#34;https://github.com/coreos/prometheus-operator/tree/master/Documentation&#34;&gt;文档&lt;/a&gt;和 &lt;a href=&#34;https://github.com/coreos/kube-prometheus&#34;&gt;kube-prometheus&lt;/a&gt;）。如果您还没有一个集群，请按照 &lt;a href=&#34;https://github.com/kubernetes/minikube&#34;&gt;minikube 的提示&lt;/a&gt;快速启动并运行本地集群。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：minikube 隐藏了 Kubernetes 的某些组件，但这是设置要使用的集群的最快方法。对于更广泛且类似于生产的环境，请查看使用 &lt;a href=&#34;https://github.com/kubernetes-incubator/bootkube&#34;&gt;bootkube&lt;/a&gt; 设置集群。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;托管部署&#34;&gt;托管部署&lt;/h3&gt;
+&lt;p&gt;让我们首先在集群中部署 Prometheus Operator：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-operator.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deployment &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;prometheus-operator&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;验证它已启动并正在运行，并且已向 Kubernetes API server 注册了 TPR 类型。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl get pod
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                                   READY     STATUS    RESTARTS   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;prometheus-operator-1078305193-ca4vs   1/1       Running   &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;          5m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;until&lt;/span&gt; kubectl get prometheus; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;do&lt;/span&gt; sleep 1; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# … wait ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# If no more errors are printed, the TPR types were registered successfully.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;部署单个 Prometheus 实例的 Prometheus TPR 的简单定义如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;monitoring.coreos.com/v1alpha1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Prometheus&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;prometheus-k8s&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;prometheus&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;k8s&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;version&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1.3.0&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;要在集群中创建它，请运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-k8s.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;prometheus &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;prometheus-k8s&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;service &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;prometheus-k8s&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这还将创建服务以使用户可以访问 Prometheus UI。出于本演示的目的，创建了将其暴露在 NodePort 30900 上的服务。&lt;/p&gt;
+&lt;p&gt;之后立即观察 Operator 部署 Prometheus pod：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl get pod -w
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                                   READY     STATUS    RESTARTS   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;prometheus-k8s-0                       3/3       Running   &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;          2m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;现在我们可以通过转到 &lt;code&gt;http://:30900&lt;/code&gt; 来访问 Prometheus UI，使用 minikube 时运行 &lt;code&gt;$ minikube service prometheus-k8s&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;以相同的方式，我们可以轻松地部署其他 Prometheus server，并在 Prometheus TPR 中使用高级选项，以使 Operator 能够处理版本升级、持久卷声明以及将 Prometheus 连接到 Alertmanager 实例。&lt;/p&gt;
+&lt;p&gt;您可以在&lt;a href=&#34;https://github.com/coreos/prometheus-operator/blob/0e6ed120261f101e6f0dc9581de025f136508ada/Documentation/prometheus.md&#34;&gt;存储库文档&lt;/a&gt;中阅读有关托管 Prometheus 部署的全部功能的更多信息。&lt;/p&gt;
+&lt;h3 id=&#34;集群监控&#34;&gt;集群监控&lt;/h3&gt;
+&lt;p&gt;我们成功创建了托管的 Prometheus server。但是，由于我们未提供任何配置，因此它尚未监视任何内容。每个 Prometheus 部署都会挂载一个以自身命名的 Kubernetes ConfigMap，即我们的 Prometheus server 会在其命名空间中挂载 “prometheus-k8s” ConfigMap 中提供的配置。&lt;/p&gt;
+&lt;p&gt;我们希望 Prometheus server 监视群集本身的所有方面，例如容器资源使用情况、群集节点和 kubelet。Kubernetes 选择 Prometheus 指标格式作为公开其所有组件的指标的方式。因此，我们只需要将 Prometheus 指向正确的端点即可检索这些指标。几乎在任何集群上这都可以工作，我们可以在 kube-prometheus 存储库中使用预定义的清单。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Deploy exporters providing metrics on cluster nodes and Kubernetes business logic&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl create -f https://coreos.com/operators/prometheus/latest/exporters.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deployment &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;kube-state-metrics&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;service &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;kube-state-metrics&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;daemonset &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;node-exporter&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;service &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;node-exporter&amp;#34;&lt;/span&gt; created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Create the ConfigMap containing the Prometheus configuration&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl apply -f https://coreos.com/operators/prometheus/latest/prometheus-k8s-cm.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;configmap &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;prometheus-k8s&amp;#34;&lt;/span&gt; configured
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Kubernetes 更新 Prometheus Pod 中配置后不久，我们可以在 “Targets” 页面上看到目标出现。Prometheus 实例现在正在接收指标，并已经可以在 UI 或仪表板中查询并评估警报。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/p3.png&#34; alt=&#34;p3&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;服务监控&#34;&gt;服务监控&lt;/h3&gt;
+&lt;p&gt;除了监视集群组件之外，我们还希望监视我们自己的服务。使用常规的 Prometheus 配置，我们必须处理 &lt;a href=&#34;https://prometheus.io/docs/operating/configuration/#&#34;&gt;relabeling&lt;/a&gt; 的概念才能正确发现和配置监视目标。它是一种强大的方法，可以使 Prometheus 与各种服务发现机制和任意操作模型集成。但是，它非常&lt;a href=&#34;https://github.com/prometheus/prometheus/blob/63fe65bf2ff8c480bb4350e4d278d3208ca687be/documentation/examples/prometheus-kubernetes.yml#L96-L120&#34;&gt;冗长和重复&lt;/a&gt;，因此通常不适合手动编写。&lt;/p&gt;
+&lt;p&gt;Prometheus Operator 通过定义第二个 TPR 来解决此问题，该 TPR 表示如何以对 Kubernetes 完全惯用的方式监视我们的自定义服务。&lt;/p&gt;
+&lt;p&gt;假设我们所有带有 &lt;code&gt;tier = frontend&lt;/code&gt; 标签的服务都在命名端口 &lt;code&gt;web&lt;/code&gt; 上的标准路径 &lt;code&gt;/metrics&lt;/code&gt; 下提供了指标。&lt;code&gt;ServiceMonitor&lt;/code&gt; TPR 允许我们声明性地表示适用于所有那些服务的监视配置，并通过标签 &lt;code&gt;tier&lt;/code&gt; 进行选择。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;monitoring.coreos.com/v1alpha1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ServiceMonitor&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;tier&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;selector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;tier&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;endpoints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;port&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;web           &lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# works for different port numbers as long as the name matches&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;interval&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;10s       &lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# scrape the endpoint every 10 seconds&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这仅定义了应如何监视一组服务。我们现在需要定义 Prometheus 实例将该 &lt;code&gt;ServiceMonitor&lt;/code&gt; 包含在其配置中。再次根据标签选择属于 Prometheus 设置的 &lt;code&gt;ServiceMonitor&lt;/code&gt;。在部署所述 Prometheus 实例时，Operator 将根据匹配的服务监视器对其进行配置。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;monitoring.coreos.com/v1alpha1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Prometheus&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;prometheus-frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;prometheus&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;version&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1.3.0&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Define that all ServiceMonitor TPRs with the label `tier = frontend` should be included&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# into the server&amp;#39;s configuration.&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;serviceMonitors&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;selector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;tier&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;frontend&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们通过运行以下命令创建 &lt;code&gt;ServiceMonitor&lt;/code&gt; 和 &lt;code&gt;Prometheus&lt;/code&gt; 对象：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl create -f https://coreos.com/operators/prometheus/latest/servicemonitor-frontend.yaml
+servicemonitor &amp;#34;frontend&amp;#34; created
+$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-frontend.yaml
+prometheus &amp;#34;prometheus-frontend&amp;#34; created
+service &amp;#34;prometheus-frontend&amp;#34; created
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;访问 &lt;code&gt;http://:30100&lt;/code&gt;（使用 minikube 时运行 &lt;code&gt;$ minikube service prometheus-frontend&lt;/code&gt;），我们可以看到新的 Prometheus server 的UI。由于 &lt;code&gt;ServiceMonitor&lt;/code&gt; 没有服务应用 &lt;code&gt;ServiceMonitor&lt;/code&gt;，因此 “Targets” 页面仍然为空。&lt;/p&gt;
+&lt;p&gt;以下命令部署四个示例应用程序的实例，以暴露由 &lt;code&gt;ServiceMonitor&lt;/code&gt; 定义的指标，并匹配其 &lt;code&gt;tier = frontend&lt;/code&gt; 标签选择器。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl create -f https://coreos.com/operators/prometheus/latest/example-app.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;回到 Web UI，我们可以看到新的 Pod 立即显示在 “Targets” 页面上，并且可以查询其公开的指标。我们的示例应用程序的服务和 Pod 标签，以及 Kubernetes 命名空间，作为标签自动地附加到了抓取的指标。这使我们能够在 Prometheus 查询和警报中进行汇总和过滤。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/sites/default/files/inline-images/p2.png&#34; alt=&#34;p2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Prometheus 将自动选择带有 &lt;code&gt;tier = frontend&lt;/code&gt; 标签的新服务，并适配其上下扩展的部署。此外，如果添加、删除或修改 &lt;code&gt;ServiceMonitor&lt;/code&gt;，Operator 将立即适当地重新配置 Prometheus。&lt;/p&gt;
+&lt;p&gt;下图形象地显示了控制器如何通过观察我们的 &lt;code&gt;Prometheus&lt;/code&gt; 和 &lt;code&gt;ServiceMonitor&lt;/code&gt; 资源的状态来管理 Prometheus 部署。资源之间的关系通过标签表示，在运行时任何更改都会立即生效。&lt;/p&gt;
+&lt;h2 id=&#34;未来发展方向&#34;&gt;未来发展方向&lt;/h2&gt;
+&lt;p&gt;今天通过引入 Operator，我们展示了 Kubernetes 平台的强大功能。Prometheus Operator 扩展了 Kubernetes API 新的监视功能。我们已经了解了 Prometheus Operator 如何帮助我们动态部署 Prometheus 实例并管理其生命周期。此外，它提供了一种以纯粹的 Kubernetes 习惯用语表达定义服务监视的方法。监控真正成为集群本身的一部分，并且抽象出了所使用的不同系统的所有实现细节。&lt;/p&gt;
+&lt;p&gt;尽管仍处于开发的早期阶段，但是 Operator 已经处理了 Prometheus 设置的多个方面，这些方面超出了本博客文章的范围，例如持久性存储、复制、警报和版本更新。查看 &lt;a href=&#34;https://github.com/coreos/prometheus-operator/blob/master/README.md&#34;&gt;Operator 文档&lt;/a&gt;以了解更多信息。&lt;a href=&#34;https://github.com/coreos/kube-prometheus&#34;&gt;kube-prometheus&lt;/a&gt; 存储库包含各种基本知识，可以使您的群集监控立即启动并运行。它还为群集组件提供了现成的仪表板和警报。&lt;/p&gt;
+&lt;p&gt;敬请期待 Prometheus Operator的更多功能和其他 operator 同样轻松地在集群内部运行 &lt;a href=&#34;https://prometheus.io/docs/alerting/alertmanager/&#34;&gt;Prometheus Alertmanager&lt;/a&gt; 和 &lt;a href=&#34;http://grafana.org/&#34;&gt;Grafana&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;在-kubecon-上加入-coreos&#34;&gt;在 KubeCon 上加入 CoreOS&lt;/h2&gt;
+&lt;p&gt;2016 年 11 月 8 日至 9 日，我们将在西雅图 KubeCon 的 Kubernetes 会议上举办一系列活动。加入我们，尤其是在 &lt;a href=&#34;http://sched.co/8NaV&#34;&gt;11 月 9 日（星期三）下午 3:30 举行的普罗米修斯主题演讲中&lt;/a&gt;。 PT，它将深入探究 Prometheus Operator。&lt;/p&gt;
+&lt;p&gt;确保检查出&lt;a href=&#34;https://tectonic.com/blog/kubecon-preview.html&#34;&gt;完整的 CoreOS KubeCon 活动日程&lt;/a&gt;，然后停下来，在 CoreOS 展位与我们的工程师一起解决您的 Kubernetes 和容器问题，或者&lt;a href=&#34;https://coreos.com/resources/meeting-request/&#34;&gt;请求与专家进行现场销售会议&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;Be sure to check out the &lt;a href=&#34;https://tectonic.com/blog/kubecon-preview.html&#34;&gt;full schedule of CoreOS KubeCon events&lt;/a&gt;, then stop by and visit our engineers at the CoreOS booth with your Kubernetes and container questions, or &lt;a href=&#34;https://coreos.com/resources/meeting-request/&#34;&gt;request an on-site sales meeting&lt;/a&gt; with a specialist.&lt;/p&gt;
+&lt;h2 id=&#34;相关文章&#34;&gt;相关文章：&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://coreos.com/blog/introducing-operators.html&#34;&gt;Operator 简介：将操作知识纳入软件&lt;/a&gt;&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: Prometheus</title>
+      <link>/blog/2020/07/25/prometheus/</link>
+      <pubDate>Sat, 25 Jul 2020 13:21:33 +0800</pubDate>
+      
+      <guid>/blog/2020/07/25/prometheus/</guid>
+      <description>
+        
+        
+        &lt;p&gt;使用 Prometheus 监控 Kubernetes 集群&lt;/p&gt;
+&lt;h2 id=&#34;前提条件&#34;&gt;前提条件&lt;/h2&gt;
+&lt;p&gt;在开始之前，应确保以下条件是否满足：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Kubernetes 集群&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;安装-prometheus&#34;&gt;安装 Prometheus&lt;/h2&gt;
+&lt;p&gt;一个完备的 Prometheus 监控系统应该包含如下组件：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prometheus Server：收集并存储时间序列数据。&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: 基于 Hugo &#43; GitHub Pages 快速搭建个人网站</title>
+      <link>/blog/2020/07/15/personal-site/</link>
+      <pubDate>Wed, 15 Jul 2020 21:49:38 +0800</pubDate>
+      
+      <guid>/blog/2020/07/15/personal-site/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;文章概述&#34;&gt;文章概述&lt;/h2&gt;
+&lt;p&gt;本章介绍了如何使用 Hugo 管理个人站点内容，并部署在 GitHub Pages 上以供浏览。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;GitHub 上创建 website 仓库用于存储站点相关的内容。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用 Hugo 组织、管理并生成站点&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在 GitHub Pages 托管个人站点&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;准备-website-仓库&#34;&gt;准备 website 仓库&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;登录 &lt;a href=&#34;https://github.com&#34;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;创建 website 仓库
+&lt;ul&gt;
+&lt;li&gt;仓库名称：website&lt;/li&gt;
+&lt;li&gt;描述（可选）：对该存储库的简单描述&lt;/li&gt;
+&lt;li&gt;公开的 或 私人的：选择该存储库的可见性及谁可以提交更改等。&lt;/li&gt;
+&lt;li&gt;初始化存储库 README 文件（可选）&lt;/li&gt;
+&lt;li&gt;选择 .gitignore 和 license&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;使用 GitHub Desktop 客户端将存储库 clone 到本地&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;使用-hugo-管理站点内容&#34;&gt;使用 Hugo 管理站点内容&lt;/h2&gt;
+&lt;h3 id=&#34;步骤-1安装-hugo&#34;&gt;步骤 1：安装 Hugo&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ brew install hugo
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;验证安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hugo version
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hugo Static Site Generator v0.74.1/extended darwin/amd64 BuildDate: unknown
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;步骤-2初始化站点&#34;&gt;步骤 2：初始化站点&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;cd&lt;/span&gt; website
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hugo new site --force .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ tree -L &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── archetypes
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── config.toml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── content
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── data
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── layouts
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;├── static
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;└── themes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;关于目录结构的更多信息，请参考&lt;a href=&#34;https://gohugo.io/getting-started/directory-structure/#directory-structure-explained&#34;&gt;目录结构说明&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;步骤-3为站点添加主题&#34;&gt;步骤 3：为站点添加主题&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://themes.gohugo.io/&#34;&gt;themes.gohugo.io&lt;/a&gt; 提供了可选的主题列表，本示例中使用了 &lt;a href=&#34;https://themes.gohugo.io/gohugo-theme-ananke/&#34;&gt;Ananke theme&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git submodule add https://github.com/budparr/gohugo-theme-ananke.git themes/ananke
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;theme = &amp;#34;ananke&amp;#34;&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; config.toml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;步骤-4为站点添加内容&#34;&gt;步骤 4：为站点添加内容&lt;/h3&gt;
+&lt;p&gt;使用 &lt;code&gt;hugo new [path]&lt;/code&gt; 命令为站点添加内容，该命令以 &lt;code&gt;content&lt;/code&gt; 作为根目录创建指定的文件，并将 &lt;code&gt;archetypes/default.md&lt;/code&gt; 作为内容模板。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hugo new blog/my-first-post.md
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat content/blog/my-first-post.md
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;title: &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;My First Post&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;date: 2020-07-15T21:47:19+08:00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;draft: &lt;span style=&#34;color:#a2f&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;提示：关于如何管理内容，请参考&lt;a href=&#34;https://gohugo.io/content-management/&#34;&gt;内容管理&lt;/a&gt;；关于如何修改内容根目录，请参考 &lt;a href=&#34;https://gohugo.io/getting-started/configuration/#all-configuration-settings&#34;&gt;Configuration Settings - contentDir&lt;/a&gt;；阅读 &lt;a href=&#34;https://gohugo.io/content-management/archetypes/&#34;&gt;archetypes&lt;/a&gt; 了解更多相关信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;可选使用-hugo-server-预览站点&#34;&gt;可选：使用 Hugo server 预览站点&lt;/h3&gt;
+&lt;p&gt;启动 Hugo server&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hugo server -D
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;访问 &lt;strong&gt;http://localhost:1313/&lt;/strong&gt; 预览站点&lt;/p&gt;
+&lt;h2 id=&#34;构建并托管到-github-pages&#34;&gt;构建并托管到 GitHub Pages&lt;/h2&gt;
+&lt;p&gt;示例中使用 GitHub &amp;lt;username&amp;gt;.github.io master 分支作为托管存储库&lt;/p&gt;
+&lt;h3 id=&#34;步骤-1修改站点配置文件&#34;&gt;步骤 1：修改站点配置文件&lt;/h3&gt;
+&lt;p&gt;编辑 &lt;code&gt;config.toml&lt;/code&gt; 文件，替换如下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-toml&#34; data-lang=&#34;toml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;baseURL = &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;https://&amp;lt;username&amp;gt;.github.io&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;title = &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Website&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;theme = [&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;ananke&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;步骤-2构建静态文件&#34;&gt;步骤 2：构建静态文件&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ hugo --gc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上述命令将在 &lt;code&gt;public&lt;/code&gt; 目录下生成站点文件。&lt;/p&gt;
+&lt;h3 id=&#34;步骤-3发布到-github&#34;&gt;步骤 3：发布到 GitHub&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ &lt;span style=&#34;color:#a2f&#34;&gt;cd&lt;/span&gt; public
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git add -A
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git commit -m &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;@website&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# 替换 &amp;lt;username&amp;gt; 为你实际的 GitHub 用户名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git push -f https://github.com/&amp;lt;username&amp;gt;/&amp;lt;username&amp;gt;.github.io.git master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;可选使用自定义域名&#34;&gt;可选：使用自定义域名&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;替换 &lt;code&gt;config.toml&lt;/code&gt; 中的 &lt;code&gt;baseURL&lt;/code&gt; 为实际的自定义域名&lt;/li&gt;
+&lt;li&gt;创建 &lt;code&gt;static/CNAME&lt;/code&gt; 文件，其内容为实际的自定义域名&lt;/li&gt;
+&lt;li&gt;重新构建发布站点&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/getting-started/quick-start/&#34;&gt;https://gohugo.io/getting-started/quick-start/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/hosting-and-deployment/&#34;&gt;https://gohugo.io/hosting-and-deployment/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: My First Post</title>
+      <link>/blog/2020/07/15/my-first-post/</link>
+      <pubDate>Wed, 15 Jul 2020 21:47:19 +0800</pubDate>
+      
+      <guid>/blog/2020/07/15/my-first-post/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

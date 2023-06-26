@@ -1,0 +1,347 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – Introduction</title>
+    <link>/docs/monitoring/prometheus/introduction/</link>
+    <description>Recent content in Introduction on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 25 Jul 2020 13:34:21 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/monitoring/prometheus/introduction/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Overview</title>
+      <link>/docs/monitoring/prometheus/introduction/overview/</link>
+      <pubDate>Sat, 25 Jul 2020 13:34:21 +0800</pubDate>
+      
+      <guid>/docs/monitoring/prometheus/introduction/overview/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;什么是-prometheus&#34;&gt;什么是 Prometheus？&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/prometheus&#34;&gt;Prometheus&lt;/a&gt; 是最初在 &lt;a href=&#34;https://soundcloud.com/&#34;&gt;SoundCloud&lt;/a&gt; 上构建的开源系统监视和警报工具包。自 2012 年成立以来，许多公司和组织都采用了 Prometheus，该项目拥有非常活跃的开发人员和用户&lt;a href=&#34;https://prometheus.io/community&#34;&gt;社区&lt;/a&gt;。现在，它是一个独立的开源项目，并且独立于任何公司进行维护。为了强调这一点并阐明项目的治理结构，Prometheus 在 2016 年加入了 &lt;a href=&#34;https://cncf.io/&#34;&gt;Cloud Native Computing Foundation&lt;/a&gt; ，这是继 Kubernetes 之后的第二个托管项目。有关 Prometheus 的详细说明，请参见 &lt;a href=&#34;https://prometheus.io/docs/introduction/media/&#34;&gt;media&lt;/a&gt; 部分中的资源链接。&lt;/p&gt;
+&lt;h3 id=&#34;特性&#34;&gt;特性&lt;/h3&gt;
+&lt;p&gt;Prometheus 的主要特性是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个多维&lt;a href=&#34;https://prometheus.io/docs/concepts/data_model/&#34;&gt;数据模型&lt;/a&gt;，其中包含通过指标名称和键/值对标识的时间序列数据。&lt;/li&gt;
+&lt;li&gt;PromQL，一种&lt;a href=&#34;https://prometheus.io/docs/prometheus/latest/querying/basics/&#34;&gt;灵活的查询语言&lt;/a&gt;，可利用此维度。&lt;/li&gt;
+&lt;li&gt;不依赖分布式存储；单服务器节点是自治的。&lt;/li&gt;
+&lt;li&gt;时间序列收集通过 HTTP 上的拉模型进行。&lt;/li&gt;
+&lt;li&gt;通过中间网关支持&lt;a href=&#34;https://prometheus.io/docs/instrumenting/pushing/&#34;&gt;推送时间序列&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;通过服务发现或静态配置发现目标。&lt;/li&gt;
+&lt;li&gt;支持多种模式的图形和仪表板&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;组件&#34;&gt;组件&lt;/h3&gt;
+&lt;p&gt;Prometheus 生态系统由多个组件组成，其中许多是可选的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;主要的 &lt;a href=&#34;https://github.com/prometheus/prometheus&#34;&gt;Prometheus server&lt;/a&gt; 用于搜集并存储时间序列数据。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://prometheus.io/docs/instrumenting/clientlibs/&#34;&gt;client libraries&lt;/a&gt; 用于检测应用程序代码。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/prometheus/pushgateway&#34;&gt;push gateway&lt;/a&gt; 用于支持短期工作&lt;/li&gt;
+&lt;li&gt;服务专用的 &lt;a href=&#34;https://prometheus.io/docs/instrumenting/exporters/&#34;&gt;exporters&lt;/a&gt;，比如用于 HAProxy、StatsD、Graphite等服务。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/prometheus/alertmanager&#34;&gt;alertmanager&lt;/a&gt; 用于处理警报。&lt;/li&gt;
+&lt;li&gt;各种支持工具&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;大多数 Prometheus 组件都是用 &lt;a href=&#34;https://golang.org/&#34;&gt;Go&lt;/a&gt; 编写的，因此易于构建和部署为静态二进制文件。&lt;/p&gt;
+&lt;h3 id=&#34;架构&#34;&gt;架构&lt;/h3&gt;
+&lt;p&gt;下图说明了 Prometheus 的体系结构及其某些生态系统组件：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://prometheus.io/assets/architecture.png&#34; alt=&#34;architecture&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Prometheus 从已检测作业中搜集指标，或是直接地，或是通过中间推送网关处理短期工作。它将所有搜集的样品存储在本地，并对这些数据运行规则，以从现有数据中汇总和记录新时间序列，或生成警报。&lt;a href=&#34;https://grafana.com/&#34;&gt;Grafana&lt;/a&gt; 或其他 API 使用者可以用来可视化收集的数据。&lt;/p&gt;
+&lt;h2 id=&#34;什么时候适合&#34;&gt;什么时候适合？&lt;/h2&gt;
+&lt;p&gt;Prometheus 可以很好地记录任何纯数字时间序列。它既适用于以机器为中心的监控，也适用于高度动态的面向服务的体系结构的监控。在微服务世界中，它对多维数据收集和查询的支持是一种特别的优势。&lt;/p&gt;
+&lt;p&gt;Prometheus 专为可靠性而设计，成为您要使用的系统，该系统帮助您在中断期间能够快速诊断问题。每个 Prometheus server 都是独立的，而不依赖于网络存储或其他远程服务。当基础结构的其他部分损坏时，您可以依靠它，并且无需设置广泛的基础结构即可使用它。&lt;/p&gt;
+&lt;h2 id=&#34;什么时候不适合&#34;&gt;什么时候不适合？&lt;/h2&gt;
+&lt;p&gt;Prometheus 重视可靠性。即使在故障情况下，您始终可以查看有关系统的可用统计信息。如果您需要 100％ 的准确性（例如按请求计费），则 Prometheus 并不是一个很好的选择，因为所收集的数据可能不够详细和完整。在这种情况下，最好使用其他系统来收集和分析数据以进行计费，并使用 Prometheus 进行其余的监视。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: First Steps</title>
+      <link>/docs/monitoring/prometheus/introduction/first-steps/</link>
+      <pubDate>Sat, 25 Jul 2020 15:01:08 +0800</pubDate>
+      
+      <guid>/docs/monitoring/prometheus/introduction/first-steps/</guid>
+      <description>
+        
+        
+        &lt;p&gt;欢迎来到 Prometheus！Prometheus 是一个监控平台，它通过在这些目标上搜集指标 HTTP 端点来从被监视的目标收集指标数据。本指南将向您展示如何安装、配置和使用 Prometheus 监控我们的第一个资源。您将下载，安装并运行 Prometheus。您还将下载并安装 exporter，这些工具可在主机和服务上暴露时间序列数据。我们的第一个 exporter 将是 Prometheus 本身，它提供了关于内存使用，垃圾回收等各种主机级别的指标。&lt;/p&gt;
+&lt;h2 id=&#34;下载-prometheus&#34;&gt;下载 Prometheus&lt;/h2&gt;
+&lt;p&gt;为您的平台&lt;a href=&#34;https://prometheus.io/download&#34;&gt;下载最新版本&lt;/a&gt;的 Prometheus，然后解压缩它：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tar xvfz prometheus-*.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f&#34;&gt;cd&lt;/span&gt; prometheus-*
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Prometheus server 是一个称为 &lt;code&gt;prometheus&lt;/code&gt;（或 &lt;code&gt;prometheus.exe&lt;/code&gt; 在 Microsoft Windows上）的二进制文件。我们可以运行二进制文件并通过传递 &lt;code&gt;--help&lt;/code&gt; 标志来查看有关其选项的帮助。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./prometheus --help
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;usage: prometheus &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;&amp;lt;flags&amp;gt;&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;The Prometheus monitoring server
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;. . .
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在启动 Prometheus 之前，让我们对其进行配置。&lt;/p&gt;
+&lt;h2 id=&#34;配置-prometheus&#34;&gt;配置 Prometheus&lt;/h2&gt;
+&lt;p&gt;Prometheus 配置为 &lt;a href=&#34;http://www.yaml.org/start.html&#34;&gt;YAML&lt;/a&gt; 格式。 Prometheus 下载包附带了示例配置在一个名为 &lt;code&gt;prometheus.yml&lt;/code&gt; 的文件中，这个文件是开始的好地方。&lt;/p&gt;
+&lt;p&gt;我们删除了示例文件中的大多数注释，以使其更加简洁（注释是带有 &lt;code&gt;#&lt;/code&gt; 前缀的行）。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;global&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;scrape_interval&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;15s&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;evaluation_interval&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;15s&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;rule_files&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# - &amp;#34;first.rules&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# - &amp;#34;second.rules&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;scrape_configs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;job_name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;prometheus&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;static_configs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;targets&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;localhost:9090&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;示例配置文件中包含三个配置块：&lt;code&gt;global&lt;/code&gt;、&lt;code&gt;rule_files&lt;/code&gt; 和 &lt;code&gt;scrape_configs&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;global&lt;/code&gt; 控制 Prometheus server 的全局配置。我们目前有两个选项。首先，&lt;code&gt;scrape_interval&lt;/code&gt; 控制 Prometheus 多久搜集一次目标。您可以为单个目标覆盖此选项。在这个例子中，全局设置是每 15 秒搜集一次。&lt;code&gt;evaluation_interval&lt;/code&gt; 选项控制 Prometheus 多久评估一次 rule。Prometheus 使用 rule 来创建新的时间序列并生成警报。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;rule_files&lt;/code&gt; 块指定我们要 Prometheus server 加载的任何规则的位置。目前，我们还没有任何规则。&lt;/p&gt;
+&lt;p&gt;最后一块 &lt;code&gt;scrape_configs&lt;/code&gt; 控制 Prometheus 监控哪些资源。由于 Prometheus 还将有关自身的数据公开为 HTTP 端点，因此它可以抓取并监视其自身的运行状况。在默认配置中，有一个名为 &lt;code&gt;prometheus&lt;/code&gt; 的作业，它会抓取 Prometheus server 公开的时间序列数据。该作业包含了单个静态配置的目标：&lt;code&gt;&#39;localhost:9090&#39;&lt;/code&gt;。Prometheus 希望指标在目标的 &lt;code&gt;/metrics&lt;/code&gt; 路径上是可用的。因此，此默认作业是通过以下网址进行抓取：http://localhost:9090/metrics。&lt;/p&gt;
+&lt;p&gt;返回的时间序列数据将详细说明 Prometheus 服务器的状态和性能。&lt;/p&gt;
+&lt;p&gt;有关配置选项的完整说明，请参阅&lt;a href=&#34;https://prometheus.io/docs/operating/configuration&#34;&gt;配置文档&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;启动-prometheus&#34;&gt;启动 Prometheus&lt;/h2&gt;
+&lt;p&gt;要使用我们新创建的配置文件启动 Prometheus，切换到包含 Prometheus 二进制文件的目录并运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./prometheus --config.file&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;prometheus.yml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Prometheus 将会启动。您还应该能够在 &lt;a href=&#34;http://localhost:9090/&#34;&gt;http://localhost:9090&lt;/a&gt; 上浏览到有关其自身的状态页。给它大约 30 秒的时间，以从其自己的 HTTP 指标端点收集有关自身的数据。&lt;/p&gt;
+&lt;p&gt;您还可以通过导航到它自己的指标端点：http://localhost:9090/metrics 来验证 Prometheus 是否正在提供有关其自身的指标。&lt;/p&gt;
+&lt;h2 id=&#34;使用表达式浏览器&#34;&gt;使用表达式浏览器&lt;/h2&gt;
+&lt;p&gt;让我们尝试查看 Prometheus 收集到的有关自身的一些数据。要使用 Prometheus 的内置表达式浏览器，请导航至 http://localhost:9090/graph 并在 &amp;ldquo;Graph&amp;rdquo; 选项卡中选择 &amp;ldquo;Console&amp;rdquo; 视图。&lt;/p&gt;
+&lt;p&gt;正如您可以从 http://localhost:9090/metrics 收集的那样，Prometheus 导出的有关其自身的一个指标称为 &lt;code&gt;promhttp_metric_handler_requests_total&lt;/code&gt; （Prometheus server 已处理的 &lt;code&gt;/metrics&lt;/code&gt; 请求总数）。继续并将以下内容输入到表达式控制台中：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;promhttp_metric_handler_requests_total
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这应该返回一些不同的时间序列（以及每个时间序列的最新值），所有时间序列的指标名称均为 &lt;code&gt;promhttp_metric_handler_requests_total&lt;/code&gt;，但具有不同的标签。这些标签指定不同的请求状态。&lt;/p&gt;
+&lt;p&gt;如果我们只对返回 HTTP code 200 的请求感兴趣，则可以使用此查询来检索该信息：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;promhttp_metric_handler_requests_total{code=&amp;#34;200&amp;#34;}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;要统计返回的时间序列数，您可以编写：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;count(promhttp_metric_handler_requests_total)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;有关表达语言的更多信息，请参见 &lt;a href=&#34;https://prometheus.io/docs/querying/basics/&#34;&gt;expression language documentation&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;使用绘图界面&#34;&gt;使用绘图界面&lt;/h2&gt;
+&lt;p&gt;要绘制表达式的图形，请导航到 http://localhost:9090/graph 并使用 &amp;ldquo;Graph&amp;rdquo; 选项卡。&lt;/p&gt;
+&lt;p&gt;例如，输入以下表达式以绘制在自抓取的 Prometheus 中发生的每秒返回状态码 200 的 HTTP 请求速率&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;rate(promhttp_metric_handler_requests_total{code=&amp;#34;200&amp;#34;}[1m])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;您可以尝试使用图形 range 参数和其他设置。&lt;/p&gt;
+&lt;h2 id=&#34;监控其他目标&#34;&gt;监控其他目标&lt;/h2&gt;
+&lt;p&gt;仅从 Prometheus 收集指标并不能很好地说明 Prometheus 的功能。为了更好地了解 Prometheus 可以做什么，我们建议您浏览有关其他 exporter 的文档。&lt;a href=&#34;https://prometheus.io/docs/guides/node-exporter&#34;&gt;Monitoring Linux or macOS host metrics using a node exporter&lt;/a&gt; 指南是一个不错的起点。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;在本指南中，您安装了 Prometheus，配置了 Prometheus 实例以监视资源，并了解了在 Prometheus 表达式浏览器中使用时间序列数据的一些基础知识。要继续学习 Prometheus，请查看 &lt;a href=&#34;https://prometheus.io/docs/introduction/overview&#34;&gt;Overview&lt;/a&gt; 以获取有关接下来要探索的内容的一些想法。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Comparison to Alternatives</title>
+      <link>/docs/monitoring/prometheus/introduction/comparison-to-alternatives/</link>
+      <pubDate>Sat, 25 Jul 2020 16:26:46 +0800</pubDate>
+      
+      <guid>/docs/monitoring/prometheus/introduction/comparison-to-alternatives/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;prometheus-vs-graphite&#34;&gt;Prometheus vs. Graphite&lt;/h2&gt;
+&lt;h3 id=&#34;scope&#34;&gt;Scope&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://graphite.readthedocs.org/en/latest/&#34;&gt;Graphite&lt;/a&gt; 专注于成为具有查询语言和图形功能的被动时间序列数据库。 其他任何问题都可以通过外部组件解决。&lt;/p&gt;
+&lt;p&gt;Prometheus 是一个完整的监视和趋势分析系统，包括基于时间序列数据的内置和主动抓取、存储、查询、图形化和警报。它了解世界应该是什么样子（应该存在哪些端点，什么时间序列模式意味着麻烦等），并积极尝试查找错误。&lt;/p&gt;
+&lt;h3 id=&#34;data-model&#34;&gt;Data model&lt;/h3&gt;
+&lt;p&gt;Graphite 存储命名时间序列的数值样本，就像 Prometheus 一样。但是，Prometheus 的元数据模型更加丰富：Graphite 指标名称由点分隔的成分组成，这些成分隐式地对维度进行编码，Prometheus 将维度明确编码为键值对（称为标签），并附加到度量标准名称。这允许查询语言通过这些标签轻松进行过滤，分组和匹配。&lt;/p&gt;
+&lt;p&gt;此外，尤其是当 Graphite 与 &lt;a href=&#34;https://github.com/etsy/statsd/&#34;&gt;StatsD&lt;/a&gt; 结合使用时，它通常只存储在所有受监视实例上的聚合数据，而不是将实例保留为一个维度并能够向下钻取到有问题的实例。&lt;/p&gt;
+&lt;p&gt;例如，在  Graphite/StatsD 中存储对 API server 发起的 &lt;code&gt;POST&lt;/code&gt; 方法到 &lt;code&gt;/tracks&lt;/code&gt; 端点且响应码是 500  的 HTTP 请求数通常会这样编码：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;stats.api-server.tracks.post.500 -&amp;gt; 93
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在 Prometheus 中，相同的数据将会像这样编码（假设三个 api-server 实例）：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;api_server_http_requests_total{method=&amp;#34;POST&amp;#34;,handler=&amp;#34;/tracks&amp;#34;,status=&amp;#34;500&amp;#34;,instance=&amp;#34;&amp;lt;sample1&amp;gt;&amp;#34;} -&amp;gt; 34
+api_server_http_requests_total{method=&amp;#34;POST&amp;#34;,handler=&amp;#34;/tracks&amp;#34;,status=&amp;#34;500&amp;#34;,instance=&amp;#34;&amp;lt;sample2&amp;gt;&amp;#34;} -&amp;gt; 28
+api_server_http_requests_total{method=&amp;#34;POST&amp;#34;,handler=&amp;#34;/tracks&amp;#34;,status=&amp;#34;500&amp;#34;,instance=&amp;#34;&amp;lt;sample3&amp;gt;&amp;#34;} -&amp;gt; 31
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;storage&#34;&gt;Storage&lt;/h3&gt;
+&lt;p&gt;Graphite 将时间序列数据以 &lt;a href=&#34;https://graphite.readthedocs.org/en/latest/whisper.html&#34;&gt;Whisper&lt;/a&gt; 格式存储在本地磁盘上，&lt;/p&gt;
+&lt;p&gt;Graphite 以 &lt;a href=&#34;https://graphite.readthedocs.org/en/latest/whisper.html&#34;&gt;Whisper&lt;/a&gt; 格式将时间序列数据存储在本地磁盘上，这是一种 RRD 风格的数据库，它希望样本以固定的时间间隔到达。每个时间序列都存储在一个单独的文件中，新样本在一定时间后会覆盖旧样本。&lt;/p&gt;
+&lt;p&gt;Prometheus 同样为每个时间序列创建一个本地文件，但允许在出现抓取或规则评估时以任意间隔存储样本。由于新样本只是简单地附加，因此旧数据可以任意保留。Prometheus 也适用于许多短暂的，经常变化的时间序列集。&lt;/p&gt;
+&lt;h3 id=&#34;summary&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;Prometheus 除了更易于运行和集成到您的环境之外，还提供了更丰富的数据模型和查询语言。如果您想要一个可以长期保存历史数据的群集解决方案，那么 Graphite 可能是一个更好的选择。&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-vs-influxdb&#34;&gt;Prometheus vs. InfluxDB&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://influxdata.com/&#34;&gt;InfluxDB&lt;/a&gt; 是一个开源时间序列数据库，具有用于扩展和集群化的商业选项。Prometheus 开发开始将近一年后，InfluxDB 项目才发布，因此我们当时无法将其视为替代方案。尽管如此，Prometheus 和 InfluxDB 之间仍然存在重大差异，并且两种系统都针对稍有不同的用例。&lt;/p&gt;
+&lt;h3 id=&#34;scope-1&#34;&gt;Scope&lt;/h3&gt;
+&lt;p&gt;为了进行公平的比较，我们还必须将 &lt;a href=&#34;https://github.com/influxdata/kapacitor&#34;&gt;Kapacitor&lt;/a&gt; 与 InfluxDB 一起考虑，因为它们结合起来可以解决与 Prometheus 和 Alertmanager 相同的问题空间。&lt;/p&gt;
+&lt;p&gt;与 &lt;a href=&#34;https://prometheus.io/docs/introduction/comparison/#prometheus-vs-graphite&#34;&gt;Graphite&lt;/a&gt; 相同的范围差异在这里适用于 InfluxDB 本身。另外，InfluxDB 提供了连续查询，这些查询等同于 Prometheus 记录规则。&lt;/p&gt;
+&lt;p&gt;Kapacitor 的范围是 Prometheus 记录规则，警报规则和 Alertmanager 的通知功能的组合。Prometheus 提供了&lt;a href=&#34;https://www.robustperception.io/translating-between-monitoring-languages/&#34;&gt;更强大的查询语言来进行图形显示和警报&lt;/a&gt;。 Prometheus Alertmanager 还提供分组，重复数据删除和静音功能。&lt;/p&gt;
+&lt;h3 id=&#34;data-model--storage&#34;&gt;Data model / storage&lt;/h3&gt;
+&lt;p&gt;与 Prometheus 一样，InfluxDB 数据模型也使用键值对作为标签，称为 tags。此外，InfluxDB 还有第二级标签，称为字段，使用范围受到更多限制。InfluxDB 支持最高达纳秒级的时间戳，以及 float64，int64，bool 和字符串数据类型。相比之下，Prometheus 支持 float64 数据类型，有限的字符串支持和毫秒级的时间戳。&lt;/p&gt;
+&lt;p&gt;InfluxDB 使用 &lt;a href=&#34;https://docs.influxdata.com/influxdb/v1.7/concepts/storage_engine/&#34;&gt;log-structured merge tree for storage with a write ahead log&lt;/a&gt; 的变体，使用时间分片。与 Prometheus 的为每个时间序列仅附加到文件的方法相比，此方法更适合事件记录。&lt;/p&gt;
+&lt;p&gt;InfluxDB uses a variant of a &lt;a href=&#34;https://docs.influxdata.com/influxdb/v1.7/concepts/storage_engine/&#34;&gt;log-structured merge tree for storage with a write ahead log&lt;/a&gt;, sharded by time. This is much more suitable to event logging than Prometheus&amp;rsquo;s append-only file per time series approach.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.raintank.io/logs-and-metrics-and-graphs-oh-my/&#34;&gt;Logs and Metrics and Graphs, Oh My!&lt;/a&gt; 描述了事件记录和指标记录之间的区别。&lt;/p&gt;
+&lt;h3 id=&#34;architecture&#34;&gt;Architecture&lt;/h3&gt;
+&lt;p&gt;Prometheus servers 彼此独立运行，并且仅依靠其本地存储来实现其核心功能：抓取，规则处理和警报。 InfluxDB 的开源版本与此类似。&lt;/p&gt;
+&lt;p&gt;根据设计，商业 InfluxDB 产品是一个分布式存储集群，其中存储和查询由多个节点一次处理。&lt;/p&gt;
+&lt;p&gt;这意味着商业 InfluxDB 将更易于水平扩展，但这也意味着您必须从一开始就管理分布式存储系统的复杂性。Prometheus 将更容易运行，但是在某些时候，您将需要按照产品，服务，数据中心或类似方面的可伸缩性边界明确地划分服务器。独立的服务（可以并行冗余运行）也可以为您提供更好的可靠性和故障隔离。&lt;/p&gt;
+&lt;p&gt;Kapacitor 的开源版本没有内置分布式/冗余选项用于规则，警报或通知。Kapacitor 的开源发行版可以通过用户手动分片来扩展，类似于 Prometheus 本身。 Influx 提供了 &lt;a href=&#34;https://docs.influxdata.com/enterprise_kapacitor&#34;&gt;Enterprise Kapacitor&lt;/a&gt;，它支持了 HA/冗余 警报系统。&lt;/p&gt;
+&lt;p&gt;相比之下，Prometheus 和 Alertmanager 通过运行 Prometheus 的冗余副本并使用 Alertmanager 的 &lt;a href=&#34;https://github.com/prometheus/alertmanager#high-availability&#34;&gt;High Availability&lt;/a&gt; 模式提供了完全开源的冗余选项。&lt;/p&gt;
+&lt;h3 id=&#34;summary-1&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;系统之间有许多相似之处。两者都有标签（在 InfluxDB 中称为tags）以有效支持多维指标。两者都使用基本相同的数据压缩算法。两者都有广泛的集成，包括彼此之间的集成。两者都有钩子，可让您进一步扩展它们，例如使用统计工具分析数据或执行自动化操作。&lt;/p&gt;
+&lt;p&gt;InfluxDB 更好的地方：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果您要进行事件记录。&lt;/li&gt;
+&lt;li&gt;商业选项为 InfluxDB 提供集群，这对于长期数据存储也更好。&lt;/li&gt;
+&lt;li&gt;最终在副本之间保持一致的数据视图。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Prometheus 更好的地方：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果您主要是在做指标。&lt;/li&gt;
+&lt;li&gt;更强大的查询语言，警报和通知功能。&lt;/li&gt;
+&lt;li&gt;图形和警报的可用性和正常运行时间更高。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Where Prometheus is better:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If you&amp;rsquo;re primarily doing metrics.&lt;/li&gt;
+&lt;li&gt;More powerful query language, alerting, and notification functionality.&lt;/li&gt;
+&lt;li&gt;Higher availability and uptime for graphing and alerting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;InfluxDB 由一家商业公司按照开放核心模型进行维护，并提供高级功能，例如封源的群集，托管和支持。Prometheus 是一个&lt;a href=&#34;https://prometheus.io/community/&#34;&gt;完全开源的独立项目&lt;/a&gt;，由许多公司和个人维护，其中一些还提供商业服务和支持。&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-vs-opentsdb&#34;&gt;Prometheus vs. OpenTSDB&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://opentsdb.net/&#34;&gt;OpenTSDB&lt;/a&gt; is a distributed time series database based on &lt;a href=&#34;https://hadoop.apache.org/&#34;&gt;Hadoop&lt;/a&gt; and &lt;a href=&#34;https://hbase.apache.org/&#34;&gt;HBase&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;scope-2&#34;&gt;Scope&lt;/h3&gt;
+&lt;p&gt;The same scope differences as in the case of &lt;a href=&#34;https://prometheus.io/docs/introduction/comparison/#prometheus-vs-graphite&#34;&gt;Graphite&lt;/a&gt; apply here.&lt;/p&gt;
+&lt;h3 id=&#34;data-model-1&#34;&gt;Data model&lt;/h3&gt;
+&lt;p&gt;OpenTSDB&amp;rsquo;s data model is almost identical to Prometheus&amp;rsquo;s: time series are identified by a set of arbitrary key-value pairs (OpenTSDB tags are Prometheus labels). All data for a metric is &lt;a href=&#34;http://opentsdb.net/docs/build/html/user_guide/writing/index.html#time-series-cardinality&#34;&gt;stored together&lt;/a&gt;, limiting the cardinality of metrics. There are minor differences though: Prometheus allows arbitrary characters in label values, while OpenTSDB is more restrictive. OpenTSDB also lacks a full query language, only allowing simple aggregation and math via its API.&lt;/p&gt;
+&lt;h3 id=&#34;storage-1&#34;&gt;Storage&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;http://opentsdb.net/&#34;&gt;OpenTSDB&lt;/a&gt;&amp;rsquo;s storage is implemented on top of &lt;a href=&#34;https://hadoop.apache.org/&#34;&gt;Hadoop&lt;/a&gt; and &lt;a href=&#34;https://hbase.apache.org/&#34;&gt;HBase&lt;/a&gt;. This means that it is easy to scale OpenTSDB horizontally, but you have to accept the overall complexity of running a Hadoop/HBase cluster from the beginning.&lt;/p&gt;
+&lt;p&gt;Prometheus will be simpler to run initially, but will require explicit sharding once the capacity of a single node is exceeded.&lt;/p&gt;
+&lt;h3 id=&#34;summary-2&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;Prometheus offers a much richer query language, can handle higher cardinality metrics, and forms part of a complete monitoring system. If you&amp;rsquo;re already running Hadoop and value long term storage over these benefits, OpenTSDB is a good choice.&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-vs-nagios&#34;&gt;Prometheus vs. Nagios&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.nagios.org/&#34;&gt;Nagios&lt;/a&gt; is a monitoring system that originated in the 1990s as NetSaint.&lt;/p&gt;
+&lt;h3 id=&#34;scope-3&#34;&gt;Scope&lt;/h3&gt;
+&lt;p&gt;Nagios is primarily about alerting based on the exit codes of scripts. These are called “checks”. There is silencing of individual alerts, however no grouping, routing or deduplication.&lt;/p&gt;
+&lt;p&gt;There are a variety of plugins. For example, piping the few kilobytes of perfData plugins are allowed to return &lt;a href=&#34;https://github.com/shawn-sterling/graphios&#34;&gt;to a time series database such as Graphite&lt;/a&gt; or using NRPE to &lt;a href=&#34;https://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details&#34;&gt;run checks on remote machines&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;data-model-2&#34;&gt;Data model&lt;/h3&gt;
+&lt;p&gt;Nagios is host-based. Each host can have one or more services and each service can perform one check.&lt;/p&gt;
+&lt;p&gt;There is no notion of labels or a query language.&lt;/p&gt;
+&lt;h3 id=&#34;storage-2&#34;&gt;Storage&lt;/h3&gt;
+&lt;p&gt;Nagios has no storage per-se, beyond the current check state. There are plugins which can store data such as &lt;a href=&#34;https://docs.pnp4nagios.org/&#34;&gt;for visualisation&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;architecture-1&#34;&gt;Architecture&lt;/h3&gt;
+&lt;p&gt;Nagios servers are standalone. All configuration of checks is via file.&lt;/p&gt;
+&lt;h3 id=&#34;summary-3&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;Nagios is suitable for basic monitoring of small and/or static systems where blackbox probing is sufficient.&lt;/p&gt;
+&lt;p&gt;If you want to do whitebox monitoring, or have a dynamic or cloud based environment, then Prometheus is a good choice.&lt;/p&gt;
+&lt;h2 id=&#34;prometheus-vs-sensu&#34;&gt;Prometheus vs. Sensu&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://sensu.io/&#34;&gt;Sensu&lt;/a&gt; is a composable monitoring pipeline that can reuse existing Nagios checks.&lt;/p&gt;
+&lt;h3 id=&#34;scope-4&#34;&gt;Scope&lt;/h3&gt;
+&lt;p&gt;The same general scope differences as in the case of Nagios apply here.&lt;/p&gt;
+&lt;p&gt;There is also a &lt;a href=&#34;https://docs.sensu.io/sensu-core/latest/reference/clients/#what-is-the-sensu-client-socket&#34;&gt;client socket&lt;/a&gt; permitting ad-hoc check results to be pushed into Sensu.&lt;/p&gt;
+&lt;h3 id=&#34;data-model-3&#34;&gt;Data model&lt;/h3&gt;
+&lt;p&gt;Sensu has the same rough data model as &lt;a href=&#34;https://prometheus.io/docs/introduction/comparison/#prometheus-vs-nagios&#34;&gt;Nagios&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;storage-3&#34;&gt;Storage&lt;/h3&gt;
+&lt;p&gt;Sensu uses Redis to persist monitoring data, including the Sensu client registry, check results, check execution history, and current event data.&lt;/p&gt;
+&lt;h3 id=&#34;architecture-2&#34;&gt;Architecture&lt;/h3&gt;
+&lt;p&gt;Sensu has a &lt;a href=&#34;https://docs.sensu.io/sensu-core/latest/overview/architecture/&#34;&gt;number of components&lt;/a&gt;. It uses RabbitMQ as a transport, Redis for current state, and a separate server for processing and API access.&lt;/p&gt;
+&lt;p&gt;All components of a Sensu deployment (RabbitMQ, Redis, and Sensu Server/API) can be clustered for highly available and redundant configurations.&lt;/p&gt;
+&lt;h3 id=&#34;summary-4&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;If you have an existing Nagios setup that you wish to scale as-is, or want to take advantage of the automatic registration feature of Sensu, then Sensu is a good choice.&lt;/p&gt;
+&lt;p&gt;If you want to do whitebox monitoring, or have a very dynamic or cloud based environment, then Prometheus is a good choice.&lt;/p&gt;
+&lt;p&gt;comparison to alternatives&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Frequently Asked Questions</title>
+      <link>/docs/monitoring/prometheus/introduction/faq/</link>
+      <pubDate>Sat, 25 Jul 2020 18:12:30 +0800</pubDate>
+      
+      <guid>/docs/monitoring/prometheus/introduction/faq/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;general&#34;&gt;General&lt;/h2&gt;
+&lt;h3 id=&#34;什么是-prometheus&#34;&gt;什么是 Prometheus？&lt;/h3&gt;
+&lt;p&gt;Prometheus 是具有活跃生态系统的开源系统监视和警报工具包。请参阅 &lt;a href=&#34;https://prometheus.io/docs/introduction/overview/&#34;&gt;overview&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-与其他监控系统相比如何&#34;&gt;Prometheus 与其他监控系统相比如何？&lt;/h3&gt;
+&lt;p&gt;请参阅 &lt;a href=&#34;https://prometheus.io/docs/introduction/comparison/&#34;&gt;comparison&lt;/a&gt; 页面。&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-有什么依赖性&#34;&gt;Prometheus 有什么依赖性？&lt;/h3&gt;
+&lt;p&gt;主要的 Prometheus server 独立运行，没有外部依赖性。&lt;/p&gt;
+&lt;h3 id=&#34;可以使-prometheus-高度可用吗&#34;&gt;可以使 Prometheus 高度可用吗？&lt;/h3&gt;
+&lt;p&gt;是的，在两台或更多台单独的计算机上运行相同的 Prometheus server。相同的警报将由 &lt;a href=&#34;https://github.com/prometheus/alertmanager&#34;&gt;Alertmanager&lt;/a&gt; 进行重复数据删除。&lt;/p&gt;
+&lt;p&gt;为了 &lt;a href=&#34;https://github.com/prometheus/alertmanager#high-availability&#34;&gt;Alertmanager的高可用&lt;/a&gt;，您可以在 &lt;a href=&#34;https://github.com/weaveworks/mesh&#34;&gt;Mesh cluster&lt;/a&gt; 中运行多个实例，并将 Prometheus server 配置为向每个实例发送通知。&lt;/p&gt;
+&lt;h3 id=&#34;有人告诉我-prometheus-不能缩放&#34;&gt;有人告诉我 Prometheus “不能缩放”。&lt;/h3&gt;
+&lt;p&gt;实际上，存在多种缩放和联合 Prometheus 的方法。阅读 Robust Perception 博客上的 &lt;a href=&#34;https://www.robustperception.io/scaling-and-federating-prometheus/&#34;&gt;Scaling and Federating Prometheus&lt;/a&gt;，以开始使用。&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-用什么语言编写&#34;&gt;Prometheus 用什么语言编写？&lt;/h3&gt;
+&lt;p&gt;大多数 Prometheus 组件都是用Go编写的。有些还用 Java、Python 和 Ruby 编写。&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-功能存储格式和-api-的稳定性如何&#34;&gt;Prometheus 功能、存储格式和 API 的稳定性如何？&lt;/h3&gt;
+&lt;p&gt;All repositories in the Prometheus GitHub organization that have reached version 1.0.0 broadly follow &lt;a href=&#34;http://semver.org/&#34;&gt;semantic versioning&lt;/a&gt;. Breaking changes are indicated by increments of the major version. Exceptions are possible for experimental components, which are clearly marked as such in announcements.&lt;/p&gt;
+&lt;p&gt;Even repositories that have not yet reached version 1.0.0 are, in general, quite stable. We aim for a proper release process and an eventual 1.0.0 release for each repository. In any case, breaking changes will be pointed out in release notes (marked by &lt;code&gt;[CHANGE]&lt;/code&gt;) or communicated clearly for components that do not have formal releases yet.&lt;/p&gt;
+&lt;h3 id=&#34;为什么要拉取而不是推送&#34;&gt;为什么要拉取而不是推送？&lt;/h3&gt;
+&lt;p&gt;通过 HTTP 拉取有许多优点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;开发更改时，可以在笔记本电脑上运行监控。&lt;/li&gt;
+&lt;li&gt;您可以更轻松地判断目标是否已关闭。&lt;/li&gt;
+&lt;li&gt;您可以手动转到目标并使用Web浏览器检查其运行状况。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;总体而言，我们认为拉取要比推送略好，但在考虑使用监控系统时，不应将其视为重点。&lt;/p&gt;
+&lt;p&gt;对于必须推送的情况，我们提供了 &lt;a href=&#34;https://prometheus.io/docs/instrumenting/pushing/&#34;&gt;Pushgateway&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;如何将日志输入-prometheus&#34;&gt;如何将日志输入 Prometheus？&lt;/h3&gt;
+&lt;p&gt;Short answer: Don&amp;rsquo;t! Use something like the &lt;a href=&#34;https://www.elastic.co/products&#34;&gt;ELK stack&lt;/a&gt; instead.&lt;/p&gt;
+&lt;p&gt;Longer answer: Prometheus is a system to collect and process metrics, not an event logging system. The Raintank blog post &lt;a href=&#34;https://blog.raintank.io/logs-and-metrics-and-graphs-oh-my/&#34;&gt;Logs and Metrics and Graphs, Oh My!&lt;/a&gt; provides more details about the differences between logs and metrics.&lt;/p&gt;
+&lt;p&gt;If you want to extract Prometheus metrics from application logs, Google&amp;rsquo;s &lt;a href=&#34;https://github.com/google/mtail&#34;&gt;mtail&lt;/a&gt; might be helpful.&lt;/p&gt;
+&lt;h3 id=&#34;谁写了-prometheus&#34;&gt;谁写了 Prometheus？&lt;/h3&gt;
+&lt;p&gt;Prometheus was initially started privately by &lt;a href=&#34;http://www.matttproud.com/&#34;&gt;Matt T. Proud&lt;/a&gt; and &lt;a href=&#34;http://juliusv.com/&#34;&gt;Julius Volz&lt;/a&gt;. The majority of its initial development was sponsored by &lt;a href=&#34;https://soundcloud.com/&#34;&gt;SoundCloud&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s now maintained and extended by a wide range of companies and individuals.&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-使用什么许可证&#34;&gt;Prometheus 使用什么许可证？&lt;/h3&gt;
+&lt;p&gt;Prometheus is released under the &lt;a href=&#34;https://github.com/prometheus/prometheus/blob/master/LICENSE&#34;&gt;Apache 2.0&lt;/a&gt; license.&lt;/p&gt;
+&lt;h3 id=&#34;prometheus-的复数是什么&#34;&gt;Prometheus 的复数是什么？&lt;/h3&gt;
+&lt;p&gt;After &lt;a href=&#34;https://youtu.be/B_CDeYrqxjQ&#34;&gt;extensive research&lt;/a&gt;, it has been determined that the correct plural of &amp;lsquo;Prometheus&amp;rsquo; is &amp;lsquo;Prometheis&amp;rsquo;.&lt;/p&gt;
+&lt;h3 id=&#34;我可以重新载入-prometheus-的配置吗&#34;&gt;我可以重新载入 Prometheus 的配置吗？&lt;/h3&gt;
+&lt;p&gt;Yes, sending &lt;code&gt;SIGHUP&lt;/code&gt; to the Prometheus process or an HTTP POST request to the &lt;code&gt;/-/reload&lt;/code&gt; endpoint will reload and apply the configuration file. The various components attempt to handle failing changes gracefully.&lt;/p&gt;
+&lt;h3 id=&#34;我可以发送警报吗&#34;&gt;我可以发送警报吗？&lt;/h3&gt;
+&lt;p&gt;Yes, with the &lt;a href=&#34;https://github.com/prometheus/alertmanager&#34;&gt;Alertmanager&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Currently, the following external systems are supported:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Email&lt;/li&gt;
+&lt;li&gt;Generic Webhooks&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.hipchat.com/&#34;&gt;HipChat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.opsgenie.com/&#34;&gt;OpsGenie&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.pagerduty.com/&#34;&gt;PagerDuty&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://pushover.net/&#34;&gt;Pushover&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://slack.com/&#34;&gt;Slack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;can-i-create-dashboards&#34;&gt;Can I create dashboards?&lt;/h3&gt;
+&lt;p&gt;Yes, we recommend &lt;a href=&#34;https://prometheus.io/docs/visualization/grafana/&#34;&gt;Grafana&lt;/a&gt; for production usage. There are also &lt;a href=&#34;https://prometheus.io/docs/visualization/consoles/&#34;&gt;Console templates&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;can-i-change-the-timezone-why-is-everything-in-utc&#34;&gt;Can I change the timezone? Why is everything in UTC?&lt;/h3&gt;
+&lt;p&gt;To avoid any kind of timezone confusion, especially when the so-called daylight saving time is involved, we decided to exclusively use Unix time internally and UTC for display purposes in all components of Prometheus. A carefully done timezone selection could be introduced into the UI. Contributions are welcome. See &lt;a href=&#34;https://github.com/prometheus/prometheus/issues/500&#34;&gt;issue #500&lt;/a&gt; for the current state of this effort.&lt;/p&gt;
+&lt;h2 id=&#34;instrumentation&#34;&gt;Instrumentation&lt;/h2&gt;
+&lt;h3 id=&#34;which-languages-have-instrumentation-libraries&#34;&gt;Which languages have instrumentation libraries?&lt;/h3&gt;
+&lt;p&gt;There are a number of client libraries for instrumenting your services with Prometheus metrics. See the &lt;a href=&#34;https://prometheus.io/docs/instrumenting/clientlibs/&#34;&gt;client libraries&lt;/a&gt; documentation for details.&lt;/p&gt;
+&lt;p&gt;If you are interested in contributing a client library for a new language, see the &lt;a href=&#34;https://prometheus.io/docs/instrumenting/exposition_formats/&#34;&gt;exposition formats&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;can-i-monitor-machines&#34;&gt;Can I monitor machines?&lt;/h3&gt;
+&lt;p&gt;Yes, the &lt;a href=&#34;https://github.com/prometheus/node_exporter&#34;&gt;Node Exporter&lt;/a&gt; exposes an extensive set of machine-level metrics on Linux and other Unix systems such as CPU usage, memory, disk utilization, filesystem fullness, and network bandwidth.&lt;/p&gt;
+&lt;h3 id=&#34;can-i-monitor-network-devices&#34;&gt;Can I monitor network devices?&lt;/h3&gt;
+&lt;p&gt;Yes, the &lt;a href=&#34;https://github.com/prometheus/snmp_exporter&#34;&gt;SNMP Exporter&lt;/a&gt; allows monitoring of devices that support SNMP.&lt;/p&gt;
+&lt;h3 id=&#34;can-i-monitor-batch-jobs&#34;&gt;Can I monitor batch jobs?&lt;/h3&gt;
+&lt;p&gt;Yes, using the &lt;a href=&#34;https://prometheus.io/docs/instrumenting/pushing/&#34;&gt;Pushgateway&lt;/a&gt;. See also the &lt;a href=&#34;https://prometheus.io/docs/practices/instrumentation/#batch-jobs&#34;&gt;best practices&lt;/a&gt; for monitoring batch jobs.&lt;/p&gt;
+&lt;h3 id=&#34;what-applications-can-prometheus-monitor-out-of-the-box&#34;&gt;What applications can Prometheus monitor out of the box?&lt;/h3&gt;
+&lt;p&gt;See &lt;a href=&#34;https://prometheus.io/docs/instrumenting/exporters/&#34;&gt;the list of exporters and integrations&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;can-i-monitor-jvm-applications-via-jmx&#34;&gt;Can I monitor JVM applications via JMX?&lt;/h3&gt;
+&lt;p&gt;Yes, for applications that you cannot instrument directly with the Java client, you can use the &lt;a href=&#34;https://github.com/prometheus/jmx_exporter&#34;&gt;JMX Exporter&lt;/a&gt; either standalone or as a Java Agent.&lt;/p&gt;
+&lt;h3 id=&#34;what-is-the-performance-impact-of-instrumentation&#34;&gt;What is the performance impact of instrumentation?&lt;/h3&gt;
+&lt;p&gt;Performance across client libraries and languages may vary. For Java, &lt;a href=&#34;https://github.com/prometheus/client_java/blob/master/benchmark/README.md&#34;&gt;benchmarks&lt;/a&gt; indicate that incrementing a counter/gauge with the Java client will take 12-17ns, depending on contention. This is negligible for all but the most latency-critical code.&lt;/p&gt;
+&lt;h2 id=&#34;故障排除&#34;&gt;故障排除&lt;/h2&gt;
+&lt;h3 id=&#34;我的-prometheus-1x-server-需要很长时间才能启动并且会向日志中发送有关崩溃恢复的大量信息的垃圾邮件&#34;&gt;我的 Prometheus 1.x server 需要很长时间才能启动，并且会向日志中发送有关崩溃恢复的大量信息的垃圾邮件。&lt;/h3&gt;
+&lt;p&gt;You are suffering from an unclean shutdown. Prometheus has to shut down cleanly after a &lt;code&gt;SIGTERM&lt;/code&gt;, which might take a while for heavily used servers. If the server crashes or is killed hard (e.g. OOM kill by the kernel or your runlevel system got impatient while waiting for Prometheus to shutdown), a crash recovery has to be performed, which should take less than a minute under normal circumstances, but can take quite long under certain circumstances. See &lt;a href=&#34;https://prometheus.io/docs/prometheus/1.8/storage/#crash-recovery&#34;&gt;crash recovery&lt;/a&gt; for details.&lt;/p&gt;
+&lt;h3 id=&#34;my-prometheus-1x-server-runs-out-of-memory&#34;&gt;My Prometheus 1.x server runs out of memory.&lt;/h3&gt;
+&lt;p&gt;See &lt;a href=&#34;https://prometheus.io/docs/prometheus/1.8/storage/#memory-usage&#34;&gt;the section about memory usage&lt;/a&gt; to configure Prometheus for the amount of memory you have available.&lt;/p&gt;
+&lt;h3 id=&#34;my-prometheus-1x-server-reports-to-be-in-rushed-mode-or-that-storage-needs-throttling&#34;&gt;My Prometheus 1.x server reports to be in “rushed mode” or that “storage needs throttling”.&lt;/h3&gt;
+&lt;p&gt;Your storage is under heavy load. Read &lt;a href=&#34;https://prometheus.io/docs/prometheus/1.8/storage/&#34;&gt;the section about configuring the local storage&lt;/a&gt; to find out how you can tweak settings for better performance.&lt;/p&gt;
+&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
+&lt;h3 id=&#34;why-are-all-sample-values-64-bit-floats-i-want-integers&#34;&gt;Why are all sample values 64-bit floats? I want integers.&lt;/h3&gt;
+&lt;p&gt;We restrained ourselves to 64-bit floats to simplify the design. The &lt;a href=&#34;https://en.wikipedia.org/wiki/Double-precision_floating-point_format&#34;&gt;IEEE 754 double-precision binary floating-point format&lt;/a&gt; supports integer precision for values up to 253. Supporting native 64 bit integers would (only) help if you need integer precision above 253 but below 263. In principle, support for different sample value types (including some kind of big integer, supporting even more than 64 bit) could be implemented, but it is not a priority right now. A counter, even if incremented one million times per second, will only run into precision issues after over 285 years.&lt;/p&gt;
+&lt;h3 id=&#34;why-dont-the-prometheus-server-components-support-tls-or-authentication-can-i-add-those&#34;&gt;Why don&amp;rsquo;t the Prometheus server components support TLS or authentication? Can I add those?&lt;/h3&gt;
+&lt;p&gt;Note: The Prometheus team has changed their stance on this during its development summit on August 11, 2018, and support for TLS and authentication in serving endpoints is now on the &lt;a href=&#34;https://prometheus.io/docs/introduction/roadmap/#tls-and-authentication-in-http-serving-endpoints&#34;&gt;project&amp;rsquo;s roadmap&lt;/a&gt;. This document will be updated once code changes have been made.&lt;/p&gt;
+&lt;p&gt;While TLS and authentication are frequently requested features, we have intentionally not implemented them in any of Prometheus&amp;rsquo;s server-side components. There are so many different options and parameters for both (10+ options for TLS alone) that we have decided to focus on building the best monitoring system possible rather than supporting fully generic TLS and authentication solutions in every server component.&lt;/p&gt;
+&lt;p&gt;If you need TLS or authentication, we recommend putting a reverse proxy in front of Prometheus. See, for example &lt;a href=&#34;https://www.robustperception.io/adding-basic-auth-to-prometheus-with-nginx/&#34;&gt;Adding Basic Auth to Prometheus with Nginx&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This applies only to inbound connections. Prometheus does support &lt;a href=&#34;https://prometheus.io/docs/operating/configuration/#&#34;&gt;scraping TLS- and auth-enabled targets&lt;/a&gt;, and other Prometheus components that create outbound connections have similar support.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

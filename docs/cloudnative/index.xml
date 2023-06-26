@@ -1,0 +1,84 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – CloudNative</title>
+    <link>/docs/cloudnative/</link>
+    <description>Recent content in CloudNative on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 13 Jun 2022 16:38:39 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/cloudnative/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Kubernetes 文档</title>
+      <link>/docs/cloudnative/kubernetes/</link>
+      <pubDate>Thu, 23 Jul 2020 16:34:21 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/</guid>
+      <description>
+        
+        
+        &lt;p&gt;kubernetes-docs 是作者学习 &lt;a href=&#34;https://kubernetes.io/docs/&#34;&gt;Kubernetes v1.18 官方文档&lt;/a&gt; 所翻译的中文文档，大部分内容与 &lt;a href=&#34;https://kubernetes.io/zh/docs&#34;&gt;Kubernetes v1.18 官方中文文档&lt;/a&gt; 一致，在此基础上做了少部分修正。&lt;/p&gt;
+&lt;h2 id=&#34;目录导航&#34;&gt;目录导航&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/_index.md&#34;&gt;概念篇&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/overview/_index.md&#34;&gt;概述&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/overview/what-is-kubernetes.md&#34;&gt;Kubernetes 是什么&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/overview/kubenetes-components.md&#34;&gt;Kubernetes 组件&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/cluster-architecture/_index.md&#34;&gt;集群架构&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/cluster-architecture/controllers.md&#34;&gt;控制器&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/_index.md&#34;&gt;工作负载&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/_index.md&#34;&gt;Pods&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/pod-overview.md&#34;&gt;Pod 概述&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/pods.md&#34;&gt;Pods&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/pod-lifecycle.md&#34;&gt;Pod 生命周期&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/init-containers.md&#34;&gt;Init 容器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/pod-preset.md&#34;&gt;Pod Preset&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/pod-topology-spread-constraints.md&#34;&gt;Pod 拓扑扩展约束&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;concepts/workloads/pods/disruptions.md&#34;&gt;干扰&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/&#34;&gt;Kubernetes 官方文档&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/&#34;&gt;Kubernetes 官方中文文档&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Envoy</title>
+      <link>/docs/cloudnative/envoy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/cloudnative/envoy/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,32 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – Developer Tools</title>
+    <link>/docs/developer-tools/</link>
+    <description>Recent content in Developer Tools on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 13 Jun 2022 16:43:25 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/developer-tools/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Hugo</title>
+      <link>/docs/developer-tools/hugo/</link>
+      <pubDate>Mon, 13 Jun 2022 16:47:41 +0800</pubDate>
+      
+      <guid>/docs/developer-tools/hugo/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

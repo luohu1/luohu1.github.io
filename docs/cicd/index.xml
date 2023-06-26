@@ -1,0 +1,32 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – CI/CD</title>
+    <link>/docs/cicd/</link>
+    <description>Recent content in CI/CD on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 13 Jun 2022 17:06:23 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/cicd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Jenkins</title>
+      <link>/docs/cicd/jenkins/</link>
+      <pubDate>Thu, 23 Jul 2020 16:59:42 +0800</pubDate>
+      
+      <guid>/docs/cicd/jenkins/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

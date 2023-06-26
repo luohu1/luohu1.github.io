@@ -1,0 +1,464 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-cn" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.114.0">
+<meta name="robots" content="index, follow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>Prometheus Operator | Website</title>
+<meta name="description" content="The Prometheus Operator: Managed Prometheus setups for Kubernetes.">
+<meta property="og:title" content="Prometheus Operator" />
+<meta property="og:description" content="The Prometheus Operator: Managed Prometheus setups for Kubernetes." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/blog/2020/07/27/prometheus-operator/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2020-07-27T13:51:23+08:00" />
+<meta property="article:modified_time" content="2020-07-27T13:51:23+08:00" />
+<meta itemprop="name" content="Prometheus Operator">
+<meta itemprop="description" content="The Prometheus Operator: Managed Prometheus setups for Kubernetes."><meta itemprop="datePublished" content="2020-07-27T13:51:23+08:00" />
+<meta itemprop="dateModified" content="2020-07-27T13:51:23+08:00" />
+<meta itemprop="wordCount" content="702">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Prometheus Operator"/>
+<meta name="twitter:description" content="The Prometheus Operator: Managed Prometheus setups for Kubernetes."/>
+
+
+
+
+<link rel="preload" href="/scss/main.min.712fd4b6d85c1ea0f4f2839311f1f3fb3a5f8d3ec40be883bd3707526d96568d.css" as="style">
+<link href="/scss/main.min.712fd4b6d85c1ea0f4f2839311f1f3fb3a5f8d3ec40be883bd3707526d96568d.css" rel="stylesheet" integrity="">
+
+<script
+  src="/js/jquery-3.6.3.min.js"
+  integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+  crossorigin="anonymous"></script>
+<script defer
+  src="/js/lunr-2.3.9.min.js"
+  integrity="sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli"
+  crossorigin="anonymous"></script>
+
+  </head>
+  <body class="td-page td-blog">
+    <header>
+      <nav class="td-navbar navbar-dark js-navbar-scroll">
+<div class="container-fluid flex-column flex-md-row">
+  <a class="navbar-brand" href="/"><span class="navbar-brand__logo navbar-logo"><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500"><g><path style="fill:#fff" d="M116.8525 421.9722c-5.7041.0-10.3442-4.3127-10.3442-9.6129V88.183c0-5.3002 4.6401-9.6117 10.3442-9.6117H320.858c3.0347.0 9.3959.5498 11.7506 2.6302l.3545.3442 58.905 63.2912c2.3101 2.491 2.9202 8.4928 2.9202 11.3184v256.2039c0 5.3002-4.6407 9.6129-10.3436 9.6129H116.8525z"/><g><g><g><path style="fill:#767676" d="M384.4445 423.2066H116.852c-6.3839.0-11.5786-4.8658-11.5786-10.8474V88.1831c0-5.9804 5.1947-10.8461 11.5786-10.8461h204.0062c.377.0 9.2786.0329 12.568 2.9389l.3947.3833 58.9508 63.337c3.2135 3.4652 3.2514 11.7924 3.2514 12.1593v256.2036C396.0231 418.3408 390.8284 423.2066 384.4445 423.2066zM116.5079 411.9189c.0848.0278.1999.0531.3441.0531h267.5925c.1442.0.2581-.0253.3441-.0531V156.1556c-.0076-.9033-.3593-3.7347-.7034-5.0037l-57.6527-61.9416c-1.4651-.3176-4.4533-.6389-5.5742-.6389H116.852c-.143.0-.2594.024-.3441.0531V411.9189zm267.4533-261.149zM327.0321 89.371v.0013V89.371z"/></g></g></g><g><g><path style="fill:#5b7fc0" d="M189.0874 210.1754l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4473C177.5953 212.627 183.0601 210.1742 189.0874 210.1754zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 234.1722 197.0804 232.033z"/><path style="opacity:.3;fill:#fff" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/><g><defs><path id="SVGID_1_" d="M194.7376 237.6875c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 234.2399 196.1861 236.239 194.7376 237.6875z"/></defs><clipPath id="SVGID_2_"><use xlink:href="#SVGID_1_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_2_);fill:#fff" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/><path style="opacity:.13;clip-path:url(#SVGID_2_);fill:#020202" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/></g><g><defs><path id="SVGID_3_" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/></defs><clipPath id="SVGID_4_"><use xlink:href="#SVGID_3_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_4_);fill:#5b7fc0" d="M172.6595 215.6045c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8475-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 209.1953 176.6171 211.647 172.6595 215.6045z"/></g></g><rect x="198.8952" y="225.1043" style="fill:#5b7fc0" width="122.6266" height="13.8671"/></g><g><path style="fill:#d95140" d="M189.0874 155.7611l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.0249 2.454-11.4897 6.4116-15.4473C177.5953 158.2128 183.0601 155.7599 189.0874 155.7611zm7.993 21.8577c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.2508 181.7667 197.0816 179.758 197.0804 177.6188z"/><path style="opacity:.3;fill:#fff" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/><g><defs><path id="SVGID_5_" d="M194.7376 183.2733c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 179.8256 196.1861 181.8248 194.7376 183.2733z"/></defs><clipPath id="SVGID_6_"><use xlink:href="#SVGID_5_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_6_);fill:#fff" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/><path style="opacity:.13;clip-path:url(#SVGID_6_);fill:#020202" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/></g><g><defs><path id="SVGID_7_" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zm7.9941 21.8613c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/></defs><clipPath id="SVGID_8_"><use xlink:href="#SVGID_7_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_8_);fill:#d95140" d="M172.6595 161.1903c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 154.7811 176.6171 157.2327 172.6595 161.1903z"/></g><rect x="198.8952" y="170.69" style="fill:#d95140" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#56a55c" d="M189.5379 264.6147l.0012-.0012c7.7751.0012 15.0294 4.1862 18.932 10.9235 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032-5.8394.0-11.3281-2.2733-15.458-6.4032-4.13-4.13-6.4032-9.6186-6.4056-15.4628.0012-6.0249 2.454-11.4897 6.4116-15.4472C178.0458 267.0663 183.5105 264.6135 189.5379 264.6147zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6538 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.7013 290.6202 197.5321 288.6115 197.5309 286.4723z"/><path style="opacity:.3;fill:#fff" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/><g><defs><path id="SVGID_9_" d="M195.1881 292.1268c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9941 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.5344 288.6792 196.6366 290.6783 195.1881 292.1268z"/></defs><clipPath id="SVGID_10_"><use xlink:href="#SVGID_9_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_10_);fill:#fff" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/><path style="opacity:.13;clip-path:url(#SVGID_10_);fill:#020202" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/></g><g><defs><path id="SVGID_11_" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/></defs><clipPath id="SVGID_12_"><use xlink:href="#SVGID_11_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_12_);fill:#56a55c" d="M173.11 270.0439c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7325-11.1497-10.9151-18.926-10.9151C182.5311 263.6346 177.0676 266.0863 173.11 270.0439z"/></g></g><rect x="199.3456" y="279.5436" style="fill:#56a55c" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#f1bc42" d="M189.0874 318.7208l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3305-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4472C177.5953 321.1724 183.0601 318.7196 189.0874 318.7208zm7.993 21.8576c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 342.7176 197.0804 340.5784z"/><path style="opacity:.3;fill:#fff" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/><g><defs><path id="SVGID_13_" d="M194.7376 346.2329c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 342.7853 196.1861 344.7844 194.7376 346.2329z"/></defs><clipPath id="SVGID_14_"><use xlink:href="#SVGID_13_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_14_);fill:#fff" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/><path style="opacity:.13;clip-path:url(#SVGID_14_);fill:#020202" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/></g><g><defs><path id="SVGID_15_" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zm7.9941 21.8612c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/></defs><clipPath id="SVGID_16_"><use xlink:href="#SVGID_15_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_16_);fill:#f1bc42" d="M172.6595 324.15c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8474-1.0151-7.6327-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 317.7407 176.6171 320.1924 172.6595 324.15z"/></g></g><rect x="198.8952" y="333.6497" style="fill:#f1bc42" width="122.6266" height="13.8671"/></g></g></svg></span><span class="navbar-brand__name">Website</span></a>
+  <div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/docs"><span>Documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/blog"><span>Blogs</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about"><span>About</span></a>
+      </li>
+      </ul>
+  </div>
+  <div class="d-none d-lg-block">
+    <div class="td-search td-search--offline">
+  <div class="td-search__icon"></div>
+  <input
+    type="search"
+    class="td-search__input form-control"
+    placeholder="Search"
+    aria-label="Search"
+    autocomplete="off"
+    
+    data-offline-search-index-json-src="/offline-search-index.e71dd357c21bf7fda1bcce7d0d43186d.json"
+    data-offline-search-base-href="/"
+    data-offline-search-max-results="10"
+  >
+</div>
+
+  </div>
+</div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+  <script>
+    $(function() {
+    $("#td-section-nav a").removeClass("active");
+    $("#td-section-nav #m-blog20200727prometheus-operator").addClass("active"); 
+    $("#td-section-nav #m-blog20200727prometheus-operator-li span").addClass("td-sidebar-nav-active-item"); 
+    $("#td-section-nav #m-blog20200727prometheus-operator").parents("li").addClass("active-path"); 
+    $("#td-section-nav li.active-path").addClass("show"); 
+    $("#td-section-nav li.active-path").children("input").prop('checked', true);
+    $("#td-section-nav #m-blog20200727prometheus-operator-li").siblings("li").addClass("show");  
+    $("#td-section-nav #m-blog20200727prometheus-operator-li").children("ul").children("li").addClass("show");  
+    $("#td-sidebar-menu").toggleClass("d-none"); 
+    });
+  </script>
+  <div id="td-sidebar-menu" class="td-sidebar__inner d-none">
+  <form class="td-sidebar__search d-flex align-items-center">
+    <div class="td-search td-search--offline">
+  <div class="td-search__icon"></div>
+  <input
+    type="search"
+    class="td-search__input form-control"
+    placeholder="Search"
+    aria-label="Search"
+    autocomplete="off"
+    
+    data-offline-search-index-json-src="/offline-search-index.e71dd357c21bf7fda1bcce7d0d43186d.json"
+    data-offline-search-base-href="/"
+    data-offline-search-max-results="10"
+  >
+</div>
+
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ms-3 fas fa-bars" type="button" data-bs-toggle="collapse" data-bs-target="#td-section-nav" aria-controls="td-section-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="collapse td-sidebar-nav foldable-nav" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pe-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-blog-li">
+  <a href="/blog/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-blog"><span class="">Blogs</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20220622monitoring-li">
+  <input type="checkbox" id="m-blog20220622monitoring-check"/>
+  <label for="m-blog20220622monitoring-check"><a href="/blog/2022/06/22/monitoring/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20220622monitoring"><span class="">Monitoring</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200728how-to-write-go-code-li">
+  <input type="checkbox" id="m-blog20200728how-to-write-go-code-check"/>
+  <label for="m-blog20200728how-to-write-go-code-check"><a href="/blog/2020/07/28/how-to-write-go-code/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200728how-to-write-go-code"><span class="">How to Write Go Code</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200728introducing-operators-li">
+  <input type="checkbox" id="m-blog20200728introducing-operators-check"/>
+  <label for="m-blog20200728introducing-operators-check"><a href="/blog/2020/07/28/introducing-operators/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200728introducing-operators"><span class="">Introducing Operators</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200727prometheus-operator-li">
+  <input type="checkbox" id="m-blog20200727prometheus-operator-check"/>
+  <label for="m-blog20200727prometheus-operator-check"><a href="/blog/2020/07/27/prometheus-operator/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200727prometheus-operator"><span class="">Prometheus Operator</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200725prometheus-li">
+  <input type="checkbox" id="m-blog20200725prometheus-check"/>
+  <label for="m-blog20200725prometheus-check"><a href="/blog/2020/07/25/prometheus/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200725prometheus"><span class="">Prometheus</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200715personal-site-li">
+  <input type="checkbox" id="m-blog20200715personal-site-check"/>
+  <label for="m-blog20200715personal-site-check"><a href="/blog/2020/07/15/personal-site/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200715personal-site"><span class="">基于 Hugo &#43; GitHub Pages 快速搭建个人网站</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20200715my-first-post-li">
+  <input type="checkbox" id="m-blog20200715my-first-post-check"/>
+  <label for="m-blog20200715my-first-post-check"><a href="/blog/2020/07/15/my-first-post/" class="align-left ps-0  td-sidebar-link td-sidebar-link__page" id="m-blog20200715my-first-post"><span class="">My First Post</span></a></label>
+  
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            
+<div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/luohu1/website/tree/main/content/zh-cn/blog/prometheus-operator.md" class="td-page-meta--view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> 查看页面源码</a>
+  <a href="https://github.com/luohu1/website/edit/main/content/zh-cn/blog/prometheus-operator.md" class="td-page-meta--edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit on GitHub</a>
+  <a href="https://github.com/luohu1/website/new/main/content/zh-cn/blog/prometheus-operator.md?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> 添加子页面</a>
+  <a href="https://github.com/luohu1/website/issues/new?title=Prometheus%20Operator" class="td-page-meta--issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Report issues</a>
+  
+</div>
+
+            <div class="td-toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#prometheus-operator整合-kubernetes-和-prometheus-的最佳方法">Prometheus Operator：整合 Kubernetes 和 Prometheus 的最佳方法</a></li>
+    <li><a href="#工作原理">工作原理</a></li>
+    <li><a href="#prometheus-operator-in-action">Prometheus Operator in Action</a>
+      <ul>
+        <li><a href="#托管部署">托管部署</a></li>
+        <li><a href="#集群监控">集群监控</a></li>
+        <li><a href="#服务监控">服务监控</a></li>
+      </ul>
+    </li>
+    <li><a href="#未来发展方向">未来发展方向</a></li>
+    <li><a href="#在-kubecon-上加入-coreos">在 KubeCon 上加入 CoreOS</a></li>
+    <li><a href="#相关文章">相关文章：</a></li>
+  </ul>
+</nav>
+      </div>
+    
+            
+
+	
+		
+
+
+
+  
+  
+
+	
+		
+
+
+
+  
+  
+
+	
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 ps-md-5 pe-md-4" role="main">
+            <a class="td-rss-button" title="RSS" href="/blog/index.xml" target="_blank" rel="noopener">
+              <i class="fa-solid fa-rss" aria-hidden="true"></i>
+            </a>
+            
+<div class="td-content">
+	<h1>Prometheus Operator</h1>
+	<div class="lead">The Prometheus Operator: Managed Prometheus setups for Kubernetes.</div>
+	<div class="td-byline mb-4">
+		借由 <b>LH</b> |
+		<time datetime="2020-07-27" class="text-muted">2020-07-27</time>
+	</div>
+	<header class="article-meta">
+		
+
+  
+    
+
+
+  
+    
+
+
+  
+
+		
+	</header>
+	<blockquote>
+<p>此文章为 <a href="https://coreos.com/blog/the-prometheus-operator.html">CoreOS Blog：The Prometheus Operator</a> 的译文。原文由 <em>Fabian Reinartz</em> 在 2016 年 11 月 3 日发表。文章内容已经过时，因此仅作为理解 Operator 的参考文章。</p>
+</blockquote>
+<p>**Note: 这篇文章中的说明已过期。**要尝试 Prometheus Operator，请查看最新的 <a href="https://coreos.com/operators/prometheus/docs/latest/user-guides/getting-started.html">Prometheus 文档</a> ，以获取最新的入门指南。</p>
+<p>今天，CoreOS 推出了一种全新的软件类别，被称为 <a href="https://coreos.com/blog/introducing-operators.html">Operators</a>，并且还将引入两个 Operator 作为开源项目，一个用于 etcd，另一个用于 Prometheus。在本文中，我们将概述 Operator 对于 Prometheus（Kubernetes 的监控系统）的重要性。</p>
+<p>Operator 以 Kubernetes 基本资源和控制器概念为基础，但包括应用程序领域知识以执行常见任务。它们最终将帮助您专注于期望的配置，而不是手动部署和生命周期管理的细节。</p>
+<p>Prometheus 是 Kubernetes 的近亲：Google 引入了 Kubernetes 作为其 Borg 集群系统的开源后代，Prometheus 来分享 Borgmon（与 Borg 配套的监控系统）的基本设计理念。如今，Prometheus 和 Kubernetes 都由 Cloud Native Computing Foundation（CNCF）管理。在技术层面上，Kubernetes 以原生 Prometheus 格式导出其所有内部指标。</p>
+<h2 id="prometheus-operator整合-kubernetes-和-prometheus-的最佳方法">Prometheus Operator：整合 Kubernetes 和 Prometheus 的最佳方法</h2>
+<p>Prometheus Operator 只需一个命令行即可轻松安装，并且允许用户使用简单的声明性配置来配置和管理Prometheus实例，该配置将作为响应来创建，配置和管理Prometheus监视实例。</p>
+<p><img src="https://coreos.com/sites/default/files/inline-images/Overview-prometheus_0.png" alt="Overview-prometheus_0"></p>
+<p>Prometheus Operator 安装后，将提供以下功能：</p>
+<ul>
+<li>
+<p>创建/销毁：使用 Operator 轻松为您的 Kubernetes 命名空间，特定的应用程序或团队启动 Prometheus 实例。</p>
+</li>
+<li>
+<p>简单配置：从原生 Kubernetes 资源配置 Prometheus 的基础知识，例如版本、持久性、保留策略和副本。</p>
+</li>
+<li>
+<p>通过标签的目标服务：基于熟悉的 Kubernetes 标签查询自动生成监控目标配置；无需学习 Prometheus 特定的配置语言。</p>
+</li>
+</ul>
+<blockquote>
+<p>请注意，Prometheus Operator 正在大量开发中，请关注 <a href="https://github.com/coreos/prometheus-operator">GitHub上的项目</a> 以获取最新信息。</p>
+</blockquote>
+<h2 id="工作原理">工作原理</h2>
+<p>Operator 的核心思想是将 Prometheus 实例的部署与它们所监视的实体的配置分离。为此，定义了两个<a href="http://kubernetes.io/docs/user-guide/thirdpartyresources/">第三方资源</a>（TPR）：<code>Prometheus</code> 和 <code>ServiceMonitor</code>。</p>
+<p>Operator 始终确保对于群集中的每个 <code>Prometheus</code> 资源，一组具有期望配置的 Prometheus server 正在运行。这涉及到诸如数据保留时间、持久卷声明、副本数量、Prometheus 版本和 Alertmanager 实例向谁发送警报等方面。每个 Prometheus 实例都与各自的配置配对，该配置指定要向哪些监控目标抓取指标以及使用哪些参数。</p>
+<p>用户可以手动指定此配置，也可以让 Operator 根据第二个TPR <code>ServiceMonitor</code> 生成它。<code>ServiceMonitor</code> 资源指定如何从一组以通用方式公开指标的服务中检索指标。<code>Prometheus</code> 资源对象可以通过其标签动态包含 <code>ServiceMonitor</code> 对象。Operator 配置 Prometheus 实例去监控该实例中包括的 <code>ServiceMonitor</code> 所覆盖的所有服务，并使此配置与群集中发生的任何更改保持同步。</p>
+<p>Operator 封装了 Prometheus 领域知识的很大一部分，并且仅显示了对监控系统最终用户有意义的方面。这是一种强大的方法，可以使组织中所有团队的工程师以这种自主且灵活的方式运行他们的监控。</p>
+<p><img src="https://coreos.com/sites/default/files/inline-images/p1.png" alt="p1"></p>
+<h2 id="prometheus-operator-in-action">Prometheus Operator in Action</h2>
+<p>我们将通过创建 Prometheus 实例和一些要监视的服务来逐步演示 Prometheus Operator。让我们从部署第一个 Prometheus 实例开始。</p>
+<p>首先，您需要一个运行中的 Kubernetes 集群，该集群版本为 v1.3.x 或 v1.4.x 并且启用了 alpha API（请注意，v1.5.0+ 的群集不适用于此博客文章中使用的 Prometheus Operator 版本；有关如何在新版本的 Kubernetes 上运行的最新信息，请参见Prometheus Operator <a href="https://github.com/coreos/prometheus-operator/tree/master/Documentation">文档</a>和 <a href="https://github.com/coreos/kube-prometheus">kube-prometheus</a>）。如果您还没有一个集群，请按照 <a href="https://github.com/kubernetes/minikube">minikube 的提示</a>快速启动并运行本地集群。</p>
+<blockquote>
+<p>注意：minikube 隐藏了 Kubernetes 的某些组件，但这是设置要使用的集群的最快方法。对于更广泛且类似于生产的环境，请查看使用 <a href="https://github.com/kubernetes-incubator/bootkube">bootkube</a> 设置集群。</p>
+</blockquote>
+<h3 id="托管部署">托管部署</h3>
+<p>让我们首先在集群中部署 Prometheus Operator：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-operator.yaml
+</span></span><span style="display:flex;"><span>deployment <span style="color:#b44">&#34;prometheus-operator&#34;</span> created
+</span></span></code></pre></div><p>验证它已启动并正在运行，并且已向 Kubernetes API server 注册了 TPR 类型。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pod
+</span></span><span style="display:flex;"><span>NAME                                   READY     STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>prometheus-operator-1078305193-ca4vs   1/1       Running   <span style="color:#666">0</span>          5m
+</span></span><span style="display:flex;"><span>$ <span style="color:#a2f;font-weight:bold">until</span> kubectl get prometheus; <span style="color:#a2f;font-weight:bold">do</span> sleep 1; <span style="color:#a2f;font-weight:bold">done</span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># … wait ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># If no more errors are printed, the TPR types were registered successfully.</span>
+</span></span></code></pre></div><p>部署单个 Prometheus 实例的 Prometheus TPR 的简单定义如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#008000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>monitoring.coreos.com/v1alpha1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Prometheus<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>prometheus-k8s<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">prometheus</span>:<span style="color:#bbb"> </span>k8s<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">version</span>:<span style="color:#bbb"> </span>v1.3.0<span style="color:#bbb">
+</span></span></span></code></pre></div><p>要在集群中创建它，请运行：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-k8s.yaml
+</span></span><span style="display:flex;"><span>prometheus <span style="color:#b44">&#34;prometheus-k8s&#34;</span> created
+</span></span><span style="display:flex;"><span>service <span style="color:#b44">&#34;prometheus-k8s&#34;</span> created
+</span></span></code></pre></div><p>这还将创建服务以使用户可以访问 Prometheus UI。出于本演示的目的，创建了将其暴露在 NodePort 30900 上的服务。</p>
+<p>之后立即观察 Operator 部署 Prometheus pod：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pod -w
+</span></span><span style="display:flex;"><span>NAME                                   READY     STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>prometheus-k8s-0                       3/3       Running   <span style="color:#666">0</span>          2m
+</span></span></code></pre></div><p>现在我们可以通过转到 <code>http://:30900</code> 来访问 Prometheus UI，使用 minikube 时运行 <code>$ minikube service prometheus-k8s</code>。</p>
+<p>以相同的方式，我们可以轻松地部署其他 Prometheus server，并在 Prometheus TPR 中使用高级选项，以使 Operator 能够处理版本升级、持久卷声明以及将 Prometheus 连接到 Alertmanager 实例。</p>
+<p>您可以在<a href="https://github.com/coreos/prometheus-operator/blob/0e6ed120261f101e6f0dc9581de025f136508ada/Documentation/prometheus.md">存储库文档</a>中阅读有关托管 Prometheus 部署的全部功能的更多信息。</p>
+<h3 id="集群监控">集群监控</h3>
+<p>我们成功创建了托管的 Prometheus server。但是，由于我们未提供任何配置，因此它尚未监视任何内容。每个 Prometheus 部署都会挂载一个以自身命名的 Kubernetes ConfigMap，即我们的 Prometheus server 会在其命名空间中挂载 “prometheus-k8s” ConfigMap 中提供的配置。</p>
+<p>我们希望 Prometheus server 监视群集本身的所有方面，例如容器资源使用情况、群集节点和 kubelet。Kubernetes 选择 Prometheus 指标格式作为公开其所有组件的指标的方式。因此，我们只需要将 Prometheus 指向正确的端点即可检索这些指标。几乎在任何集群上这都可以工作，我们可以在 kube-prometheus 存储库中使用预定义的清单。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#080;font-style:italic"># Deploy exporters providing metrics on cluster nodes and Kubernetes business logic</span>
+</span></span><span style="display:flex;"><span>$ kubectl create -f https://coreos.com/operators/prometheus/latest/exporters.yaml
+</span></span><span style="display:flex;"><span>deployment <span style="color:#b44">&#34;kube-state-metrics&#34;</span> created
+</span></span><span style="display:flex;"><span>service <span style="color:#b44">&#34;kube-state-metrics&#34;</span> created
+</span></span><span style="display:flex;"><span>daemonset <span style="color:#b44">&#34;node-exporter&#34;</span> created
+</span></span><span style="display:flex;"><span>service <span style="color:#b44">&#34;node-exporter&#34;</span> created
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># Create the ConfigMap containing the Prometheus configuration</span>
+</span></span><span style="display:flex;"><span>$ kubectl apply -f https://coreos.com/operators/prometheus/latest/prometheus-k8s-cm.yaml
+</span></span><span style="display:flex;"><span>configmap <span style="color:#b44">&#34;prometheus-k8s&#34;</span> configured
+</span></span></code></pre></div><p>Kubernetes 更新 Prometheus Pod 中配置后不久，我们可以在 “Targets” 页面上看到目标出现。Prometheus 实例现在正在接收指标，并已经可以在 UI 或仪表板中查询并评估警报。</p>
+<p><img src="https://coreos.com/sites/default/files/inline-images/p3.png" alt="p3"></p>
+<h3 id="服务监控">服务监控</h3>
+<p>除了监视集群组件之外，我们还希望监视我们自己的服务。使用常规的 Prometheus 配置，我们必须处理 <a href="https://prometheus.io/docs/operating/configuration/#">relabeling</a> 的概念才能正确发现和配置监视目标。它是一种强大的方法，可以使 Prometheus 与各种服务发现机制和任意操作模型集成。但是，它非常<a href="https://github.com/prometheus/prometheus/blob/63fe65bf2ff8c480bb4350e4d278d3208ca687be/documentation/examples/prometheus-kubernetes.yml#L96-L120">冗长和重复</a>，因此通常不适合手动编写。</p>
+<p>Prometheus Operator 通过定义第二个 TPR 来解决此问题，该 TPR 表示如何以对 Kubernetes 完全惯用的方式监视我们的自定义服务。</p>
+<p>假设我们所有带有 <code>tier = frontend</code> 标签的服务都在命名端口 <code>web</code> 上的标准路径 <code>/metrics</code> 下提供了指标。<code>ServiceMonitor</code> TPR 允许我们声明性地表示适用于所有那些服务的监视配置，并通过标签 <code>tier</code> 进行选择。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#008000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>monitoring.coreos.com/v1alpha1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>ServiceMonitor<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">tier</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">selector</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">matchLabels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#008000;font-weight:bold">tier</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">endpoints</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span>- <span style="color:#008000;font-weight:bold">port</span>:<span style="color:#bbb"> </span>web           <span style="color:#bbb"> </span><span style="color:#080;font-style:italic"># works for different port numbers as long as the name matches</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">interval</span>:<span style="color:#bbb"> </span>10s       <span style="color:#bbb"> </span><span style="color:#080;font-style:italic"># scrape the endpoint every 10 seconds</span><span style="color:#bbb">
+</span></span></span></code></pre></div><p>这仅定义了应如何监视一组服务。我们现在需要定义 Prometheus 实例将该 <code>ServiceMonitor</code> 包含在其配置中。再次根据标签选择属于 Prometheus 设置的 <code>ServiceMonitor</code>。在部署所述 Prometheus 实例时，Operator 将根据匹配的服务监视器对其进行配置。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#008000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>monitoring.coreos.com/v1alpha1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Prometheus<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>prometheus-frontend<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">prometheus</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">version</span>:<span style="color:#bbb"> </span>v1.3.0<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#080;font-style:italic"># Define that all ServiceMonitor TPRs with the label `tier = frontend` should be included</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#080;font-style:italic"># into the server&#39;s configuration.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">serviceMonitors</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span>- <span style="color:#008000;font-weight:bold">selector</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#008000;font-weight:bold">matchLabels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#008000;font-weight:bold">tier</span>:<span style="color:#bbb"> </span>frontend<span style="color:#bbb">
+</span></span></span></code></pre></div><p>我们通过运行以下命令创建 <code>ServiceMonitor</code> 和 <code>Prometheus</code> 对象：</p>
+<pre tabindex="0"><code>$ kubectl create -f https://coreos.com/operators/prometheus/latest/servicemonitor-frontend.yaml
+servicemonitor &#34;frontend&#34; created
+$ kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-frontend.yaml
+prometheus &#34;prometheus-frontend&#34; created
+service &#34;prometheus-frontend&#34; created
+</code></pre><p>访问 <code>http://:30100</code>（使用 minikube 时运行 <code>$ minikube service prometheus-frontend</code>），我们可以看到新的 Prometheus server 的UI。由于 <code>ServiceMonitor</code> 没有服务应用 <code>ServiceMonitor</code>，因此 “Targets” 页面仍然为空。</p>
+<p>以下命令部署四个示例应用程序的实例，以暴露由 <code>ServiceMonitor</code> 定义的指标，并匹配其 <code>tier = frontend</code> 标签选择器。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create -f https://coreos.com/operators/prometheus/latest/example-app.yaml
+</span></span></code></pre></div><p>回到 Web UI，我们可以看到新的 Pod 立即显示在 “Targets” 页面上，并且可以查询其公开的指标。我们的示例应用程序的服务和 Pod 标签，以及 Kubernetes 命名空间，作为标签自动地附加到了抓取的指标。这使我们能够在 Prometheus 查询和警报中进行汇总和过滤。</p>
+<p><img src="https://coreos.com/sites/default/files/inline-images/p2.png" alt="p2"></p>
+<p>Prometheus 将自动选择带有 <code>tier = frontend</code> 标签的新服务，并适配其上下扩展的部署。此外，如果添加、删除或修改 <code>ServiceMonitor</code>，Operator 将立即适当地重新配置 Prometheus。</p>
+<p>下图形象地显示了控制器如何通过观察我们的 <code>Prometheus</code> 和 <code>ServiceMonitor</code> 资源的状态来管理 Prometheus 部署。资源之间的关系通过标签表示，在运行时任何更改都会立即生效。</p>
+<h2 id="未来发展方向">未来发展方向</h2>
+<p>今天通过引入 Operator，我们展示了 Kubernetes 平台的强大功能。Prometheus Operator 扩展了 Kubernetes API 新的监视功能。我们已经了解了 Prometheus Operator 如何帮助我们动态部署 Prometheus 实例并管理其生命周期。此外，它提供了一种以纯粹的 Kubernetes 习惯用语表达定义服务监视的方法。监控真正成为集群本身的一部分，并且抽象出了所使用的不同系统的所有实现细节。</p>
+<p>尽管仍处于开发的早期阶段，但是 Operator 已经处理了 Prometheus 设置的多个方面，这些方面超出了本博客文章的范围，例如持久性存储、复制、警报和版本更新。查看 <a href="https://github.com/coreos/prometheus-operator/blob/master/README.md">Operator 文档</a>以了解更多信息。<a href="https://github.com/coreos/kube-prometheus">kube-prometheus</a> 存储库包含各种基本知识，可以使您的群集监控立即启动并运行。它还为群集组件提供了现成的仪表板和警报。</p>
+<p>敬请期待 Prometheus Operator的更多功能和其他 operator 同样轻松地在集群内部运行 <a href="https://prometheus.io/docs/alerting/alertmanager/">Prometheus Alertmanager</a> 和 <a href="http://grafana.org/">Grafana</a>。</p>
+<h2 id="在-kubecon-上加入-coreos">在 KubeCon 上加入 CoreOS</h2>
+<p>2016 年 11 月 8 日至 9 日，我们将在西雅图 KubeCon 的 Kubernetes 会议上举办一系列活动。加入我们，尤其是在 <a href="http://sched.co/8NaV">11 月 9 日（星期三）下午 3:30 举行的普罗米修斯主题演讲中</a>。 PT，它将深入探究 Prometheus Operator。</p>
+<p>确保检查出<a href="https://tectonic.com/blog/kubecon-preview.html">完整的 CoreOS KubeCon 活动日程</a>，然后停下来，在 CoreOS 展位与我们的工程师一起解决您的 Kubernetes 和容器问题，或者<a href="https://coreos.com/resources/meeting-request/">请求与专家进行现场销售会议</a>。</p>
+<p>Be sure to check out the <a href="https://tectonic.com/blog/kubecon-preview.html">full schedule of CoreOS KubeCon events</a>, then stop by and visit our engineers at the CoreOS booth with your Kubernetes and container questions, or <a href="https://coreos.com/resources/meeting-request/">request an on-site sales meeting</a> with a specialist.</p>
+<h2 id="相关文章">相关文章：</h2>
+<p><a href="https://coreos.com/blog/introducing-operators.html">Operator 简介：将操作知识纳入软件</a></p>
+
+	
+
+	<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
+  <li>
+    <a href="/blog/2020/07/25/prometheus/" aria-label="上一页 - Prometheus" class="btn btn-primary"><span class="me-1">←</span>上一页</a>
+  </li>
+  <li>
+    <a href="/blog/2020/07/28/introducing-operators/" aria-label="下一页 - Introducing Operators" class="btn btn-primary">下一页<span class="ms-1">→</span></a>
+  </li>
+</ul>
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="row d-print-none">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-2 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="User mailing list"
+    aria-label="User mailing list">
+    <a class="text-white" target="_blank" href="https://github.com/luohu1">
+      <i class="fa fa-envelope"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-2 text-right text-xs-center order-sm-3">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub"
+    aria-label="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/luohu1">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-12 col-sm-8 text-center order-sm-2">
+        
+        <small class="text-white">&copy; 2023 LH 保留所有权利</small>
+        
+        
+        <br />
+        <small class="ml-1"><a href="https://beian.miit.gov.cn" target="_blank">京ICP备16035985号</a></small>
+        
+      </div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    
+  <script src="/js/main.min.99abe30f7fb05785a480d405ee1665ebd520cec6bbadffe966b7737e103675b8.js" integrity="sha256-mavjD3&#43;wV4WkgNQF7hZl69Ugzsa7rf/pZrdzfhA2dbg=" crossorigin="anonymous"></script>
+<script defer src="/js/click-to-copy.min.f724d3de49218995223b7316aa2e53e2b34bf42026bf399ebb21bb02212402d1.js" integrity="sha256-9yTT3kkhiZUiO3MWqi5T4rNL9CAmvzmeuyG7AiEkAtE=" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+
+  </body>
+</html>

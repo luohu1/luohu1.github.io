@@ -1,0 +1,1213 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – Pods</title>
+    <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/</link>
+    <description>Recent content in Pods on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 23 Jul 2020 16:43:26 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/cloudnative/kubernetes/concepts/workloads/pods/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Pod Overview</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-overview/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Pod 是 Kubernetes 对象模型中最小的可部署对象。&lt;/p&gt;
+&lt;h2 id=&#34;理解-pods&#34;&gt;理解 Pods&lt;/h2&gt;
+&lt;p&gt;Pod 是 Kubernetes 应用程序的基本执行单元 - 在您创建或部署的 Kubernetes 对象模型中最小和最简单的单元。Pod 表示集群中运行的进程。&lt;/p&gt;
+&lt;p&gt;Pod 封装了一个应用程序的容器（或在某些情况下为多个容器），存储资源，唯一的网络标识（IP 地址）以及管理容器容器如何运行的选项。Pod 表示部署的单元：Kubernetes 中应用程序的单个实例，可能由单个容器或紧密耦合并共享资源的少量容器组成。&lt;/p&gt;
+&lt;p&gt;Kubernetes 集群中的 Pod 可以通过两种主要方式使用：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;运行单个容器的 Pod：”one-container-per-Pod“ 模型是最常见的 Kubernetes 用例。在这种情况下，您可以将 Pod 视为单个容器的包装，而 Kubernetes 则直接管理 Pod，而不是直接管理容器。&lt;/li&gt;
+&lt;li&gt;运行多个需要协同工作的容器的 Pod：Pod 可能封装了一个应用程序，该应用程序由紧密耦合且需要共享资源的多个并置容器组成。这些并置的容器可能形成一个内聚的服务单元 - 一个容器将文件从共享卷提供给公众，而一个单独的”sidecar“容器则刷新或更新这些文件。Pod 将这些容器和存储资源包装在一起，成为一个可管理的实体。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每个 Pod 旨在运行给定应用程序的单个实例。如果要水平扩展应用程序（通过运行更多实例来提供更多整体资源），则应使用多个 Pod，每个实例一个。在 Kubernetes 中，这通常称为复制 replication。复制的 Pods 通常作为一个组被 workload 资源及其 &lt;code&gt;_controller_&lt;/code&gt;  创建和管理。&lt;/p&gt;
+&lt;h3 id=&#34;pods-如何管理多个容器&#34;&gt;Pods 如何管理多个容器&lt;/h3&gt;
+&lt;p&gt;Pod 被设计为支持多个协作进程（即容器）组成一个内聚的服务单元。Pod 中的容器会自动地共同放置和调度到集群中的同一物理或虚拟机上。这些容器可以共享资源和依赖项，彼此通信，并协调何时以及如何终止他们。&lt;/p&gt;
+&lt;p&gt;请注意，在单个 Pod 中对多个共同放置和管理的容器进行分组是一个相对高级的用例。您仅应在容器紧密耦合的特定实例中使用此模式。例如，您可能有一个容器充当共享卷中文件的 Web 服务器，以及一个单独的”sidecar“容器从远程源更新这些文件，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://d33wubrfki0l68.cloudfront.net/aecab1f649bc640ebef1f05581bfcc91a48038c4/728d6/images/docs/pod.svg&#34; alt=&#34;pod&#34;&gt;&lt;/p&gt;
+&lt;p&gt;有些 Pod 具有 init 容器和 app 容器。init 容器在 app 容器启动前运行并完成。&lt;/p&gt;
+&lt;p&gt;Pod 为其组成的容器提供两种共享资源：networking 和 storage。&lt;/p&gt;
+&lt;h4 id=&#34;networking&#34;&gt;Networking&lt;/h4&gt;
+&lt;p&gt;每个 Pod 为每个地址族分配一个唯一的 IP 地址。Pod 中的每个容器都共享这个网络名称空间，包括 IP 地址和网络端口。在同一个 Pod 中的容器可以使用 &lt;code&gt;localhost&lt;/code&gt; 相互通信。当 Pod 中的容器与 Pod 外部的实体进行通信时，它们必须协调如何使用共享的网络资源（例如端口）。&lt;/p&gt;
+&lt;h4 id=&#34;storage&#34;&gt;Storage&lt;/h4&gt;
+&lt;p&gt;一个 Pod 可以指定一组共享存储卷。这个 Pod 中的所有容器都可以访问共享卷，从而使这些容器可以共享数据。Volumes 还允许 Pod 中的持久化数据保存下来，以防其中的容器之一需要重新启动。&lt;/p&gt;
+&lt;h2 id=&#34;working-with-pods&#34;&gt;Working with Pods&lt;/h2&gt;
+&lt;p&gt;您很少会直接在 Kubernetes 中创建单个 Pod &amp;ndash; 甚至是单身 Pod。这是因为 Pod 被设计为相对短暂的一次性的实体。当一个 Pod 被创建时（直接由您创建，或者由 &lt;em&gt;controller&lt;/em&gt; 间接创建），它将被安排在集群中的 Node 上运行。Pod 会保留在该节点上，直到进程终止，Pod 对象被删除，Pod 由于缺少资源而被驱逐，或节点发生故障为止。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;说明：不要将重新启动 Pod 中的容器与重新启动 Pod 混淆。Pod 不是进程，而是用于运行容器的环境。Pod 会一直存在直到被删除。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Pod 本身无法自我修复。如果 Pod 被调度到发生故障的节点，或者调度操作本身失败，Pod 将被删除。同样，由于缺乏资源或 Node 维护，Pod 无法幸免。Kubernetes 使用称为控制器的更高级的抽象来处理管理相对一次性的 Pod 实例的工作。因此，虽然可以直接使用 Pod，但在 Kubernetes 中使用控制器来管理 Pod 更为常见。&lt;/p&gt;
+&lt;h3 id=&#34;pods-and-controllers&#34;&gt;Pods and controllers&lt;/h3&gt;
+&lt;p&gt;您可以使用工作负载资源为您创建和管理多个 Pod。资源的控制器处理 Pod 失败时的复制和回滚以及自动修复。例如，如果某个节点发生故障，则控制器会注意到该节点上的 Pod 已停止工作，并创建了一个替换 Pod。调度程序将替换的 Pod 放置到健康的节点上。&lt;/p&gt;
+&lt;p&gt;以下是管理一个或多个 Pod 的工作负载资源的一些示例：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Deployment&lt;/li&gt;
+&lt;li&gt;StatefulSet&lt;/li&gt;
+&lt;li&gt;DaemonSet&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;pod-templates&#34;&gt;Pod templates&lt;/h2&gt;
+&lt;p&gt;工作负载资源的控制器从 Pod 模板创建 Pod，并代表您管理这些 Pod。 PodTemplates 是用于创建 Pod 的规范，并且包含在工作负载资源（如 Deployments，Jobs 和 DaemonSets）中。&lt;/p&gt;
+&lt;p&gt;工作负载资源的每个控制器都使用工作负载对象内部的 PodTemplate 来创建实际的 Pod。PodTemplate 是用于运行应用程序的任何工作负载资源的期望状态的一部分。&lt;/p&gt;
+&lt;p&gt;下面的示例是一个简单的 Job 的清单，带有一个启动一个容器的 &lt;code&gt;template&lt;/code&gt;。该 Pod 中的容器会打印一条消息，然后暂停。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;batch/v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Job&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;hello&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;template&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# This is the pod template&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;hello&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;busybox&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;command&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;sh&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;-c&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;echo &amp;#34;Hello, Kubernetes!&amp;#34; &amp;amp;&amp;amp; sleep 3600&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;restartPolicy&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;OnFailure&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# The pod template ends here&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;修改 pod 模板或切换到新的 pod 模板对已存在的 Pod 无效。 Pod 不会直接接收模板更新。而是创建一个新的 Pod 以匹配修订后的 Pod 模板。&lt;/p&gt;
+&lt;p&gt;例如，Deployment 控制器可确保正在运行的 Pod 与当前 Pod 模板匹配。如果模板已更新，则控制器必须删除现有的 Pod 并根据更新的模板创建新的 Pod。每个工作负载控制器都实现自己的规则，以处理 Pod 模板的更改。&lt;/p&gt;
+&lt;p&gt;在节点上，kubelet 不会直接观察或管理有关 pod 模板和更新的任何详细信息。这些细节被抽象掉了。关注点的抽象和分离简化了系统语义，并使得在不更改现有代码的情况下扩展集群的行为变得可行。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Pods</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/pods/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/pods/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;em&gt;Pod&lt;/em&gt; 是可以在 Kubernetes 中创建和管理的最小的可部署计算单元。&lt;/p&gt;
+&lt;h2 id=&#34;what-is-a-pod&#34;&gt;What is a Pod?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Pod&lt;/em&gt;（就像在鲸鱼荚或者豌豆荚中）是一组（一个或多个）容器（例如 Docker 容器），这些容器具有共享的存储/网络，以及有关如何运行容器的规范。Pod 的内容总是并置（co-located）的并且一同调度，在共享上下文中运行。Pod 所建模的是特定于应用的“逻辑主机”，其中包含一个或多个相对紧密耦合的应用容器 — 在容器出现之前，在相同的物理机或虚拟机上运行意味着在相同的逻辑主机上运行。&lt;/p&gt;
+&lt;p&gt;虽然 Kubernetes 支持多种容器运行时，但 Docker 是最常见的一种运行时，它有助于使用 Docker 术语来描述 Pod。&lt;/p&gt;
+&lt;p&gt;Pod 的共享上下文是一组 Linux 命名空间、cgroups、以及其他潜在的资源隔离相关的因素，这些相同的东西也隔离了 Docker 容器。在 Pod 的上下文中，单个应用程序可能还会应用进一步的子隔离。&lt;/p&gt;
+&lt;p&gt;Pod 中的所有容器共享一个 IP 地址和端口空间，并且可以通过 &lt;code&gt;localhost&lt;/code&gt; 互相发现。他们也能通过标准的进程间通信（如 SystemV 信号量或 POSIX 共享内存）方式进行互相通信。不同 Pod 中的容器的 IP 地址互不相同，没有 &lt;a href=&#34;https://kubernetes.io/docs/concepts/policy/pod-security-policy/&#34;&gt;特殊配置&lt;/a&gt; 就不能使用 IPC 进行通信。这些容器之间经常通过 Pod IP 地址进行通信。&lt;/p&gt;
+&lt;p&gt;Pod 中的应用也能访问共享 &lt;a href=&#34;https://kubernetes.io/docs/concepts/storage/volumes/&#34;&gt;卷&lt;/a&gt;，共享卷是 Pod 定义的一部分，可被用来挂载到每个应用的文件系统上。&lt;/p&gt;
+&lt;p&gt;在 &lt;a href=&#34;https://www.docker.com/&#34;&gt;Docker&lt;/a&gt; 体系的术语中，Pod 被建模为一组具有共享命名空间和共享文件系统&lt;a href=&#34;https://kubernetes.io/docs/concepts/storage/volumes/&#34;&gt;卷&lt;/a&gt; 的 Docker 容器。&lt;/p&gt;
+&lt;p&gt;与单个应用程序容器一样，Pod 被认为是相对短暂的（而不是持久的）实体。如 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/&#34;&gt;Pod 的生命周期&lt;/a&gt; 所讨论的那样：Pod 被创建、给它指定一个唯一 ID（UID）、被调度到节点、在节点上存续直到终止（取决于重启策略）或被删除。如果 &lt;a href=&#34;https://kubernetes.io/docs/concepts/architecture/nodes/&#34;&gt;节点&lt;/a&gt; 宕机，调度到该节点上的 Pod 会在一个超时周期后被安排删除。给定 Pod （由 UID 定义）不会重新调度到新节点；相反，它会被一个完全相同的 Pod 替换掉，如果需要甚至连 Pod 名称都可以一样，除了 UID 是新的(更多信息请查阅 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/&#34;&gt;副本控制器（replication controller）&lt;/a&gt;）。&lt;/p&gt;
+&lt;p&gt;当某些东西被说成与 Pod（如卷）具有相同的生命周期时，这表明只要 Pod（具有该 UID）存在，它就存在。如果出于任何原因删除了该 Pod，即使创建了相同的 Pod，相关的内容（例如卷）也会被销毁并重新创建。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://d33wubrfki0l68.cloudfront.net/aecab1f649bc640ebef1f05581bfcc91a48038c4/728d6/images/docs/pod.svg&#34; alt=&#34;pod&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;一个多容器 Pod，其中包含一个文件拉取器和一个 Web 服务器，该 Web 服务器使用持久卷在容器之间共享存储&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;设计-pod-的目的&#34;&gt;设计 Pod 的目的&lt;/h2&gt;
+&lt;h3 id=&#34;管理&#34;&gt;管理&lt;/h3&gt;
+&lt;p&gt;Pod 是形成内聚服务单元的多个协作过程模式的模型。它们提供了一个比它们的应用组成集合更高级的抽象，从而简化了应用的部署和管理。Pod 可以用作部署、水平扩展和制作副本的最小单元。在 Pod 中，系统自动处理多个容器的在并置运行（协同调度）、生命期共享（例如，终止），协同复制、资源共享和依赖项管理。&lt;/p&gt;
+&lt;h3 id=&#34;资源共享和通信&#34;&gt;资源共享和通信&lt;/h3&gt;
+&lt;p&gt;Pod 使它的组成容器间能够进行数据共享和通信。&lt;/p&gt;
+&lt;p&gt;Pod 中的应用都使用相同的网络命名空间（相同 IP 和 端口空间），而且能够互相“发现”并使用 &lt;code&gt;localhost&lt;/code&gt; 进行通信。因此，在 Pod 中的应用必须协调它们的端口使用情况。每个 Pod 在扁平的共享网络空间中具有一个 IP 地址，该空间通过网络与其他物理计算机和 Pod 进行全面通信。&lt;/p&gt;
+&lt;p&gt;Pod 中的容器获取的系统主机名与为 Pod 配置的 &lt;code&gt;name&lt;/code&gt; 相同。&lt;a href=&#34;https://kubernetes.io/docs/concepts/cluster-administration/networking/&#34;&gt;网络&lt;/a&gt; 部分提供了更多有关此内容的信息。&lt;/p&gt;
+&lt;p&gt;Pod 除了定义了 Pod 中运行的应用程序容器之外，Pod 还指定了一组共享存储卷。该共享存储卷能使数据在容器重新启动后继续保留，并能在 Pod 内的应用程序之间共享。&lt;/p&gt;
+&lt;h2 id=&#34;使用-pod&#34;&gt;使用 Pod&lt;/h2&gt;
+&lt;p&gt;Pod 可以用于托管垂直集成的应用程序栈（例如，LAMP），但最主要的目的是支持位于同一位置的、共同管理的工具程序，例如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;内容管理系统、文件和数据加载器、本地缓存管理器等。&lt;/li&gt;
+&lt;li&gt;日志和检查点备份、压缩、旋转、快照等。&lt;/li&gt;
+&lt;li&gt;数据更改监视器、日志跟踪器、日志和监视适配器、事件发布器等。&lt;/li&gt;
+&lt;li&gt;代理、桥接器和适配器&lt;/li&gt;
+&lt;li&gt;控制器、管理器、配置器和更新器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通常，不会用单个 Pod 来运行同一应用程序的多个实例。&lt;/p&gt;
+&lt;p&gt;有关详细说明，请参考 &lt;a href=&#34;https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns&#34;&gt;分布式系统工具包：组合容器的模式&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;可考虑的备选方案&#34;&gt;可考虑的备选方案&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;为什么不在单个（Docker）容器中运行多个程序？&lt;/em&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;透明度。Pod 内的容器对基础设施可见，使得基础设施能够向这些容器提供服务，例如进程管理和资源监控。这为用户提供了许多便利。&lt;/li&gt;
+&lt;li&gt;解耦软件依赖关系。可以独立地对单个容器进行版本控制、重新构建和重新部署。Kubernetes 有一天甚至可能支持单个容器的实时更新。&lt;/li&gt;
+&lt;li&gt;易用性。用户不需要运行他们自己的进程管理器、也不用担心信号和退出代码传播等。&lt;/li&gt;
+&lt;li&gt;效率。因为基础结构承担了更多的责任，所以容器可以变得更加轻量化。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;em&gt;为什么不支持基于亲和性的容器协同调度？&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;这种处理方法尽管可以提供同址，但不能提供 Pod 的大部分好处，如资源共享、IPC、有保证的命运共享和简化的管理&lt;/p&gt;
+&lt;h2 id=&#34;pod-的持久性或稀缺性&#34;&gt;Pod 的持久性（或稀缺性）&lt;/h2&gt;
+&lt;p&gt;不得将 Pod 视为持久实体。它们无法在调度失败、节点故障或其他驱逐策略（例如由于缺乏资源或在节点维护的情况下）中生存。&lt;/p&gt;
+&lt;p&gt;一般来说，用户不需要直接创建 Pod。他们几乎都是使用控制器进行创建，即使对于单例的 Pod 创建也一样使用控制器，例如 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/deployment/&#34;&gt;Deployments&lt;/a&gt;。控制器提供集群范围的自修复以及副本数和滚动管理。像 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/statefulset.md&#34;&gt;StatefulSet&lt;/a&gt; 这样的控制器还可以提供支持有状态的 Pod。&lt;/p&gt;
+&lt;p&gt;在集群调度系统中，使用 API 合集作为面向用户的主要原语是比较常见的，包括 &lt;a href=&#34;https://research.google.com/pubs/pub43438.html&#34;&gt;Borg&lt;/a&gt;、&lt;a href=&#34;https://mesosphere.github.io/marathon/docs/rest-api.html&#34;&gt;Marathon&lt;/a&gt;、&lt;a href=&#34;http://aurora.apache.org/documentation/latest/reference/configuration/#job-schema&#34;&gt;Aurora&lt;/a&gt;、和 &lt;a href=&#34;https://www.slideshare.net/Docker/aravindnarayanan-facebook140613153626phpapp02-37588997&#34;&gt;Tupperware&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;Pod 暴露为原语是为了便于：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;调度器和控制器可插拔性&lt;/li&gt;
+&lt;li&gt;支持 Pod 级别的操作，而不需要通过控制器 API &amp;ldquo;代理&amp;rdquo; 它们&lt;/li&gt;
+&lt;li&gt;Pod 生命与控制器生命的解耦，如自举&lt;/li&gt;
+&lt;li&gt;控制器和服务的解耦 — 端点控制器只监视 Pod&lt;/li&gt;
+&lt;li&gt;kubelet 级别的功能与集群级别功能的清晰组合 — kubelet 实际上是 &amp;ldquo;Pod 控制器&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;高可用性应用程序期望在 Pod 终止之前并且肯定要在 Pod 被删除之前替换 Pod，例如在计划驱逐或镜像预先拉取的情况下。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;pod-的终止&#34;&gt;Pod 的终止&lt;/h2&gt;
+&lt;p&gt;因为 Pod 代表在集群中的节点上运行的进程，所以当不再需要这些进程时（与被 KILL 信号粗暴地杀死并且没有机会清理相比），允许这些进程优雅地终止是非常重要的。 用户应该能够请求删除并且知道进程何时终止，但是也能够确保删除最终完成。当用户请求删除 Pod 时，系统会记录在允许强制删除 Pod 之前所期望的宽限期，并向每个容器中的主进程发送 TERM 信号。一旦过了宽限期，KILL 信号就发送到这些进程，然后就从 API 服务器上删除 Pod。如果 Kubelet 或容器管理器在等待进程终止时发生重启，则终止操作将以完整的宽限期进行重试。&lt;/p&gt;
+&lt;p&gt;流程示例：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用户发送命令删除 Pod，使用的是默认的宽限期（30秒）&lt;/li&gt;
+&lt;li&gt;API 服务器中的 Pod 会随着宽限期规定的时间进行更新，过了这个时间 Pod 就会被认为已 &amp;ldquo;死亡&amp;rdquo;。&lt;/li&gt;
+&lt;li&gt;当使用客户端命令查询 Pod 状态时，Pod 显示为 &amp;ldquo;Terminating&amp;rdquo;。&lt;/li&gt;
+&lt;li&gt;（和第 3 步同步进行）当 Kubelet 看到 Pod 由于步骤 2 中设置的时间而被标记为 terminating 状态时，它就开始执行关闭 Pod 流程。
+&lt;ol&gt;
+&lt;li&gt;如果 Pod 的容器之一定义了 &lt;a href=&#34;https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-details&#34;&gt;preStop 钩子&lt;/a&gt;，就在容器内部调用它。如果宽限期结束了，但是 &lt;code&gt;preStop&lt;/code&gt; 钩子还在运行，那么就用小的（2 秒）扩展宽限期调用步骤 2。&lt;/li&gt;
+&lt;li&gt;给 Pod 内的容器发送 TERM 信号。请注意，并不是所有 Pod 中的容器都会同时收到 TERM 信号，如果它们关闭的顺序很重要，则每个容器可能都需要一个 &lt;code&gt;preStop&lt;/code&gt; 钩子。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;（和第 3 步同步进行）从服务的端点列表中删除 Pod，Pod 也不再被视为副本控制器的运行状态的 Pod 集的一部分。因为负载均衡器（如服务代理）会将其从轮换中删除，所以缓慢关闭的 Pod 无法继续为流量提供服务。&lt;/li&gt;
+&lt;li&gt;当宽限期到期时，仍在 Pod 中运行的所有进程都会被 SIGKILL 信号杀死。&lt;/li&gt;
+&lt;li&gt;kubelet 将通过设置宽限期为 0 （立即删除）来完成在 API 服务器上删除 Pod 的操作。该 Pod 从 API 服务器中消失，并且在客户端中不再可见。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;默认情况下，所有删除操作宽限期是 30 秒。&lt;code&gt;kubectl delete&lt;/code&gt; 命令支持 &lt;code&gt;--grace-period=&amp;lt;seconds&amp;gt;&lt;/code&gt; 选项，允许用户覆盖默认值并声明他们自己的宽限期。设置为 &lt;code&gt;0&lt;/code&gt; 会&lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod/#force-deletion-of-pods&#34;&gt;强制删除&lt;/a&gt; Pod。您必须指定一个附加标志 &lt;code&gt;--force&lt;/code&gt; 和 &lt;code&gt;--grace-period=0&lt;/code&gt; 才能执行强制删除操作。&lt;/p&gt;
+&lt;h3 id=&#34;pod-的强制删除&#34;&gt;Pod 的强制删除&lt;/h3&gt;
+&lt;p&gt;强制删除 Pod 被定义为从集群状态与 etcd 中立即删除 Pod。当执行强制删除时，API 服务器并不会等待 kubelet 的确认信息，该 Pod 已在所运行的节点上被终止了。强制执行删除操作会从 API 服务器中立即清除 Pod， 因此可以用相同的名称创建一个新的 Pod。在节点上，设置为立即终止的 Pod 还是会在被强制删除前设置一个小的宽限期。&lt;/p&gt;
+&lt;p&gt;强制删除对某些 Pod 可能具有潜在危险，因此应该谨慎地执行。对于 StatefulSet 管理的 Pod，请参考 &lt;a href=&#34;https://kubernetes.io/docs/tasks/run-application/force-delete-stateful-set-pod/&#34;&gt;从 StatefulSet 中删除 Pod&lt;/a&gt; 的任务文档。&lt;/p&gt;
+&lt;h2 id=&#34;pod-容器的特权模式&#34;&gt;Pod 容器的特权模式&lt;/h2&gt;
+&lt;p&gt;Pod 中的任何容器都可以使用容器规范 &lt;a href=&#34;https://kubernetes.io/docs/tasks/configure-pod-container/security-context/&#34;&gt;security context&lt;/a&gt; 上的 &lt;code&gt;privileged&lt;/code&gt; 参数启用特权模式。这对于想要使用 Linux 功能（如操纵网络堆栈和访问设备）的容器很有用。容器内的进程几乎可以获得与容器外的进程相同的特权。使用特权模式，将网络和卷插件编写为不需要编译到 kubelet 中的独立的 Pod 应该更容易。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;说明：&lt;/strong&gt; 您的容器运行时必须支持特权容器模式才能使用此设置。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;api-对象&#34;&gt;API 对象&lt;/h2&gt;
+&lt;p&gt;Pod 是 Kubernetes REST API 中的顶级资源。 &lt;a href=&#34;https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#pod-v1-core&#34;&gt;Pod API 对象&lt;/a&gt;定义详细描述了该 Pod 对象。为 Pod 对象创建清单时，请确保指定的名称是有效的 &lt;a href=&#34;https://kubernetes.io/docs/concepts/overview/working-with-objects/names#dns-subdomain-names&#34;&gt;DNS 子域名&lt;/a&gt;。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Pod Lifecycle</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-lifecycle/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-lifecycle/</guid>
+      <description>
+        
+        
+        &lt;p&gt;该页面将描述 Pod 的生命周期。&lt;/p&gt;
+&lt;h2 id=&#34;pod-phase&#34;&gt;Pod phase&lt;/h2&gt;
+&lt;p&gt;Pod 的 &lt;code&gt;status&lt;/code&gt; 定义在 &lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#podstatus-v1-core&#34;&gt;PodStatus&lt;/a&gt; 对象中，其中有一个 &lt;code&gt;phase&lt;/code&gt; 字段。&lt;/p&gt;
+&lt;p&gt;Pod 的运行阶段（phase）是 Pod 在其生命周期中的简单宏观概述。该阶段并不是对容器或 Pod 的综合汇总，也不是为了做为综合状态机。&lt;/p&gt;
+&lt;p&gt;Pod 运行阶段值的数量和含义是严格指定的。除了本文档中列举的内容外，不应该再假定 Pod 有其他的 &lt;code&gt;phase&lt;/code&gt; 值。&lt;/p&gt;
+&lt;p&gt;下面是 &lt;code&gt;phase&lt;/code&gt; 可能的值：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;挂起（Pending）：Pod 已被 Kubernetes 系统接受，但有一个或者多个容器镜像尚未创建。等待时间包括调度 Pod 的时间和通过网络下载镜像的时间，这可能需要花点时间。&lt;/li&gt;
+&lt;li&gt;运行中（Running）：该 Pod 已经绑定到了一个节点上，Pod 中所有的容器都已被创建。至少有一个容器正在运行，或者正处于启动或重启状态。&lt;/li&gt;
+&lt;li&gt;成功（Succeeded）：Pod 中的所有容器都被成功终止，并且不会再重启。&lt;/li&gt;
+&lt;li&gt;失败（Failed）：Pod 中的所有容器都已终止了，并且至少有一个容器是因为失败终止。也就是说，容器以非 0 状态退出或者被系统终止。&lt;/li&gt;
+&lt;li&gt;未知（Unknown）：因为某些原因无法取得 Pod 的状态，通常是因为与 Pod 所在主机通信失败。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;pod-conditions&#34;&gt;Pod conditions&lt;/h2&gt;
+&lt;p&gt;Pod 有一个 PodStatus 对象，其中包含一个 &lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#podcondition-v1-core&#34;&gt;PodCondition&lt;/a&gt; 数组。 PodCondition 数组的每个元素都有六个可能的字段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;lastProbeTime&lt;/code&gt; 字段提供最后一次探测 Pod condition 的时间戳。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lastTransitionTime&lt;/code&gt; 字段提供 Pod 最后一次从一种状态过渡到另一种状态的时间戳。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;message&lt;/code&gt; 字段是人类可读的消息，指示有关过渡的详细信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;reason&lt;/code&gt; 字段是 condition 最后一次过渡的原因，该原因用唯一的、驼峰式的、一个词表示。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;status&lt;/code&gt; 字段是一个字符串，可能的值有 &amp;ldquo;&lt;code&gt;True&lt;/code&gt;&amp;quot;、&amp;quot;&lt;code&gt;False&lt;/code&gt;&amp;rdquo; 和 &amp;ldquo;&lt;code&gt;Unknown&lt;/code&gt;&amp;quot;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt; 字段是一个字符串，具有以下可能的值：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PodScheduled&lt;/code&gt;：已将Pod调度到一个节点；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Ready&lt;/code&gt;：该 Pod 能够处理请求，应将其添加到所有匹配服务的负载均衡池中；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Initialized&lt;/code&gt;：所有&lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/init-containers&#34;&gt;初始化容器&lt;/a&gt;已成功启动；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ContainersReady&lt;/code&gt;：Pod 中的所有容器均已准备就绪。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;容器探针&#34;&gt;容器探针&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#probe-v1-core&#34;&gt;探针&lt;/a&gt; 是由 &lt;a href=&#34;https://kubernetes.io/docs/admin/kubelet/&#34;&gt;kubelet&lt;/a&gt; 对容器执行的定期诊断。要执行诊断，kubelet 调用由容器实现的 &lt;a href=&#34;https://godoc.org/k8s.io/kubernetes/pkg/api/v1#Handler&#34;&gt;Handler&lt;/a&gt;。有三种类型的处理程序：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#execaction-v1-core&#34;&gt;ExecAction&lt;/a&gt;：在容器内执行指定命令。如果命令退出时状态码为 0 则认为诊断成功。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#tcpsocketaction-v1-core&#34;&gt;TCPSocketAction&lt;/a&gt;：对容器 IP 地址上指定的端口进行 TCP 检查。如果端口是开放的，则诊断被认为是成功的。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#httpgetaction-v1-core&#34;&gt;HTTPGetAction&lt;/a&gt;：对容器的 IP 地址上指定的端口和路径执行 HTTP Get 请求。如果响应的状态码大于等于200 且小于 400，则诊断被认为是成功的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每次探测都将获得以下三种结果之一：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;成功（Success）：容器通过了诊断。&lt;/li&gt;
+&lt;li&gt;失败（Failure）：容器未通过诊断。&lt;/li&gt;
+&lt;li&gt;未知（Unknown）：诊断失败，因此不会采取任何行动。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;kubelet 可以选择对正在运行的 Container 进行三种探针的执行并对其做出反应：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;livenessProbe&lt;/code&gt;：指示容器是否正在运行。如果存活探测失败，则 kubelet 会杀死容器，并且容器将受到其 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy&#34;&gt;重启策略&lt;/a&gt; 的影响。如果容器不提供存活探针，则默认状态为 &lt;code&gt;Success&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;readinessProbe&lt;/code&gt;：指示容器是否准备好服务请求。如果就绪探测失败，端点控制器将从与 Pod 匹配的所有 Service 的端点中删除该 Pod 的 IP 地址。初始延迟之前的就绪状态默认为 &lt;code&gt;Failure&lt;/code&gt;。如果容器不提供就绪探针，则默认状态为 &lt;code&gt;Success&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;startupProbe&lt;/code&gt;: 指示容器中的应用是否已经启动。如果提供了启动探测（startup probe），则禁用所有其他探测，直到它成功为止。如果启动探测失败，kubelet 将杀死容器，容器服从其重启策略进行重启。如果容器没有提供启动探测，则默认状态为成功&lt;code&gt;Success&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;什么时候应该使用存活探针livenessprobe&#34;&gt;什么时候应该使用存活探针（livenessProbe）？&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.0 [stable]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;如果容器中的进程能够在遇到问题或不健康的情况下能够自行崩溃，则不一定需要存活探针; kubelet 将根据 Pod 的&lt;code&gt;restartPolicy&lt;/code&gt; 自动执行正确的操作。&lt;/p&gt;
+&lt;p&gt;如果您希望容器在探测失败时被杀死并重新启动，那么请指定一个存活探针，并指定&lt;code&gt;restartPolicy&lt;/code&gt; 为 Always 或 OnFailure。&lt;/p&gt;
+&lt;h3 id=&#34;什么时候应该使用就绪探针readinessprobe&#34;&gt;什么时候应该使用就绪探针（readinessProbe）？&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.0 [stable]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;如果您希望仅在探测成功时才开始向 Pod 发送流量，请指定就绪探针。在这种情况下，就绪探针可能与存活探针相同，但是 spec 中的就绪探针的存在意味着 Pod 将在没有接收到任何流量的情况下启动，并且只有在探针探测成功后才开始接收流量。如果您的容器需要在启动过程中加载大型数据、配置文件或迁移，请指定就绪探针。&lt;/p&gt;
+&lt;p&gt;如果您希望容器能够自行维护，您可以指定一个就绪探针，该探针检查与存活探针不同的端点。&lt;/p&gt;
+&lt;p&gt;请注意，如果您只是想在 Pod 被删除后能够排除请求，则不一定需要使用就绪探针；在删除 Pod 后，无论就绪探针是否存在，Pod 都会自动将自身置于未就绪状态。当等待 Pod 中的容器停止时，Pod 仍处于未完成状态。&lt;/p&gt;
+&lt;h3 id=&#34;什么时候应该使用就绪探针startupprobe&#34;&gt;什么时候应该使用就绪探针（startupProbe）？&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.16 [stable]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;如果您的容器通常在超过 &lt;code&gt;initialDelaySeconds + failureThreshold × periodSeconds&lt;/code&gt; 的时间内启动，则应指定一个启动探针，该探针检查与存活探针相同的端点。&lt;code&gt;periodSeconds&lt;/code&gt; 的默认值为 30s。然后，应将其 &lt;code&gt;failureThreshold&lt;/code&gt; 设置得足够高，以允许 Container 启动，而不更改存活探针的默认值。这有助于防止死锁。&lt;/p&gt;
+&lt;h2 id=&#34;pod-和容器状态&#34;&gt;Pod 和容器状态&lt;/h2&gt;
+&lt;p&gt;有关 Pod 容器状态的详细信息，请参阅 &lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#podstatus-v1-core&#34;&gt;PodStatus&lt;/a&gt; 和 &lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#containerstatus-v1-core&#34;&gt;ContainerStatus&lt;/a&gt;。请注意，报告的 Pod 状态信息取决于当前的 &lt;a href=&#34;https://kubernetes.io/docs/resources-reference/v1.7/#containerstatus-v1-core&#34;&gt;ContainerState&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;容器状态&#34;&gt;容器状态&lt;/h2&gt;
+&lt;p&gt;一旦 Pod 被调度器分配到节点后，kubelet 将开始使用容器运行时来创建容器。容器有三种可能的状态：Waiting、Running 和 Terminated。您可以使用 &lt;code&gt;kubectl describe pod [POD_NAME]&lt;/code&gt; 来检查容器的状态。Pod 中每个容器的状态将会被显示。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Waiting&lt;/code&gt;: 容器的默认状态。如果容器未处于 Running 或 Terminated 状态，则处于 Waiting 状态。处于 Waiting 状态的容器仍会运行其所需的操作，例如拉取镜像，应用秘密等。关于该状态的消息和原因会伴随着该状态显示，以提供更多的信息。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;State&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;Waiting&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Reason&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;       &lt;/span&gt;ErrImagePull&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Running&lt;/code&gt;: 表示容器正在执行，没有问题。 &lt;code&gt;postStart&lt;/code&gt; 钩子（如果有）在容器进入 Running 状态之前执行。此状态还显示容器进入 Running 状态的时间。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;State&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;Running&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Started&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;Wed, 30 Jan 2019 16:46:38 +0530&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Terminated&lt;/code&gt;: 表示容器已完成其执行并已停止运行。当容器成功完成执行或由于某种原因失败时，容器就会进入该容器。无论如何，都会显示原因和退出代码，以及容器的开始和结束时间。在容器进入 Terminated 之前，执行 &lt;code&gt;preStop&lt;/code&gt; 挂钩（如果有）。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;State&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;Terminated&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Reason&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;       &lt;/span&gt;Completed&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Exit Code&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Started&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;Wed, 30 Jan 2019 11:45:26 +0530&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;Finished&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;     &lt;/span&gt;Wed, 30 Jan 2019 11:45:26 +0530&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;...&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;pod-就绪&#34;&gt;Pod 就绪&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.14 [stable]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;您的应用程序可以向 PodStatus 注入额外的反馈或信号：&lt;em&gt;Pod readiness&lt;/em&gt;。要使用此功能，请在 PodSpec 中设置 &lt;code&gt;readinessGates&lt;/code&gt; 以指定 kubelet 为 Pod 就绪评估的其他条件列表。&lt;/p&gt;
+&lt;p&gt;Readiness gates 由 Pod 的 &lt;code&gt;status.condition&lt;/code&gt; 字段的当前状态决定。如果 Kubernetes 在 Pod 的 &lt;code&gt;status.conditions&lt;/code&gt; 字段中找不到这样的条件，则该条件的状态默认为“&lt;code&gt;False&lt;/code&gt;”。&lt;/p&gt;
+&lt;p&gt;这是一个例子：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;readinessGates&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;conditionType&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;www.example.com/feature-1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;status&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;conditions&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;type&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Ready                             &lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# a built in PodCondition&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;status&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;False&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;lastProbeTime&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;null&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;lastTransitionTime&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;2018-01-01T00:00:00Z&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;type&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;www.example.com/feature-1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# an extra PodCondition&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;status&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;False&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;lastProbeTime&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;null&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;lastTransitionTime&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;2018-01-01T00:00:00Z&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containerStatuses&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containerID&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;docker://abcd...&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;ready&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;true&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;您添加的 Pod 条件必须具有符合Kubernetes &lt;a href=&#34;https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set&#34;&gt;label key format&lt;/a&gt; 的名称。&lt;/p&gt;
+&lt;h3 id=&#34;pod-就绪状态&#34;&gt;Pod 就绪状态&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;kubectl patch&lt;/code&gt; 命令不支持修补对象状态。要为 Pod 设置这些 &lt;code&gt;status.conditions&lt;/code&gt;，应用程序和 &lt;a href=&#34;https://kubernetes.io/docs/concepts/extend-kubernetes/operator/&#34;&gt;操作员&lt;/a&gt; 应使用 &lt;code&gt;PATCH&lt;/code&gt; 操作。您可以使用 &lt;a href=&#34;https://kubernetes.io/docs/reference/using-api/client-libraries/&#34;&gt;Kubernetes client library&lt;/a&gt; 编写代码，来为 Pod 就绪设置自定义 Pod 条件。&lt;/p&gt;
+&lt;p&gt;对于使用自定义条件的 Pod，仅当以下两个声明均适用时，该 Pod 才被评估为就绪：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Pod 中的所有容器均已准备就绪。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ReadinessGates&lt;/code&gt; 中指定的所有条件均为 &lt;code&gt;True&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当 Pod 的容器准备就绪但至少一个自定义条件是缺失的或 &lt;code&gt;False&lt;/code&gt; 时，kubelet 将 Pod 的条件设置为 &lt;code&gt;ContainersReady&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;重启策略&#34;&gt;重启策略&lt;/h2&gt;
+&lt;p&gt;PodSpec 中有一个 &lt;code&gt;restartPolicy&lt;/code&gt; 字段，可能的值为 Always、OnFailure 和 Never。默认为 Always。 &lt;code&gt;restartPolicy&lt;/code&gt; 适用于 Pod 中的所有容器。&lt;code&gt;restartPolicy&lt;/code&gt; 仅指通过同一节点上的 kubelet 重新启动容器。失败的容器由 kubelet 以五分钟为上限的指数退避延迟（10秒，20秒，40秒&amp;hellip;）重新启动，并在成功执行十分钟后重置。如 &lt;a href=&#34;https://kubernetes.io/docs/user-guide/pods/#durability-of-pods-or-lack-thereof&#34;&gt;Pod 文档&lt;/a&gt; 中所述，一旦绑定到一个节点，Pod 将永远不会重新绑定到另一个节点。&lt;/p&gt;
+&lt;h2 id=&#34;pod-的生命&#34;&gt;Pod 的生命&lt;/h2&gt;
+&lt;p&gt;一般来说，Pod 会一直保留，直到人为或 &lt;a href=&#34;https://kubernetes.io/docs/concepts/architecture/controller/&#34;&gt;控制器&lt;/a&gt; 进程明确地销毁他们。当 Pod 的数量超过配置的阈值（取决于 kube-controller-manager 中的 &lt;code&gt;terminate-pod-gc-threshold&lt;/code&gt;）时，控制平面将清理终止的 Pod（阶段为成功或失败）。这样可以避免在创建和终止 Pod 时资源泄漏。&lt;/p&gt;
+&lt;p&gt;有多种创建Pod的资源：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对不希望终止的 Pod 使用 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/deployment/&#34;&gt;Deployment&lt;/a&gt;、&lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/&#34;&gt;ReplicaSet&lt;/a&gt; 或 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/&#34;&gt;StatefulSet&lt;/a&gt;，例如 Web 服务器。&lt;/li&gt;
+&lt;li&gt;对希望在工作完成后终止的 Pod 使用 &lt;a href=&#34;https://kubernetes.io/docs/concepts/jobs/run-to-completion-finite-workloads/&#34;&gt;Job&lt;/a&gt;，例如批量计算。Job 仅适用于 &lt;code&gt;restartPolicy&lt;/code&gt; 为 &lt;code&gt;OnFailure&lt;/code&gt; 或 &lt;code&gt;Never&lt;/code&gt; 的 Pod。&lt;/li&gt;
+&lt;li&gt;对需要在每个合格节点上运行一个的 Pod 使用 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/&#34;&gt;DaemonSet&lt;/a&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所有工作负载资源都包含一个 PodSpec。建议创建适当的工作负载资源，并让资源的控制器为您创建Pod，而不是自己直接创建Pods。&lt;/p&gt;
+&lt;p&gt;如果某个节点死亡或与集群的其余部分断开连接，则 Kubernetes 将应用一个策略将丢失节点上的所有 Pod 的 &lt;code&gt;phase&lt;/code&gt; 设置为 Failed。&lt;/p&gt;
+&lt;h2 id=&#34;示例&#34;&gt;示例&lt;/h2&gt;
+&lt;h3 id=&#34;高级-liveness-探针示例&#34;&gt;高级 liveness 探针示例&lt;/h3&gt;
+&lt;p&gt;存活探针由 kubelet 来执行，因此所有的请求都在 kubelet 的网络命名空间中进行。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;test&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;liveness&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;liveness-http&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;args&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- /server&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;k8s.gcr.io/liveness&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;livenessProbe&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;httpGet&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# 当没有定义 &amp;#34;host&amp;#34; 时，使用 &amp;#34;PodIP&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# host: my-host&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# 当没有定义 &amp;#34;scheme&amp;#34; 时，使用 &amp;#34;HTTP&amp;#34; scheme 只允许 &amp;#34;HTTP&amp;#34; 和 &amp;#34;HTTPS&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# scheme: HTTPS&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;path&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;/healthz&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;port&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;8080&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;httpHeaders&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;X-Custom-Header&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;value&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Awesome&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;initialDelaySeconds&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;15&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;timeoutSeconds&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;liveness&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;状态示例&#34;&gt;状态示例&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 中只有一个容器并且正在运行。容器成功退出。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;记录完成事件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果 &lt;code&gt;restartPolicy&lt;/code&gt; 为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OnFailure：Pod &lt;code&gt;phase&lt;/code&gt; 变成 Succeeded。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Never：Pod &lt;code&gt;phase&lt;/code&gt; 变成 Succeeded。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 中只有一个容器并且正在运行。容器退出失败。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;记录失败事件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果 &lt;code&gt;restartPolicy&lt;/code&gt; 为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OnFailure：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Never：Pod &lt;code&gt;phase&lt;/code&gt; 变成 Failed。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 中有两个容器并且正在运行。容器 1 退出失败。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;记录失败事件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果 &lt;code&gt;restartPolicy&lt;/code&gt; 为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;li&gt;OnFailure：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;li&gt;Never：不重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果容器 1 没有处于运行状态，并且容器 2 退出：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;记录失败事件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果 &lt;code&gt;restartPolicy&lt;/code&gt; 为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OnFailure：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。
+- Never：Pod &lt;code&gt;phase&lt;/code&gt; 变成 Failed。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 中只有一个容器并处于运行状态。容器运行时内存超出限制：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;容器以失败状态终止。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;记录 OOM 事件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果 &lt;code&gt;restartPolicy&lt;/code&gt; 为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OnFailure：重启容器；Pod &lt;code&gt;phase&lt;/code&gt; 仍为 Running。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Never: 记录失败事件；Pod &lt;code&gt;phase&lt;/code&gt; 变成 Failed。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 正在运行，磁盘故障：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;杀掉所有容器。&lt;/li&gt;
+&lt;li&gt;记录适当事件。&lt;/li&gt;
+&lt;li&gt;Pod &lt;code&gt;phase&lt;/code&gt; 变成 Failed。&lt;/li&gt;
+&lt;li&gt;如果使用控制器来运行，Pod 将在别处重建。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Pod 正在运行，其节点分段退出。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;节点控制器等待直到超时。&lt;/li&gt;
+&lt;li&gt;节点控制器将 Pod &lt;code&gt;phase&lt;/code&gt; 设置为 Failed。&lt;/li&gt;
+&lt;li&gt;如果是用控制器来运行，Pod 将在别处重建。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Init 容器</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/init-containers/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/init-containers/</guid>
+      <description>
+        
+        
+        &lt;p&gt;本页提供了 Init 容器的概览：它是一种专用的容器，在 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/&#34;&gt;Pod&lt;/a&gt; 内的应用容器启动之前运行。Init 容器包括一些应用镜像中不存在的实用工具和安装脚本。&lt;/p&gt;
+&lt;p&gt;你可以在 Pod 的规格信息中与 &lt;code&gt;containers&lt;/code&gt; 数组（应用容器的描述）同级的位置指定 Init 容器。&lt;/p&gt;
+&lt;h2 id=&#34;理解-init-容器&#34;&gt;理解 Init 容器&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/&#34;&gt;Pod&lt;/a&gt; 可以包含多个容器，应用运行在这些容器里面，同时 Pod 也可以有一个或多个先于应用容器启动的 Init 容器。&lt;/p&gt;
+&lt;p&gt;Init 容器与普通容器完全一样，除了如下两点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Init 容器始终会运行到完成状态。&lt;/li&gt;
+&lt;li&gt;每个 init 容器必须成功完成才能启动下一个容器。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果 Pod 的 Init 容器失败，Kubernetes 会不断地重启该 Pod，直到 Init 容器成功为止。然而，如果 Pod 对应的 &lt;code&gt;restartPolicy&lt;/code&gt; 值为 Never，它不会重新启动。&lt;/p&gt;
+&lt;p&gt;为 Pod 指定 Init 容器，需要在 Pod 的 spec 中添加 &lt;code&gt;initContainers&lt;/code&gt; 字段， 该字段內以&lt;a href=&#34;https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#container-v1-core&#34;&gt;Container&lt;/a&gt; 类型对象数组的形式组织，和应用的 &lt;code&gt;containers&lt;/code&gt; 数组同级相邻。 Init 容器的状态在 &lt;code&gt;status.initContainerStatuses&lt;/code&gt; 字段中以容器状态数组的格式返回（类似 &lt;code&gt;status.containerStatuses&lt;/code&gt; 字段）。&lt;/p&gt;
+&lt;h3 id=&#34;与普通容器的不同之处&#34;&gt;与普通容器的不同之处&lt;/h3&gt;
+&lt;p&gt;Init 容器支持应用容器的全部字段和特性，包括资源限制、数据卷和安全设置。 然而，Init 容器对资源请求和限制的处理稍有不同，在下面 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/workloads/pods/init-containers/#%E8%B5%84%E6%BA%90&#34;&gt;资源&lt;/a&gt; 处有说明。&lt;/p&gt;
+&lt;p&gt;同时 Init 容器不支持 &lt;code&gt;lifecycle&lt;/code&gt;、 &lt;code&gt;livenessProbe&lt;/code&gt;、&lt;code&gt;readinessProbe&lt;/code&gt; 或 &lt;code&gt;startupProbe&lt;/code&gt;，因为它们必须在 Pod 就绪之前运行完成。&lt;/p&gt;
+&lt;p&gt;如果为一个 Pod 指定了多个 Init 容器，kubelet 会按顺序逐个运行这些容器。每个 Init 容器必须运行成功，下一个才能够运行。当所有的 Init 容器运行完成时，Kubernetes 才会为 Pod 初始化应用容器并像平常一样运行。&lt;/p&gt;
+&lt;h2 id=&#34;使用-init-容器&#34;&gt;使用 Init 容器&lt;/h2&gt;
+&lt;p&gt;因为 Init 容器具有与应用容器分离的单独镜像，因此他们在启动相关代码方面具有一些优势：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Init 容器可以包含一些安装过程中应用容器中不存在的实用工具或个性化代码。例如，没有必要仅为了在安装过程中使用类似 &lt;code&gt;sed&lt;/code&gt;、 &lt;code&gt;awk&lt;/code&gt;、 &lt;code&gt;python&lt;/code&gt; 或 &lt;code&gt;dig&lt;/code&gt; 这样的工具而去 &lt;code&gt;FROM&lt;/code&gt; 一个镜像来生成一个新的镜像。&lt;/li&gt;
+&lt;li&gt;应用镜像的构建者和部署者可以各自独立工作，而没有必要联合构建一个单独的应用镜像。&lt;/li&gt;
+&lt;li&gt;Init 容器能以不同于Pod内应用容器的文件系统视图运行。因此，Init 容器可具有访问 &lt;a href=&#34;https://kubernetes.io/docs/concepts/configuration/secret/&#34;&gt;Secrets&lt;/a&gt; 的权限，而应用容器不能够访问。&lt;/li&gt;
+&lt;li&gt;由于 Init 容器必须在应用容器启动之前运行完成，因此 Init 容器提供了一种机制来阻塞或延迟应用容器的启动，直到满足了一组先决条件。一旦前置条件满足，Pod内的所有的应用容器会并行启动。&lt;/li&gt;
+&lt;li&gt;Init 容器可以安全地运行这些工具，避免这些工具导致应用镜像的安全性降低。通过将不必要的工具分开，您可以限制应用容器镜像的攻击面。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;示例&#34;&gt;示例&lt;/h3&gt;
+&lt;p&gt;下面是一些如何使用 Init 容器的想法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;等待一个 &lt;a href=&#34;https://kubernetes.io/docs/concepts/services-networking/service/&#34;&gt;Service&lt;/a&gt; 完成创建，通过类似如下的单行 shell 命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; i in &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;1..100&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;do&lt;/span&gt; sleep 1; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; dig myservice; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;then&lt;/span&gt; &lt;span style=&#34;color:#a2f&#34;&gt;exit&lt;/span&gt; 0; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;fi&lt;/span&gt;; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;; &lt;span style=&#34;color:#a2f&#34;&gt;exit&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;注册这个 Pod 到远程服务器，通过在命令中调用 API，类似如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -X POST http://&lt;span style=&#34;color:#b8860b&#34;&gt;$MANAGEMENT_SERVICE_HOST&lt;/span&gt;:&lt;span style=&#34;color:#b8860b&#34;&gt;$MANAGEMENT_SERVICE_PORT&lt;/span&gt;/register -d &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;instance=$(&amp;lt;POD_NAME&amp;gt;)&amp;amp;ip=$(&amp;lt;POD_IP&amp;gt;)&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在启动应用容器之前等一段时间，使用类似命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sleep &lt;span style=&#34;color:#666&#34;&gt;60&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;克隆 Git 仓库到 &lt;a href=&#34;https://kubernetes.io/docs/concepts/storage/volumes/&#34;&gt;Volume&lt;/a&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将配置值放到配置文件中，运行模板工具为主应用容器动态地生成配置文件。例如，在配置文件中存放 &lt;code&gt;POD_IP&lt;/code&gt; 值，并使用 Jinja 生成主应用配置文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;使用-init-容器-1&#34;&gt;使用 Init 容器&lt;/h3&gt;
+&lt;p&gt;下面的例子定义了一个具有 2 个 Init 容器的简单 Pod。第一个等待 &lt;code&gt;myservice&lt;/code&gt; 启动，第二个等待 &lt;code&gt;mydb&lt;/code&gt; 启动。 一旦这两个 Init容器 都启动完成，Pod 将启动 &lt;code&gt;spec&lt;/code&gt; 区域中的应用容器。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;myapp-pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;app&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;myapp&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;myapp-container&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;busybox:1.28&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;command&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;sh&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;-c&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;echo The app is running! &amp;amp;&amp;amp; sleep 3600&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;initContainers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;init-myservice&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;busybox:1.28&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;command&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;sh&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;-c&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done&amp;#34;&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;init-mydb&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;busybox:1.28&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;command&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;[&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;sh&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;-c&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done&amp;#34;&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;您可以通过运行以下命令启动此Pod：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl apply -f myapp.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pod/myapp-pod created
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;并使用以下命令检查其状态：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl get -f myapp.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME        READY     STATUS     RESTARTS   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;myapp-pod   0/1       Init:0/2   &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;          6m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或了解更多详情：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl describe -f myapp.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Name:          myapp-pod
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Namespace:     default
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Labels:        &lt;span style=&#34;color:#b8860b&#34;&gt;app&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;myapp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Status:        Pending
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Init Containers:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  init-myservice:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    State:         Running
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  init-mydb:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    State:         Waiting
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      Reason:      PodInitializing
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Ready:         False
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Containers:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  myapp-container:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    State:         Waiting
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      Reason:      PodInitializing
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Ready:         False
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;...&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Events:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  FirstSeen    LastSeen    Count    From                      SubObjectPath                           Type          Reason        Message
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  ---------    --------    -----    ----                      -------------                           --------      ------        -------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  16s          16s         &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;        &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;default-scheduler &lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;                                              Normal        Scheduled     Successfully assigned myapp-pod to 172.17.4.201
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  16s          16s         &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;        &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;kubelet 172.17.4.201&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;    spec.initContainers&lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;init-myservice&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;     Normal        Pulling       pulling image &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;busybox&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  13s          13s         &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;        &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;kubelet 172.17.4.201&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;    spec.initContainers&lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;init-myservice&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;     Normal        Pulled        Successfully pulled image &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;busybox&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  13s          13s         &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;        &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;kubelet 172.17.4.201&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;    spec.initContainers&lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;init-myservice&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;     Normal        Created       Created container with docker id 5ced34a04634; Security:&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;seccomp&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;unconfined&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  13s          13s         &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;        &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;kubelet 172.17.4.201&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;    spec.initContainers&lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;init-myservice&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;     Normal        Started       Started container with docker id 5ced34a04634
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如需查看 Pod 内 Init 容器的日志，请执行:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl logs myapp-pod -c init-myservice &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Inspect the first init container&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl logs myapp-pod -c init-mydb      &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Inspect the second init container&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;此时，Init 容器将会等待至发现名称为 &lt;code&gt;mydb&lt;/code&gt; 和 &lt;code&gt;myservice&lt;/code&gt; 的 Service。&lt;/p&gt;
+&lt;p&gt;如下为创建这些 Service 的配置文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;---&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Service&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;myservice&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;ports&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;protocol&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;TCP&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;port&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;80&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;targetPort&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;9376&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f;font-weight:bold&#34;&gt;---&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Service&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;mydb&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;ports&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;protocol&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;TCP&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;port&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;80&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;targetPort&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;9377&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 &lt;code&gt;mydb&lt;/code&gt; 和 &lt;code&gt;myservice&lt;/code&gt; service 的命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl create -f services.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;service/myservice created
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;service/mydb created
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后，您将能看到这些 Init 容器执行完毕，并且 &lt;code&gt;my-app&lt;/code&gt; Pod 进入了 Running 状态：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ kubectl get -f myapp.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME        READY     STATUS    RESTARTS   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;myapp-pod   1/1       Running   &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;          9m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个简单的例子应该能为你创建自己的 Init 容器提供一些启发。 &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/workloads/pods/init-containers/#what-s-next&#34;&gt;What&amp;rsquo;s next&lt;/a&gt; 部分提供了更详细例子的链接。&lt;/p&gt;
+&lt;h2 id=&#34;具体行为&#34;&gt;具体行为&lt;/h2&gt;
+&lt;p&gt;在 Pod 启动过程中，kubelet 会延迟运行 Init 容器，直到网络和存储就绪为止。然后，kubelet 按照 Pod 规范中出现的顺序运行 Pod 的 Init 容器。&lt;/p&gt;
+&lt;p&gt;每个 Init 容器成功退出后才会启动下一个 Init容器。如果应为运行或退出时失败引发容器启动失败，它会根据 Pod 的 &lt;code&gt;restartPolicy&lt;/code&gt; 策略进行重试。然而，如果 Pod 的 &lt;code&gt;restartPolicy&lt;/code&gt; 设置为 Always，Init 容器失败时会使用 &lt;code&gt;restartPolicy&lt;/code&gt; 的 OnFailure 策略。&lt;/p&gt;
+&lt;p&gt;在所有的 Init 容器没有成功之前，Pod 将不会变成  &lt;code&gt;Ready&lt;/code&gt; 状态。Init 容器的端口将不会在 Service 中进行聚集。 正在初始化中的 Pod 处于 &lt;code&gt;Pending&lt;/code&gt; 状态，但会将条件 &lt;code&gt;Initializing&lt;/code&gt; 设置为 true。&lt;/p&gt;
+&lt;p&gt;如果 Pod &lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/workloads/pods/init-containers/#pod-restart-reasons&#34;&gt;重启&lt;/a&gt;，所有 Init 容器必须重新执行。&lt;/p&gt;
+&lt;p&gt;对 Init 容器 spec 的修改仅限于容器的 image 字段。更改 Init 容器的 image 字段，等同于重启该 Pod。&lt;/p&gt;
+&lt;p&gt;因为 Init 容器可能会被重启、重试或者重新执行，所以 Init 容器的代码应该是幂等的。 特别地，基于 &lt;code&gt;EmptyDirs&lt;/code&gt; 写文件的代码，应该对输出文件可能已经存在做好准备。&lt;/p&gt;
+&lt;p&gt;Init 容器具有应用容器的所有字段。 然而 Kubernetes 禁止使用 &lt;code&gt;readinessProbe&lt;/code&gt;，因为 Init 容器不能定义不同于完成（completion）的就绪（readiness）。 这一点会在校验时强制执行。&lt;/p&gt;
+&lt;p&gt;在 Pod 上使用 &lt;code&gt;activeDeadlineSeconds&lt;/code&gt;和在容器上使用 &lt;code&gt;livenessProbe&lt;/code&gt; 可以避免 Init 容器一直重复失败。 &lt;code&gt;activeDeadlineSeconds&lt;/code&gt; 时间包含了 Init 容器启动的时间。&lt;/p&gt;
+&lt;p&gt;在 Pod 中的每个应用容器和 Init 容器的名称必须唯一；与任何其它容器共享同一个名称，会在校验时抛出错误。&lt;/p&gt;
+&lt;h3 id=&#34;资源&#34;&gt;资源&lt;/h3&gt;
+&lt;p&gt;给定 Init 容器的执行顺序下，资源使用适用于如下规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有 Init 容器上定义的对任何特定资源的 request 或 limit 的最大值，作为 &lt;em&gt;有效的初始 request/limit&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Pod 对资源的有效 request/limit 是如下两者的较大者：
+&lt;ul&gt;
+&lt;li&gt;所有应用容器对某个资源的 request/limit 之和&lt;/li&gt;
+&lt;li&gt;对某个资源的有效初始 request/limit&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;基于有效 limit/request 完成调度，这意味着 Init 容器能够为初始化过程预留资源，这些资源在 Pod 生命周期过程中并没有被使用。&lt;/li&gt;
+&lt;li&gt;Pod 的 &lt;em&gt;有效 QoS 层&lt;/em&gt; ，与 Init 容器和应用容器的一样。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;配额和限制将根据有效的 Pod request 和 limit 进行应用。&lt;/p&gt;
+&lt;p&gt;Pod 级别的 cgroups 是基于有效 Pod 的 request 和 limit，和调度器相同。&lt;/p&gt;
+&lt;h3 id=&#34;pod-重启的原因&#34;&gt;Pod 重启的原因&lt;/h3&gt;
+&lt;p&gt;Pod 重启导致 Init 容器重新执行，主要有如下几个原因：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户更新 Pod 的 Spec 导致 Init 容器镜像发生改变。Init 容器镜像的变更会引起 Pod 重启. 应用容器镜像的变更仅会重启应用容器。&lt;/li&gt;
+&lt;li&gt;Pod 的基础设施容器（译者注：如 pause 容器）被重启。这种情况不多见，必须由具备Node root 权限访问的人员来完成。&lt;/li&gt;
+&lt;li&gt;当 &lt;code&gt;restartPolicy&lt;/code&gt; 设置为 Always，Pod 中所有容器会终止而强制重启，由于垃圾收集导致 Init 容器的完成记录丢失。&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Pod Preset</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-preset/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-preset/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.6 [alpha]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;本文提供了 PodPreset 的概述。在 Pod 创建时，用户可以使用 PodPreset 对象将特定信息注入 Pod 中，这些信息可以包括 secret、卷、卷挂载和环境变量。&lt;/p&gt;
+&lt;h2 id=&#34;理解-pod-preset&#34;&gt;理解 Pod Preset&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Pod Preset&lt;/code&gt; 是一种 API 资源，在 Pod 创建时，用户可以用它将额外的运行时需求信息注入 Pod。 使用&lt;a href=&#34;https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors&#34;&gt;标签选择器（label selector）&lt;/a&gt;来指定 Pod Preset 所适用的 Pod。&lt;/p&gt;
+&lt;p&gt;使用 Pod Preset 使得 Pod 模板编写者不必显式地为每个 Pod 设置所有信息。这样，使用特定服务的 Pod 模板编写者不需要了解该服务的所有细节。&lt;/p&gt;
+&lt;p&gt;了解更多的相关背景信息，请参考 &lt;a href=&#34;https://git.k8s.io/community/contributors/design-proposals/service-catalog/pod-preset.md&#34;&gt;PodPreset 设计提案&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;在集群中启用-podpreset&#34;&gt;在集群中启用 PodPreset&lt;/h2&gt;
+&lt;p&gt;为了在集群中使用 Pod Preset，您必须确保以下几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;您已启用 API &lt;code&gt;settings.k8s.io/v1alpha1/podpreset&lt;/code&gt; 类型。例如，可以通过在 API Server 的 &lt;code&gt;--runtime-config&lt;/code&gt; 选项中包含 &lt;code&gt;settings.k8s.io/v1alpha1=true&lt;/code&gt; 来实现。在使用 minikube 的情况下，在启动集群时添加此标志 &lt;code&gt;--extra-config=apiserver.runtime-config=settings.k8s.io/v1alpha1=true&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;您已启用 &lt;code&gt;PodPreset&lt;/code&gt; 准入控制器。一种方法是将 &lt;code&gt;PodPreset&lt;/code&gt; 包含在为 API Server 指定的 &lt;code&gt;--enable-admission-plugins&lt;/code&gt; 选项值中。在使用 minikube 的情况下，在启动集群时添加此标志 &lt;code&gt;--extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;podpreset-如何工作&#34;&gt;PodPreset 如何工作&lt;/h2&gt;
+&lt;p&gt;Kubernetes 提供了准入控制器（&lt;code&gt;PodPreset&lt;/code&gt;），该控制器被启用时，会将 Pod Preset 应用于传入的 Pod 创建请求中。 当出现 Pod 创建请求时，系统会执行以下操作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;检索所有可用 &lt;code&gt;PodPresets&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;检查 &lt;code&gt;PodPreset&lt;/code&gt; 的标签选择器与要创建的 Pod 的标签是否匹配。&lt;/li&gt;
+&lt;li&gt;尝试将 &lt;code&gt;PodPreset&lt;/code&gt; 中定义的各种资源合并到正在创建的 Pod 中。&lt;/li&gt;
+&lt;li&gt;发生错误时，抛出一个事件用来记录在 Pod 上的合并错误，同时在 &lt;em&gt;不注入&lt;/em&gt; 任何来自 &lt;code&gt;PodPreset&lt;/code&gt; 的资源的情况下创建 Pod。&lt;/li&gt;
+&lt;li&gt;为修改后的 Pod spec 添加注解，来表明它已被 &lt;code&gt;PodPreset&lt;/code&gt; 修改。注解的格式为： &lt;code&gt;podpreset.admission.kubernetes.io/podpreset-&amp;lt;pod-preset name&amp;gt;&amp;quot;: &amp;quot;&amp;lt;resource version&amp;gt;&amp;quot;&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;每个 Pod 可以匹配零个或多个 Pod Preset；并且每个 &lt;code&gt;PodPreset&lt;/code&gt; 可以应用于零个或多个 Pod。当 &lt;code&gt;PodPreset&lt;/code&gt; 应用于一个或多个 Pod 时，Kubernetes 会修改 Pod Spec。对于 &lt;code&gt;Env&lt;/code&gt;、&lt;code&gt;EnvFrom&lt;/code&gt; 和 &lt;code&gt;VolumeMounts&lt;/code&gt; 的改动，Kubernetes 修改 Pod 中所有容器的规格；对于 &lt;code&gt;Volume&lt;/code&gt; 的改动，Kubernetes 修改 Pod Spec。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;说明：&lt;/strong&gt; 适当时候，Pod Preset 可以修改 Pod Spec 中的以下字段： - &lt;code&gt;.spec.containers&lt;/code&gt; 字段 - &lt;code&gt;initContainers&lt;/code&gt; 字段（需要 Kubernetes 1.14.0 或更高版本）。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;为特定-pod-禁用-pod-preset&#34;&gt;为特定 Pod 禁用 Pod Preset&lt;/h3&gt;
+&lt;p&gt;在某些情况下，您希望 Pod 不受任何 Pod Preset 变动的影响。这时，您可以在  Pod Spec 中添加如下格式 &lt;code&gt;podpreset.admission.kubernetes.io/exclude: &amp;quot;true&amp;quot;&lt;/code&gt; 的注解。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Pod 拓扑扩展约束</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-topology-spread-constraints/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/pod-topology-spread-constraints/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.16 [alpha]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;您可以使用 &lt;em&gt;拓扑扩展约束&lt;/em&gt; 来控制 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/&#34;&gt;Pod&lt;/a&gt; 在集群内故障域（例如地区，区域，节点和其他用户自定义拓扑域）之间的分布。这可以帮助实现高可用以及提升资源利用率。&lt;/p&gt;
+&lt;h2 id=&#34;先决条件&#34;&gt;先决条件&lt;/h2&gt;
+&lt;h3 id=&#34;启用功能&#34;&gt;启用功能&lt;/h3&gt;
+&lt;p&gt;确保 &lt;code&gt;EvenPodsSpread&lt;/code&gt; 功能已开启（在 1.16 版本中该功能默认关闭）。阅读&lt;a href=&#34;https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/&#34;&gt;功能选项&lt;/a&gt;了解如何开启该功能。&lt;code&gt;EvenPodsSpread&lt;/code&gt; 必须在 &lt;a href=&#34;https://kubernetes.io/docs/reference/generated/kube-apiserver/&#34;&gt;API Server&lt;/a&gt; &lt;strong&gt;和&lt;/strong&gt; &lt;a href=&#34;https://kubernetes.io/docs/reference/generated/kube-scheduler/&#34;&gt;scheduler&lt;/a&gt; 中都要开启。&lt;/p&gt;
+&lt;h3 id=&#34;节点标签&#34;&gt;节点标签&lt;/h3&gt;
+&lt;p&gt;拓扑扩展约束依赖于节点标签来标识每个节点所在的拓扑域。例如，一个节点可能具有标签：&lt;code&gt;node=node1,zone=us-east-1a,region=us-east-1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;假设你拥有一个具有以下标签的 4 节点集群：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;NAME    STATUS   ROLES    AGE     VERSION   LABELS
+node1   Ready    &amp;lt;none&amp;gt;   4m26s   v1.16.0   node=node1,zone=zoneA
+node2   Ready    &amp;lt;none&amp;gt;   3m58s   v1.16.0   node=node2,zone=zoneA
+node3   Ready    &amp;lt;none&amp;gt;   3m17s   v1.16.0   node=node3,zone=zoneB
+node4   Ready    &amp;lt;none&amp;gt;   2m43s   v1.16.0   node=node4,zone=zoneB
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后从逻辑上看集群如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+---------------+
+|     zoneA     |     zoneB     |
++-------+-------+-------+-------+
+| node1 | node2 | node3 | node4 |
++-------+-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以复用在大多数集群上自动创建和填充的&lt;a href=&#34;https://kubernetes.io/docs/reference/kubernetes-api/labels-annotations-taints/&#34;&gt;知名标签&lt;/a&gt;，而不是手动添加标签。&lt;/p&gt;
+&lt;h2 id=&#34;pod-的拓扑约束&#34;&gt;Pod 的拓扑约束&lt;/h2&gt;
+&lt;h3 id=&#34;api&#34;&gt;API&lt;/h3&gt;
+&lt;p&gt;在 1.16 中引入的 &lt;code&gt;pod.spec.topologySpreadConstraints&lt;/code&gt; 字段如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;mypod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologySpreadConstraints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;lt;integer&amp;gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;lt;string&amp;gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;lt;string&amp;gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labelSelector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;lt;object&amp;gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以定义一个或多个 &lt;code&gt;topologySpreadConstraint&lt;/code&gt; 来指示 kube-scheduler 如何将每个传入的 Pod 根据与现有的 Pod 的关联关系在集群中部署。字段包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;maxSkew&lt;/strong&gt; 描述 Pod 分布不均的程度。这是给定拓扑类型中任意两个拓扑域中匹配的 Pod 之间的最大允许差值。它必须大于零。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;topologyKey&lt;/strong&gt; 是节点标签的键。如果两个节点使用此键标记并且具有相同的标签值，则调度器会将这两个节点视为处于同一拓扑中。调度器试图在每个拓扑域中放置数量均衡的 Pod。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;whenUnsatisfiable&lt;/strong&gt; 指示如果 Pod 不满足扩展约束时如何处理：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DoNotSchedule&lt;/code&gt;（默认）告诉调度器不用进行调度。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ScheduleAnyway&lt;/code&gt; 告诉调度器在对节点进行优先级排序以最大程度地减少偏斜的同时仍要调度它。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;labelSelector&lt;/strong&gt; 用于查找匹配的 Pod。匹配此标签的 Pod 将被统计，以确定相应拓扑域中 Pod 的数量。有关详细信息，请参考 &lt;a href=&#34;https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors&#34;&gt;Label Selectors&lt;/a&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;您可以执行 &lt;code&gt;kubectl explain Pod.spec.topologySpreadConstraints&lt;/code&gt; 命令了解更多关于 topologySpreadConstraints 的信息。&lt;/p&gt;
+&lt;h3 id=&#34;示例单个拓扑扩展约束&#34;&gt;示例：单个拓扑扩展约束&lt;/h3&gt;
+&lt;p&gt;假设你拥有一个 4 节点集群，其中标记为 &lt;code&gt;foo:bar&lt;/code&gt; 的 3 个 Pod 分别位于 node1，node2 和 node3 中（&lt;code&gt;P&lt;/code&gt; 表示 pod）：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+---------------+
+|     zoneA     |     zoneB     |
++-------+-------+-------+-------+
+| node1 | node2 | node3 | node4 |
++-------+-------+-------+-------+
+|   P   |   P   |   P   |       |
++-------+-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果我们希望将传入的 Pod 与现有 Pod 均匀地分布在区域之间，则可以指定字段如下：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://raw.githubusercontent.com/kubernetes/website/master/content/zh/examples/pods/topology-spread-constraints/one-constraint.yaml&#34;&gt;&lt;code&gt;pods/topology-spread-constraints/one-constraint.yaml&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;mypod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologySpreadConstraints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;zone&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;DoNotSchedule&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labelSelector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;pause&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;k8s.gcr.io/pause:3.1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;topologyKey: zone&lt;/code&gt; 意味着均匀分布将只应用于存在标签对为 &amp;ldquo;zone:&lt;any value&gt;&amp;rdquo; 的节点上。&lt;code&gt;whenUnsatisfiable: DoNotSchedule&lt;/code&gt; 告诉调度器，如果传入的 Pod 不满足约束，则让它保持挂起状态。&lt;/p&gt;
+&lt;p&gt;如果调度器将传入的 Pod 放入 &amp;ldquo;zoneA&amp;rdquo;，Pod 分布将变为 [3, 1]，因此实际的倾斜为 2（3 - 1）。这违反了 &lt;code&gt;maxSkew: 1&lt;/code&gt;。此示例中，传入的 pod 只能放置在 &amp;ldquo;zoneB&amp;rdquo; 上：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+---------------+      +---------------+---------------+
+|     zoneA     |     zoneB     |      |     zoneA     |     zoneB     |
++-------+-------+-------+-------+      +-------+-------+-------+-------+
+| node1 | node2 | node3 | node4 |  OR  | node1 | node2 | node3 | node4 |
++-------+-------+-------+-------+      +-------+-------+-------+-------+
+|   P   |   P   |   P   |   P   |      |   P   |   P   |  P P  |       |
++-------+-------+-------+-------+      +-------+-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;您可以调整 Pod Spec 以满足各种要求：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将 &lt;code&gt;maxSkew&lt;/code&gt; 更改为更大的值，比如 &amp;ldquo;2&amp;rdquo;，这样传入的 Pod 也可以放在 &amp;ldquo;zoneA&amp;rdquo; 上。&lt;/li&gt;
+&lt;li&gt;将 &lt;code&gt;topologyKey&lt;/code&gt; 更改为 &amp;ldquo;node&amp;rdquo;，以便将 Pod 均匀分布在节点上而不是区域中。在上面的例子中，如果 &lt;code&gt;maxSkew&lt;/code&gt; 保持为 &amp;ldquo;1&amp;rdquo;，那么传入的 pod 只能放在 &amp;ldquo;node4&amp;rdquo; 上。&lt;/li&gt;
+&lt;li&gt;将 &lt;code&gt;whenUnsatisfiable: DoNotSchedule&lt;/code&gt; 更改为 &lt;code&gt;whenUnsatisfiable: ScheduleAnyway&lt;/code&gt;，以确保传入的 Pod 始终可以调度（假设满足其他的调度 API）。但是，最好将其放置在具有较少匹配 Pod 的拓扑域中。（请注意，此优先性与其他内部调度优先级（如资源使用率等）一起进行标准化。）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;示例多个拓扑扩展约束&#34;&gt;示例：多个拓扑扩展约束&lt;/h3&gt;
+&lt;p&gt;下面的例子建立在前面例子的基础上。假设你拥有一个 4 节点集群，其中 3 个标记为 &lt;code&gt;foo:bar&lt;/code&gt; 的 pod 分别位于 node1，node2 和 node3 上（&lt;code&gt;P&lt;/code&gt; 表示 pod）：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+---------------+
+|     zoneA     |     zoneB     |
++-------+-------+-------+-------+
+| node1 | node2 | node3 | node4 |
++-------+-------+-------+-------+
+|   P   |   P   |   P   |       |
++-------+-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以使用 2 个拓扑扩展约束来控制 Pod 在 区域和节点两个维度上进行分布：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;a href=&#34;https://raw.githubusercontent.com/kubernetes/website/master/content/zh/examples/pods/topology-spread-constraints/two-constraints.yaml&#34;&gt;&lt;code&gt;pods/topology-spread-constraints/two-constraints.yaml&lt;/code&gt;&lt;/a&gt; &lt;img src=&#34;https://d33wubrfki0l68.cloudfront.net/0901162ab78eb4ff2e9e5dc8b17c3824befc91a6/44ccd/images/copycode.svg&#34; alt=&#34;Copy pods/topology-spread-constraints/two-constraints.yaml to clipboard&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;kind: Pod apiVersion: v1 metadata:  name: mypod  labels:    foo: bar spec:  topologySpreadConstraints:  - maxSkew: 1    topologyKey: zone    whenUnsatisfiable: DoNotSchedule    labelSelector:      matchLabels:        foo: bar  - maxSkew: 1    topologyKey: node    whenUnsatisfiable: DoNotSchedule    labelSelector:      matchLabels:        foo: bar  containers:  - name: pause    image: k8s.gcr.io/pause:3.1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;a href=&#34;https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/topology-spread-constraints/two-constraints.yaml&#34;&gt;&lt;code&gt;pods/topology-spread-constraints/two-constraints.yaml&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;mypod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologySpreadConstraints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;zone&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;DoNotSchedule&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labelSelector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;node&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;DoNotSchedule&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labelSelector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;pause&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;k8s.gcr.io/pause:3.1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在这种情况下，为了匹配第一个约束，传入的 Pod 只能放置在 &amp;ldquo;zoneB&amp;rdquo; 中；而在第二个约束中，传入的 Pod 只能放置在 &amp;ldquo;node4&amp;rdquo; 上。然后两个约束的结果加在一起，因此唯一可行的选择是放置在 &amp;ldquo;node4&amp;rdquo; 上。&lt;/p&gt;
+&lt;p&gt;多个约束可能导致冲突。假设有一个跨越 2 个区域的 3 节点集群：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+-------+
+|     zoneA     | zoneB |
++-------+-------+-------+
+| node1 | node2 |  nod3 |
++-------+-------+-------+
+|  P P  |   P   |  P P  |
++-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果对集群应用 &amp;ldquo;two-constraints.yaml&amp;rdquo;，会发现 &amp;ldquo;mypod&amp;rdquo; 处于 &lt;code&gt;Pending&lt;/code&gt; 状态。这是因为：为了满足第一个约束，&amp;ldquo;mypod&amp;rdquo; 只能放在 &amp;ldquo;zoneB&amp;rdquo; 中，而第二个约束要求 &amp;ldquo;mypod&amp;rdquo; 只能放在 &amp;ldquo;node2&amp;rdquo; 上。Pod 调度无法满足两种约束。&lt;/p&gt;
+&lt;p&gt;为了避免这种情况，您可以增加 &lt;code&gt;maxSkew&lt;/code&gt; 或修改其中一个约束，让其使用 &lt;code&gt;whenUnsatisfiable: ScheduleAnyway&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;约定&#34;&gt;约定&lt;/h3&gt;
+&lt;p&gt;这里有一些值得注意的隐式约定：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;只有与传入 Pod 具有相同命名空间的 Pod 才能作为匹配候选者。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;没有 &lt;code&gt;topologySpreadConstraints[*].topologyKey&lt;/code&gt; 的节点将被忽略。这意味着：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;位于这些节点上的 Pod 不会影响 &lt;code&gt;maxSkew&lt;/code&gt; 的计算。在上面的例子中，假设 &amp;ldquo;node1&amp;rdquo; 没有标签 &amp;ldquo;zone&amp;rdquo;，那么 2 个 Pod 将被忽略，因此传入的 Pod 将被调度到 &amp;ldquo;zoneA&amp;rdquo; 中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;传入的 Pod 没有机会被调度到这类节点上。在上面的例子中，假设一个带有标签 &lt;code&gt;{zone-typo: zoneC}&lt;/code&gt; 的 &amp;ldquo;node5&amp;rdquo; 加入到集群，它将由于没有标签键 &amp;ldquo;zone&amp;rdquo; 而被忽略。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;注意，如果传入 Pod 的 &lt;code&gt;topologySpreadConstraints[*].labelSelector&lt;/code&gt; 与自身的标签不匹配，将会发生什么。在上面的例子中，如果移除传入 Pod 的标签，Pod 仍然可以调度到 &amp;ldquo;zoneB&amp;rdquo;，因为约束仍然满足。然而，在调度之后，集群的不平衡程度保持不变。zoneA 仍然有 2 个带有 {foo:bar} 标签的 Pod，zoneB 有 1 个带有 {foo:bar} 标签的 Pod。因此，如果这不是您所期望的，我们建议工作负载的 &lt;code&gt;topologySpreadConstraints[*].labelSelector&lt;/code&gt; 与其自身的标签匹配。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果传入的 Pod 定义了 &lt;code&gt;spec.nodeSelector&lt;/code&gt; 或 &lt;code&gt;spec.affinity.nodeAffinity&lt;/code&gt;，则将忽略不匹配的节点。&lt;/p&gt;
+&lt;p&gt;假设您有一个从 zoneA 到 zoneC 的 5 节点集群：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+---------------+---------------+-------+
+|     zoneA     |     zoneB     | zoneC |
++-------+-------+-------+-------+-------+
+| node1 | node2 | node3 | node4 | node5 |
++-------+-------+-------+-------+-------+
+|   P   |   P   |   P   |       |       |
++-------+-------+-------+-------+-------+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;并且您知道 &amp;ldquo;zoneC&amp;rdquo; 必须被排除在外。在这种情况下，可以按如下方式编写 yaml，以便将 &amp;ldquo;mypod&amp;rdquo; 放置在 &amp;ldquo;zoneB&amp;rdquo; 上，而不是 &amp;ldquo;zoneC&amp;rdquo; 上。同样，&lt;code&gt;spec.nodeSelector&lt;/code&gt; 也要一样处理。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;a href=&#34;https://raw.githubusercontent.com/kubernetes/website/master/content/zh/examples/pods/topology-spread-constraints/one-constraint-with-nodeaffinity.yaml&#34;&gt;&lt;code&gt;pods/topology-spread-constraints/one-constraint-with-nodeaffinity.yaml&lt;/code&gt;&lt;/a&gt; &lt;img src=&#34;https://d33wubrfki0l68.cloudfront.net/0901162ab78eb4ff2e9e5dc8b17c3824befc91a6/44ccd/images/copycode.svg&#34; alt=&#34;Copy pods/topology-spread-constraints/one-constraint-with-nodeaffinity.yaml to clipboard&#34;&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;kind: Pod apiVersion: v1 metadata:  name: mypod  labels:    foo: bar spec:  topologySpreadConstraints:  - maxSkew: 1    topologyKey: zone    whenUnsatisfiable: DoNotSchedule    labelSelector:      matchLabels:        foo: bar  affinity:    nodeAffinity:      requiredDuringSchedulingIgnoredDuringExecution:        nodeSelectorTerms:        - matchExpressions:          - key: zone            operator: NotIn            values:            - zoneC  containers:  - name: pause    image: k8s.gcr.io/pause:3.1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;a href=&#34;https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/topology-spread-constraints/one-constraint-with-nodeaffinity.yaml&#34;&gt;&lt;code&gt;pods/topology-spread-constraints/one-constraint-with-nodeaffinity.yaml&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;Pod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;v1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;mypod&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologySpreadConstraints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;zone&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;DoNotSchedule&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;labelSelector&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchLabels&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;foo&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;bar&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;affinity&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;nodeAffinity&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;requiredDuringSchedulingIgnoredDuringExecution&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;nodeSelectorTerms&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;matchExpressions&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;key&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;zone&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;            &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;operator&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;NotIn&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;            &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;values&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;            &lt;/span&gt;- zoneC&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;pause&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;k8s.gcr.io/pause:3.1&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;集群级别的默认约束&#34;&gt;集群级别的默认约束&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt;&lt;code&gt;Kubernetes v1.18 [alpha]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;可以为集群设置默认拓扑扩展约束。仅在以下情况下，默认拓扑扩展约束将应用于Pod：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Pod 没有在 &lt;code&gt;.spec.topologySpreadConstraints&lt;/code&gt; 中定义任何约束。&lt;/li&gt;
+&lt;li&gt;Pod 属于 Service、Replication Controller、ReplicaSet 或 StatefulSet。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可以在 &lt;a href=&#34;https://kubernetes.io/docs/reference/scheduling/profiles&#34;&gt;调度配置文件&lt;/a&gt; 中将默认约束设置为 &lt;code&gt;PodTopologySpread&lt;/code&gt; 插件 args 的一部分。约束使用与上面相同的 &lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#api&#34;&gt;API&lt;/a&gt; 指定，但 &lt;code&gt;labelSelector&lt;/code&gt; 必须为空。选择器是根据 Pod 所属的 Service、Replication Controller、ReplicaSet 或 StatefulSet 计算得出的。&lt;/p&gt;
+&lt;p&gt;配置示例如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;apiVersion&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;kubescheduler.config.k8s.io/v1alpha2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;kind&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;KubeSchedulerConfiguration&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;profiles&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;pluginConfig&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;PodTopologySpread&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;args&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;defaultConstraints&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;          &lt;/span&gt;- &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;maxSkew&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;            &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;topologyKey&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;failure-domain.beta.kubernetes.io/zone&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;            &lt;/span&gt;&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;whenUnsatisfiable&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ScheduleAnyway&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意：默认调度约束产生的分数可能与 &lt;a href=&#34;https://kubernetes.io/docs/reference/scheduling/profiles/#scheduling-plugins&#34;&gt;&lt;code&gt;DefaultPodTopologySpread&lt;/code&gt; 插件&lt;/a&gt; 产生的分数冲突。当为 &lt;code&gt;PodTopologySpread&lt;/code&gt; 使用默认约束时，建议您在调度配置文件中禁用此插件。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;与-podaffinitypodantiaffinity-相比较&#34;&gt;与 PodAffinity/PodAntiAffinity 相比较&lt;/h2&gt;
+&lt;p&gt;在 Kubernetes 中，与 &amp;ldquo;Affinity&amp;rdquo; 相关的指令控制 Pod 的调度方式（更密集或更分散）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于 &lt;code&gt;PodAffinity&lt;/code&gt;，可以尝试将任意数量的 Pod 打包到符合条件的拓扑域中。&lt;/li&gt;
+&lt;li&gt;对于 &lt;code&gt;PodAntiAffinity&lt;/code&gt;，只能将一个 Pod 调度到单个拓扑域中。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&amp;ldquo;EvenPodsSpread&amp;rdquo; 功能提供了灵活的选项，用来将 Pod 均匀分布到不同的拓扑域中，以实现高可用性或节省成本。这也有助于滚动更新工作负载和平滑扩展副本。有关详细信息，请参考&lt;a href=&#34;https://github.com/kubernetes/enhancements/blob/master/keps/sig-scheduling/20190221-pod-topology-spread.md#motivation&#34;&gt;动机&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;已知局限性&#34;&gt;已知局限性&lt;/h2&gt;
+&lt;p&gt;1.18 版本（此功能为 Beta）存在如下已知限制：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Deployment&lt;/code&gt; 的缩容可能导致 Pod 分布不平衡。&lt;/li&gt;
+&lt;li&gt;Pod 匹配到污点节点是允许的。参考 &lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/80921&#34;&gt;Issue 80921&lt;/a&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 干扰（Disruptions）</title>
+      <link>/docs/cloudnative/kubernetes/concepts/workloads/pods/disruptions/</link>
+      <pubDate>Thu, 23 Jul 2020 16:43:26 +0800</pubDate>
+      
+      <guid>/docs/cloudnative/kubernetes/concepts/workloads/pods/disruptions/</guid>
+      <description>
+        
+        
+        &lt;p&gt;本指南针对的是希望构建高可用性应用程序的应用所有者，他们有必要了解可能发生在 Pod 上的干扰类型。&lt;/p&gt;
+&lt;p&gt;文档同样适用于想要执行自动化集群操作（例如升级和自动扩展集群）的集群管理员。&lt;/p&gt;
+&lt;h2 id=&#34;自愿干扰和非自愿干扰&#34;&gt;自愿干扰和非自愿干扰&lt;/h2&gt;
+&lt;p&gt;Pod 不会消失，除非有人（用户或控制器）将其销毁，或者出现了不可避免的硬件或软件系统错误。&lt;/p&gt;
+&lt;p&gt;我们把这些不可避免的情况称为应用的&lt;em&gt;非自愿干扰&lt;/em&gt;。例如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;节点下层物理机的硬件故障&lt;/li&gt;
+&lt;li&gt;集群管理员错误地删除虚拟机（实例）&lt;/li&gt;
+&lt;li&gt;云提供商或虚拟机管理程序中的故障导致的虚拟机消失&lt;/li&gt;
+&lt;li&gt;内核错误&lt;/li&gt;
+&lt;li&gt;节点由于集群网络隔离从集群中消失&lt;/li&gt;
+&lt;li&gt;由于节点&lt;a href=&#34;https://kubernetes.io/docs/tasks/administer-cluster/out-of-resource/&#34;&gt;资源不足&lt;/a&gt;导致 Pod 被驱逐。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除了资源不足的情况，大多数用户应该都熟悉这些情况；它们不是特定于 Kubernetes 的。&lt;/p&gt;
+&lt;p&gt;我们称其他情况为&lt;em&gt;自愿干扰&lt;/em&gt;。包括由应用程序所有者发起的操作和由集群管理员发起的操作。典型的应用程序所有者的 作包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;删除 deployment 或其他管理 pod 的控制器&lt;/li&gt;
+&lt;li&gt;更新了 deployment 的 pod 模板导致 pod 重启&lt;/li&gt;
+&lt;li&gt;直接删除 pod（例如，因为误操作）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;集群管理员操作包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/&#34;&gt;排空（drain）节点&lt;/a&gt;进行修复或升级。&lt;/li&gt;
+&lt;li&gt;从集群中排空节点以缩小集群（了解&lt;a href=&#34;https://kubernetes.io/docs/tasks/administer-cluster/cluster-management/#cluster-autoscaler&#34;&gt;集群自动扩缩&lt;/a&gt;）。&lt;/li&gt;
+&lt;li&gt;从节点中移除一个 pod，以允许其他 pod 使用该节点。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些操作可能由集群管理员直接执行，也可能由集群管理员所使用的自动化工具执行，或者由集群托管提供商自动执行。&lt;/p&gt;
+&lt;p&gt;咨询集群管理员或联系云提供商，或者查询发布文档，以确定是否为集群启用了任何自愿干扰源。如果没有启用，可以不用创建 Pod Disruption Budgets（Pod 干扰预算）。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;**警告：**并非所有的自愿干扰都会受到 Pod 干扰预算的限制。例如，删除 deployment 或 pod 的删除操作就会跳过 pod 干扰预算检查。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;处理干扰&#34;&gt;处理干扰&lt;/h2&gt;
+&lt;p&gt;以下是减轻非自愿干扰的一些方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;确保 Pod &lt;a href=&#34;https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-ram-container&#34;&gt;请求所需资源&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;如果需要更高的可用性，请复制应用程序。（了解有关运行多副本的&lt;a href=&#34;https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/&#34;&gt;无状态&lt;/a&gt;和&lt;a href=&#34;https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/&#34;&gt;有状态&lt;/a&gt;应用程序的信息。）&lt;/li&gt;
+&lt;li&gt;为了在运行复制应用程序时获得更高的可用性，请跨机架（使用&lt;a href=&#34;https://kubernetes.io/docs/user-guide/node-selection/#inter-pod-affinity-and-anti-affinity-beta-feature&#34;&gt;反亲和性&lt;/a&gt;）或跨区域（如果使用&lt;a href=&#34;https://kubernetes.io/docs/setup/multiple-zones&#34;&gt;多区域集群&lt;/a&gt;）扩展应用程序。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;自愿干扰的频率各不相同。在一个基本的 Kubernetes 集群中，根本没有自愿干扰。然而，集群管理员或托管提供商可能运行一些可能导致自愿干扰的额外服务。例如，节点软件更新可能导致自愿干扰。另外，集群（节点）自动缩放的某些实现可能导致碎片整理和紧缩节点的自愿干扰。集群管理员或托管提供商应该已经记录了各级别的自愿干扰（如果有的话）。&lt;/p&gt;
+&lt;p&gt;Kubernetes 提供特性来满足在出现频繁自愿干扰的同时运行高可用的应用程序。我们称这些特性为&lt;em&gt;干扰预算&lt;/em&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;干扰预算工作原理&#34;&gt;干扰预算工作原理&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;功能状态：&lt;/strong&gt; &lt;code&gt;Kubernetes v1.5 [beta]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;应用程序所有者可以为每个应用程序创建 &lt;code&gt;PodDisruptionBudget&lt;/code&gt; 对象（PDB）。PDB 将限制在同一时间因自愿干扰导致的复制应用程序中宕机的 Pod 数量。例如，基于仲裁的应用程序希望确保运行的副本数永远不会低于仲裁所需的数量。Web 前端可能希望确保提供负载的副本数量永远不会低于总数的某个百分比。&lt;/p&gt;
+&lt;p&gt;集群管理员和托管提供商应该使用遵循 Pod Disruption Budgets 的工具（通过调用&lt;a href=&#34;https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#the-eviction-api&#34;&gt;驱逐 API&lt;/a&gt;），而不是直接删除 Pod 或 Deployment。示例包括 &lt;code&gt;kubectl drain&lt;/code&gt; 命令和 Kubernetes-on-GCE 集群升级脚本（&lt;code&gt;cluster/gce/upgrade.sh&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;当集群管理员想排空一个节点时，可以使用 &lt;code&gt;kubectl drain&lt;/code&gt; 命令。该命令试图驱逐机器上的所有 Pod。驱逐请求可能会暂时被拒绝，且该工具定时重试失败的请求直到所有的 Pod 都被终止，或者达到配置的超时时间。&lt;/p&gt;
+&lt;p&gt;PDB 指定应用程序可以容忍的副本数量（相当于应该有多少副本）。例如，具有 &lt;code&gt;.spec.replicas: 5&lt;/code&gt; 的 Deployment 在任何时间都应该有 5 个 pod。如果 PDB 允许其在某一时刻有 4 个副本，那么驱逐 API 将允许同一时刻仅有一个而不是两个 Pod 自愿干扰。&lt;/p&gt;
+&lt;p&gt;使用标签选择器来指定构成应用程序的一组 Pod，这与应用程序的控制器（deployment，stateful-set 等）选择 Pod 的逻辑一样。&lt;/p&gt;
+&lt;p&gt;Pod 控制器的 &lt;code&gt;.spec.replicas&lt;/code&gt; 计算“预期的” Pod 数量。根据 Pod 对象的 &lt;code&gt;.metadata.ownerReferences&lt;/code&gt; 字段来发现控制器。&lt;/p&gt;
+&lt;p&gt;PDB 不能阻止&lt;a href=&#34;https://kubernetes.io/zh/docs/concepts/workloads/pods/disruptions/#voluntary-and-involuntary-disruptions&#34;&gt;非自愿干扰&lt;/a&gt;的发生，但是确实会计入预算。&lt;/p&gt;
+&lt;p&gt;由于应用程序的滚动升级而被删除或不可用的 Pod 确实会计入干扰预算，但是控制器（如 deployment 和 stateful-set）在进行滚动升级时不受 PDB 的限制。应用程序更新期间的故障处理是在控制器的 spec 中配置的。（了解&lt;a href=&#34;https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment&#34;&gt;更新 deployment&lt;/a&gt;。）&lt;/p&gt;
+&lt;p&gt;当使用驱逐 API 驱逐 Pod 时，Pod 会被优雅地终止（参考 &lt;a href=&#34;https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podspec-v1-core&#34;&gt;PodSpec&lt;/a&gt; 中的 &lt;code&gt;terminationGracePeriodSeconds&lt;/code&gt;）。&lt;/p&gt;
+&lt;h2 id=&#34;pdb-例子&#34;&gt;PDB 例子&lt;/h2&gt;
+&lt;p&gt;假设集群有 3 个节点，&lt;code&gt;node-1&lt;/code&gt; 到 &lt;code&gt;node-3&lt;/code&gt;。集群上运行了一些应用。其中一个应用有 3 个副本，分别是 &lt;code&gt;pod-a&lt;/code&gt;，&lt;code&gt;pod-b&lt;/code&gt; 和 &lt;code&gt;pod-c&lt;/code&gt;。另外，还有一个不带 PDB 的无关 pod &lt;code&gt;pod-x&lt;/code&gt; 也同样显示。最初，所有的 pod 分布如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-a &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-x &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;3 个 pod 都是 deployment 的一部分，并且共同拥有同一个 PDB，要求 3 个 pod 中至少有 2 个 pod 始终处于可用状态。&lt;/p&gt;
+&lt;p&gt;例如，假设集群管理员想要重启系统，升级内核版本来修复内核中的 bug。集群管理员首先使用 &lt;code&gt;kubectl drain&lt;/code&gt; 命令尝试排空 &lt;code&gt;node-1&lt;/code&gt; 节点。命令尝试驱逐 &lt;code&gt;pod-a&lt;/code&gt; 和 &lt;code&gt;pod-x&lt;/code&gt;。操作立即就成功了。两个 pod 同时进入 &lt;code&gt;terminating&lt;/code&gt; 状态。这时的集群处于下面的状态：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1 &lt;em&gt;draining&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-a &lt;em&gt;terminating&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-x &lt;em&gt;terminating&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Deployment 控制器观察到其中一个 pod 正在终止，因此它创建了一个替代 pod &lt;code&gt;pod-d&lt;/code&gt;。由于 &lt;code&gt;node-1&lt;/code&gt; 被封锁（cordon），&lt;code&gt;pod-d&lt;/code&gt; 落在另一个节点上。同样其他控制器也创建了 &lt;code&gt;pod-y&lt;/code&gt; 作为 &lt;code&gt;pod-x&lt;/code&gt; 的替代品。&lt;/p&gt;
+&lt;p&gt;（注意：对于 StatefulSet 来说，&lt;code&gt;pod-a&lt;/code&gt;（也称为 &lt;code&gt;pod-0&lt;/code&gt;）需要在替换 pod 创建之前完全终止，替代它的也称为 &lt;code&gt;pod-0&lt;/code&gt;，但是具有不同的 UID。反之，样例也适用于 StatefulSet。）&lt;/p&gt;
+&lt;p&gt;当前集群的状态如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1 &lt;em&gt;draining&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-a &lt;em&gt;terminating&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pod-x &lt;em&gt;terminating&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-d &lt;em&gt;starting&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-y&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;在某一时刻，pod 被终止，集群如下所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1 &lt;em&gt;drained&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-d &lt;em&gt;starting&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-y&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;此时，如果一个急躁的集群管理员试图排空（drain）&lt;code&gt;node-2&lt;/code&gt; 或 &lt;code&gt;node-3&lt;/code&gt;，drain 命令将被阻塞，因为对于 deployment 来说只有 2 个可用的 pod，并且它的 PDB 至少需要 2 个。经过一段时间，&lt;code&gt;pod-d&lt;/code&gt; 变得可用。&lt;/p&gt;
+&lt;p&gt;集群状态如下所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1 &lt;em&gt;drained&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-d &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-y&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;现在，集群管理员试图排空（drain）&lt;code&gt;node-2&lt;/code&gt;。drain 命令将尝试按照某种顺序驱逐两个 pod，假设先是 &lt;code&gt;pod-b&lt;/code&gt;，然后是 &lt;code&gt;pod-d&lt;/code&gt;。命令成功驱逐 &lt;code&gt;pod-b&lt;/code&gt;，但是当它尝试驱逐 &lt;code&gt;pod-d&lt;/code&gt; 时将被拒绝，因为对于 deployment 来说只剩一个可用的 pod 了。&lt;/p&gt;
+&lt;p&gt;Deployment 创建 &lt;code&gt;pod-b&lt;/code&gt; 的替代 pod &lt;code&gt;pod-e&lt;/code&gt;。因为集群中没有足够的资源来调度 &lt;code&gt;pod-e&lt;/code&gt;，drain 命令再次阻塞。集群最终将是下面这种状态：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;node-1 &lt;em&gt;drained&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;node-2&lt;/th&gt;
+&lt;th&gt;node-3&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;no node&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-b &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-c &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-e &lt;em&gt;pending&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;pod-d &lt;em&gt;available&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;pod-y&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;此时，集群管理员需要增加一个节点到集群中以继续升级操作。&lt;/p&gt;
+&lt;p&gt;可以看到 Kubernetes 如何改变干扰发生的速率，根据：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;应用程序需要多少个副本&lt;/li&gt;
+&lt;li&gt;优雅关闭应用实例需要多长时间&lt;/li&gt;
+&lt;li&gt;启动应用新实例需要多长时间&lt;/li&gt;
+&lt;li&gt;控制器的类型&lt;/li&gt;
+&lt;li&gt;集群的资源容量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;分离集群所有者和应用所有者角色&#34;&gt;分离集群所有者和应用所有者角色&lt;/h2&gt;
+&lt;p&gt;通常，将集群管理者和应用所有者视为彼此了解有限的独立角色是很有用的。这种责任分离在下面这些场景下是有意义的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当有许多应用程序团队共用一个 Kubernetes 集群，并且有自然的专业角色&lt;/li&gt;
+&lt;li&gt;当第三方工具或服务用于集群自动化管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Pod 干扰预算通过在角色之间提供接口来支持这种分离。&lt;/p&gt;
+&lt;p&gt;如果你的组织中没有这样的责任分离，则可能不需要使用 Pod 干扰预算。&lt;/p&gt;
+&lt;h2 id=&#34;如何在集群上执行干扰操作&#34;&gt;如何在集群上执行干扰操作&lt;/h2&gt;
+&lt;p&gt;如果你是集群管理员，并且需要对集群中的所有节点执行干扰操作，例如节点或系统软件升级，则可以使用以下选项&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;接受升级期间的停机时间。&lt;/li&gt;
+&lt;li&gt;故障转移到另一个完整的副本集群。
+&lt;ul&gt;
+&lt;li&gt;没有停机时间，但是对于重复的节点和人工协调成本可能是昂贵的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;编写可容忍干扰的应用程序和使用 PDB。
+&lt;ul&gt;
+&lt;li&gt;不停机。&lt;/li&gt;
+&lt;li&gt;最小的资源重复。&lt;/li&gt;
+&lt;li&gt;允许更多的集群管理自动化。&lt;/li&gt;
+&lt;li&gt;编写可容忍干扰的应用程序是棘手的，但对于支持容忍自愿干扰所做的工作，和支持自动扩缩和容忍非自愿干扰所做的工作相比，有大量的重叠。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

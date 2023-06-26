@@ -1,0 +1,485 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website – User Handbook</title>
+    <link>/docs/cicd/jenkins/user-handbook/</link>
+    <description>Recent content in User Handbook on Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 23 Jul 2020 16:59:42 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/cicd/jenkins/user-handbook/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Installing Jenkins</title>
+      <link>/docs/cicd/jenkins/user-handbook/installing-jenkins/</link>
+      <pubDate>Sun, 19 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/cicd/jenkins/user-handbook/installing-jenkins/</guid>
+      <description>
+        
+        
+        &lt;h1 id=&#34;安装-jenkins&#34;&gt;安装 Jenkins&lt;/h1&gt;
+&lt;p&gt;本节的步骤适用于在单台/本地计算机上的 Jenkins 新安装。&lt;/p&gt;
+&lt;p&gt;Jenkins 通常使用内置的 &lt;a href=&#34;https://stackoverflow.com/questions/7213541/what-is-java-servlet&#34;&gt;Java Servlet&lt;/a&gt; 容器/应用服务器（&lt;a href=&#34;https://www.eclipse.org/jetty/&#34;&gt;Jetty&lt;/a&gt;）在其自己的进程中作为独立应用程序运行。&lt;/p&gt;
+&lt;p&gt;Jenkins 也可以在其他 Java servlet 容器（例如 &lt;a href=&#34;https://tomcat.apache.org/&#34;&gt;Apache Tomcat&lt;/a&gt; 或 &lt;a href=&#34;https://javaee.github.io/glassfish/&#34;&gt;GlassFish&lt;/a&gt;）中作为 servlet 运行。但是，设置这些类型的安装的说明超出了本页的范围。&lt;/p&gt;
+&lt;p&gt;**注意：**尽管此页面侧重于 Jenkins 的本地安装，但此内容也可用于帮助在生产环境中设置 Jenkins。&lt;/p&gt;
+&lt;h2 id=&#34;系统要求&#34;&gt;系统要求&lt;/h2&gt;
+&lt;p&gt;最低硬件要求：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;256 MB 可用内存&lt;/li&gt;
+&lt;li&gt;1 GB 可用磁盘空间（如果将 Jenkins 作为 Docker 容器运行，建议最小为 10 GB）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为小团队推荐的硬件配置:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1 GB + 可用内存&lt;/li&gt;
+&lt;li&gt;50 GB+ 可用磁盘空间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;全面的硬件建议：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;硬件：请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/hardware-recommendations/#hardware-recommendations&#34;&gt;硬件建议 &lt;/a&gt;页面&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;软件要求：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Java：请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/administration/requirements/java&#34;&gt;Java 要求&lt;/a&gt; 页面&lt;/li&gt;
+&lt;li&gt;Web 浏览器：请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/administration/requirements/web-browsers&#34;&gt;Web 浏览器兼容性&lt;/a&gt; 页面&lt;/li&gt;
+&lt;li&gt;对于 Windows 操作系统：&lt;a href=&#34;https://www.jenkins.io/doc/administration/requirements/windows&#34;&gt;Windows 支持策略&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;安装平台&#34;&gt;安装平台&lt;/h2&gt;
+&lt;p&gt;本节介绍如何在不同的平台和操作系统上安装/运行 Jenkins。&lt;/p&gt;
+&lt;h3 id=&#34;docker&#34;&gt;Docker&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.docker.com/engine/docker-overview/&#34;&gt;Docker&lt;/a&gt; 是一个用于在称为“容器”（或 Docker 容器）的隔离环境中运行应用程序的平台。诸如 Jenkins 之类的应用程序可以作为只读“镜像”（或 Docker 镜像）下载，每个映像都作为容器在 Docker 中运行。Docker 容器实际上是 Docker 镜像的“运行实例”。从这个角度来看，镜像或多或少地被永久地存储（即：只要镜像更新发布），而容器被临时存储。在 Docker 文档的入门指南，&lt;a href=&#34;https://docs.docker.com/get-started/&#34;&gt;Getting Started, Part 1: Orientation and setup&lt;/a&gt; 页面中阅读有关这些概念的更多信息。&lt;/p&gt;
+&lt;p&gt;Docker 的基本平台和容器设计意味着可以在任何受支持的操作系统（macOS、Linux 和 Windows）或也运行着 Docker 的云服务（AWS 和 Azure）上运行单个 Docker 映像（对于任何给定的应用程序，如 Jenkins）。&lt;/p&gt;
+&lt;h4 id=&#34;安装-docker&#34;&gt;安装 Docker&lt;/h4&gt;
+&lt;p&gt;要将 Docker 安装在您的操作系统上，请访问 &lt;a href=&#34;https://store.docker.com/search?type=edition&amp;amp;offering=community&#34;&gt;Docker store&lt;/a&gt; 网站，然后单击适用于您的操作系统或云服务的 &lt;strong&gt;Docker Community Edition&lt;/strong&gt; 框。按照其网站上的安装说明进行操作。&lt;/p&gt;
+&lt;p&gt;Jenkins 也可以在 Docker 企业版上运行，您可以通过 Docker 商店网站上的 &lt;strong&gt;Docker EE&lt;/strong&gt; 进行访问。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果要在基于 Linux 的操作系统上安装 Docker，请确保配置 Docker，以便可以以非 root 用户身份对其进行管理。请在 Docker 文档的 Docker 的 &lt;a href=&#34;https://docs.docker.com/engine/installation/linux/linux-postinstall/&#34;&gt;Linux 安装后步骤&lt;/a&gt; 页面中阅读有关此内容的更多信息。该页面还包含有关如何配置 Docker 开机启动的信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;在-docker-中下载并运行-jenkins&#34;&gt;在 Docker 中下载并运行 Jenkins&lt;/h4&gt;
+&lt;p&gt;Jenkins 有多个可用的 Docker 镜像。&lt;/p&gt;
+&lt;p&gt;推荐使用的 Docker 镜像是 &lt;a href=&#34;https://hub.docker.com/r/jenkinsci/blueocean/&#34;&gt;&lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 镜像&lt;/a&gt;（来自 &lt;a href=&#34;https://hub.docker.com/&#34;&gt;Docker Hub 存储库&lt;/a&gt;）。该镜像包含了与所有 Blue Ocean 插件和功能捆绑在一起的 Jenkins 的当前长期支持（LTS）版本（可以投入生产使用）。这意味着您不需要单独安装 Blue Ocean 插件。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每次发布新版 Blue Ocean 时，都会发布新的 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 镜像。您可以在 &lt;a href=&#34;https://hub.docker.com/r/jenkinsci/blueocean/tags/&#34;&gt;tags&lt;/a&gt; 页面上看到 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 镜像以前发布的版本列表。&lt;/p&gt;
+&lt;p&gt;您还可以使用其他 Jenkins Docker 映像（在 Docker Hub 上可通过 &lt;a href=&#34;https://hub.docker.com/r/jenkins/jenkins/&#34;&gt;&lt;code&gt;jenkins/jenkins&lt;/code&gt;&lt;/a&gt; 访问）。但是，这些不会随 Blue Ocean的发布而提供，需要通过 Jenkins 中的 &lt;a href=&#34;https://www.jenkins.io/zh/doc/book/managing&#34;&gt;&lt;strong&gt;Manage Jenkins&lt;/strong&gt;&lt;/a&gt; &amp;gt; &lt;a href=&#34;https://www.jenkins.io/zh/doc/book/managing/plugins&#34;&gt;&lt;strong&gt;Manage Plugins&lt;/strong&gt;&lt;/a&gt; 页面进行安装。 在 &lt;a href=&#34;https://www.jenkins.io/zh/doc/book/blueocean/getting-started&#34;&gt;Blue Ocean 入门&lt;/a&gt; 中了解更多信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h5 id=&#34;在-macos-和-linux-上&#34;&gt;在 macOS 和 Linux 上&lt;/h5&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;打开一个终端窗口。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用以下 &lt;code&gt;docker network create&lt;/code&gt; 命令在 Docker 中创建 &lt;a href=&#34;https://docs.docker.com/network/bridge/&#34;&gt;桥接网络&lt;/a&gt;：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker network create jenkins
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用以下 &lt;code&gt;docker volume create&lt;/code&gt; 命令创建以下存储卷，这些存储卷用来共享连接到 Docker 守护程序所需的 Docker 客户端 TLS 证书，和持久化 Jenkins 数据：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker volume create jenkins-docker-certs
+docker volume create jenkins-data
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为了在 Jenkins 节点内执行 Docker 命令，请使用以下 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_run/&#34;&gt;&lt;code&gt;docker container run&lt;/code&gt;&lt;/a&gt; 命令下载并运行 &lt;code&gt;docker:dind&lt;/code&gt; Docker 镜像：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container run \
+  --name jenkins-docker \
+  --rm \
+  --detach \
+  --privileged \
+  --network jenkins \
+  --network-alias docker \
+  --env DOCKER_TLS_CERTDIR=/certs \
+  --volume jenkins-docker-certs:/certs/client \
+  --volume jenkins-data:/var/jenkins_home \
+  --publish 2376:2376 \
+  docker:dind
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参数说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--name jenkins-docker&lt;/code&gt;：（可选）指定用于运行镜像的 Docker 容器名称。默认情况下，Docker 将为容器生成一个唯一的名称。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--rm&lt;/code&gt;：（可选）关闭时自动删除 Docker 容器（Docker 镜像的实例）。它包含当被下面描述的 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器调用时 Docker 使用的 Docker 镜像缓存。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--detach&lt;/code&gt;：（可选）在后台运行 Docker 容器。此实例可以稍后通过运行 &lt;code&gt;docker container stop jenkins-docker&lt;/code&gt; 停止，并可以通过 &lt;code&gt;docker container start jenkins-docker&lt;/code&gt; 再次启动。有关更多容器管理命令，请参阅 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container/&#34;&gt;&lt;code&gt;docker container&lt;/code&gt;&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--privileged&lt;/code&gt;：当前在 Docker 中运行 Docker 需要特权访问才能正常运行。使用较新的 Linux 内核版本可以放宽此要求。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--network jenkins&lt;/code&gt;：这对应于先前步骤中创建的网络。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--network-alias docker&lt;/code&gt;：使 Docker 容器中的 Docker 在 &lt;code&gt;jenkins&lt;/code&gt; 网络中作为主机名 &lt;code&gt;docker&lt;/code&gt; 可用。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--env DOCKER_TLS_CERTDIR=/certs&lt;/code&gt;：在 Docker 服务器中启用 TLS 的使用。由于使用了特权容器，因此建议这样做，尽管它需要使用下面描述的共享存储卷。此环境变量控制被管理的 Docker TLS 证书的根目录。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--volume jenkins-docker-certs:/certs/client&lt;/code&gt;：将容器内的 &lt;code&gt;/certs/client&lt;/code&gt; 目录映射到上面创建的名为 &lt;code&gt;jenkins-docker-certs&lt;/code&gt; 的 Docker 存储卷。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--volume jenkins-data:/var/jenkins_home&lt;/code&gt;：将容器内的 &lt;code&gt;/var/jenkins_home&lt;/code&gt; 目录映射到上面创建的名为 &lt;code&gt;jenkins-data&lt;/code&gt; 的Docker 存储卷。这将允许此 Docker容器中的 Docker 守护程序控制的其他 Docker 容器从 Jenkins 装载数据。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--publish 2376:2376&lt;/code&gt;：（可选）公开主机上的 Docker 守护程序端口。这对于在主机上执行 &lt;code&gt;docker&lt;/code&gt; 命令来控制此内部 Docker 守护程序很有用。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;docker:dind&lt;/code&gt;：&lt;code&gt;docker:dind&lt;/code&gt; 镜像本身。可以使用以下命令在运行之前下载此映像：&lt;code&gt;docker image pull docker:dind&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;下载 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 映像，并使用以下 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_run/&#34;&gt;&lt;code&gt;docker container run&lt;/code&gt;&lt;/a&gt; 命令将其作为容器在 Docker 中运行：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container run \
+  --name jenkins-blueocean \
+  --rm \
+  --detach \
+  --network jenkins \
+  --env DOCKER_HOST=tcp://docker:2376 \
+  --env DOCKER_CERT_PATH=/certs/client \
+  --env DOCKER_TLS_VERIFY=1 \
+  --publish 8080:8080 \
+  --publish 50000:50000 \
+  --volume jenkins-data:/var/jenkins_home \
+  --volume jenkins-docker-certs:/certs/client:ro \
+  jenkinsci/blueocean
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参数说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--name jenkins-blueocean&lt;/code&gt;：（可选）为 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; Docker 镜像的此实例指定 Docker 容器名称。这使得后续的 &lt;code&gt;docker container&lt;/code&gt; 命令更易于引用它。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--rm&lt;/code&gt;：（可选）关闭时自动删除 Docker 容器（这是下面的 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 镜像的实例）。如果您需要退出 Jenkins，这可以保持整洁。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--detach&lt;/code&gt;：（可选）在后台运行 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器（即“detached”模式）并输出容器 ID。如果未指定此选项，则在终端窗口中输出此容器的运行中的 Docker 日志。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--network jenkins&lt;/code&gt;：将此容器连接到先前步骤中定义的 &lt;code&gt;jenkins&lt;/code&gt; 网络。这使得上一步中的 Docker 守护程序可以通过主机名 &lt;code&gt;docker&lt;/code&gt; 应用于此 Jenkins 容器。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--env DOCKER_HOST=tcp://docker:2376&lt;/code&gt;：指定 &lt;code&gt;docker&lt;/code&gt;、 &lt;code&gt;docker-compose&lt;/code&gt; 和其他 Docker 工具用于连接上一步中的 Docker 守护程序的环境变量。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--publish 8080:8080&lt;/code&gt;：将 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器的端口 8080映射（即“发布”）到主机上的端口 8080。第一个数字表示主机上的端口，而最后一个数字表示容器的端口。因此，如果为该选项指定 &lt;code&gt;-p 49000:8080&lt;/code&gt;，则将通过主机上的端口 49000 访问 Jenkins。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--publish 50000:50000&lt;/code&gt;：（可选）将 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器的端口 50000 映射到主机上的端口 50000。仅当您在其他计算机上设置了一个或多个基于 JNLP 的 Jenkins 代理时才需要这样做，这些代理又与 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器（充当“master” Jenkins服务器，或仅充当“ Jenkins master服务器”）交互。基于 JNLP 的 Jenkins 代理默认情况下通过 TCP 端口 50000 与 Jenkins master 服务器通信。您可以通过 &lt;a href=&#34;https://www.jenkins.io/doc/book/managing/security/&#34;&gt;Configure Global Security&lt;/a&gt; 页面在 Jenkins master 服务器上更改此端口号。如果要将 JNLP 代理程序的 Jenkins master 服务器的 TCP 端口更改为 51000（例如），则需要重新运行 Jenkins（通过此 &lt;code&gt;docker run …&lt;/code&gt; 命令），并使用以下命令指定此 &amp;ldquo;publish&amp;rdquo; 选项 &lt;code&gt;--publish 52000:51000&lt;/code&gt;，其中最后一个值与 Jenkins 主服务器上更改后的值匹配，并且第一个值是 Jenkins master 服务器主机上的端口号，基于 JNLP 的 Jenkins 代理通过其通信（与 Jenkins master 服务器） - 即 52000。请注意，Jenkins 2.217 中的 WebSocket 代理不需要此配置。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--volume jenkins-data:/var/jenkins_home&lt;/code&gt;：将容器中的 &lt;code&gt;/var/jenkins_home&lt;/code&gt; 目录映射到名称为 &lt;code&gt;jenkins-data&lt;/code&gt; 的 Docker &lt;a href=&#34;https://docs.docker.com/engine/admin/volumes/volumes/&#34;&gt;volume&lt;/a&gt;。除了将 &lt;code&gt;/var/jenkins_home&lt;/code&gt; 目录映射到 Docker 存储卷之外，您还可以将此目录映射到计算机本地文件系统上的目录。例如，指定选项 &lt;code&gt;--volume $HOME/jenkins:/var/jenkins_home&lt;/code&gt; 会将容器的 &lt;code&gt;/var/jenkins_home&lt;/code&gt; 目录映射到本地计算机上 &lt;code&gt;$HOME&lt;/code&gt; 目录中的 &lt;code&gt;jenkins&lt;/code&gt; 子目录，该目录通常是 &lt;code&gt;/Users/&amp;lt;your-username&amp;gt;/jenkins&lt;/code&gt;  或者 &lt;code&gt;/home/&amp;lt;your-username&amp;gt;/jenkins&lt;/code&gt;。请注意，如果您为此更改源存储卷或目录，则需要更新上述 &lt;code&gt;docker:dind&lt;/code&gt; 容器中的存储卷以匹配此卷。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--volume jenkins-docker-certs:/certs/client:ro&lt;/code&gt;：将 &lt;code&gt;/certs/client&lt;/code&gt; 目录映射到先前创建的 &lt;code&gt;jenkins-docker-certs&lt;/code&gt; 存储卷。这使连接到 Docker 守护程序所需的客户端 TLS 证书在  &lt;code&gt;DOCKER_CERT_PATH&lt;/code&gt; 环境变量指定的路径中可用。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;jenkinsci/blueocean&lt;/code&gt;：&lt;code&gt;jenkinsci/blueocean&lt;/code&gt; Docker 镜像本身。如果尚未下载该镜像，则此 &lt;code&gt;docker container run&lt;/code&gt; 命令将自动为您下载该镜像。此外，如果自上次运行此命令以来已发布了对该镜像的任何更新，则再次运行该命令将自动为您下载这些发布的镜像更新。**注意：**也可以使用 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/image_pull/&#34;&gt;&lt;code&gt;docker image pull&lt;/code&gt;&lt;/a&gt; 命令独立下载（或更新）此 Docker 镜像：&lt;code&gt;docker image pull jenkinsci/blueocean&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;继续进行 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#setup-wizard&#34;&gt;Post-installation setup wizard&lt;/a&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h5 id=&#34;在-windows-上&#34;&gt;在 Windows 上&lt;/h5&gt;
+&lt;p&gt;Jenkins 项目提供 Linux 容器镜像，而不是 Windows 容器镜像。确保将 Docker for Windows 安装配置为运行 &lt;code&gt;Linux Containers&lt;/code&gt; 而不是 &lt;code&gt;Windows Containers&lt;/code&gt;。请参阅 Docker 文档以获取 &lt;a href=&#34;https://docs.docker.com/docker-for-windows/#switch-between-windows-and-linux-containers&#34;&gt;switch to Linux containers&lt;/a&gt; 的说明。配置为运行 &lt;code&gt;Linux Containers&lt;/code&gt; 后，步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;打开命令提示符窗口。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用以下 &lt;code&gt;docker network create&lt;/code&gt; 命令在 Docker 中创建 &lt;a href=&#34;https://docs.docker.com/network/bridge/&#34;&gt;桥接网络&lt;/a&gt;：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker network create jenkins
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用以下 &lt;code&gt;docker volume create&lt;/code&gt; 命令创建以下存储卷，这些存储卷用来共享连接到 Docker 守护程序所需的 Docker 客户端 TLS 证书，和持久化 Jenkins 数据：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker volume create jenkins-docker-certs
+docker volume create jenkins-data
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为了在 Jenkins 节点内执行 Docker 命令，请使用以下 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_run/&#34;&gt;&lt;code&gt;docker container run&lt;/code&gt;&lt;/a&gt; 命令下载并运行 &lt;code&gt;docker:dind&lt;/code&gt; Docker 镜像：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container run --name jenkins-docker --rm --detach ^
+  --privileged --network jenkins --network-alias docker ^
+  --env DOCKER_TLS_CERTDIR=/certs ^
+  --volume jenkins-docker-certs:/certs/client ^
+  --volume jenkins-data:/var/jenkins_home ^
+  docker:dind
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;下载 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 映像，并使用以下 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_run/&#34;&gt;&lt;code&gt;docker container run&lt;/code&gt;&lt;/a&gt; 命令将其作为容器在 Docker 中运行：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container run --name jenkins-blueocean --rm --detach ^
+  --network jenkins --env DOCKER_HOST=tcp://docker:2376 ^
+  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 ^
+  --volume jenkins-data:/var/jenkins_home ^
+  --volume jenkins-docker-certs:/certs/client:ro ^
+  --publish 8080:8080 --publish 50000:50000 jenkinsci/blueocean
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;有关每个选项的说明，请参阅上面的 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#on-macos-and-linux&#34;&gt;macOS and Linux&lt;/a&gt; 说明。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;继续进行 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#setup-wizard&#34;&gt;Post-installation setup wizard&lt;/a&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;访问-jenkinsblue-ocean-docker-容器&#34;&gt;访问 Jenkins/Blue Ocean Docker 容器&lt;/h4&gt;
+&lt;p&gt;如果您有使用 Docker 的经验，并且希望或需要使用 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_exec/&#34;&gt;&lt;code&gt;docker container exec&lt;/code&gt;&lt;/a&gt; 命令通过终端/命令提示符访问 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器，您可以添加 &lt;code&gt;--name jenkins-blueocean&lt;/code&gt; 之类的选项（在上面的 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_run/&#34;&gt;&lt;code&gt;docker container run&lt;/code&gt;&lt;/a&gt; 中），它将为 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器命名为 “jenkins-blueocean”。&lt;/p&gt;
+&lt;p&gt;这意味着您可以使用如下类似的 &lt;code&gt;docker container exec&lt;/code&gt; 命令（通过单独的终端/命令提示符窗口）访问容器：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container exec -it jenkins-blueocean bash
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;通过-docker-日志访问-jenkins-控制台日志&#34;&gt;通过 Docker 日志访问 Jenkins 控制台日志&lt;/h4&gt;
+&lt;p&gt;您可能需要访问 Jenkins 控制台日志。例如，在 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#unlocking-jenkins&#34;&gt;Unlocking Jenkins&lt;/a&gt; 作为 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#setup-wizard&#34;&gt;Post-installation setup wizard&lt;/a&gt; 的一部分时。&lt;/p&gt;
+&lt;p&gt;如果您没有在 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#downloading-and-running-jenkins-in-docker&#34;&gt;上面&lt;/a&gt; 的 &lt;code&gt;docker container run …&lt;/code&gt; 命令中指定分离模式选项 &lt;code&gt;--detach&lt;/code&gt;，那么可以通过运行该 Docker 命令的终端/命令提示符窗口轻松访问 Jenkins 控制台日志。&lt;/p&gt;
+&lt;p&gt;否则，您可以使用以下命令通过 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器的 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_logs/&#34;&gt;Docker logs&lt;/a&gt; 访问 Jenkins 控制台日志：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container logs &amp;lt;docker-container-name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;您的 &lt;code&gt;&amp;lt;docker-container-name&amp;gt;&lt;/code&gt; 可以使用 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_ls/&#34;&gt;&lt;code&gt;docker container ls&lt;/code&gt;&lt;/a&gt; 命令获取。如果您在上面的 &lt;code&gt;docker container run …&lt;/code&gt; 命令中指定了 &lt;code&gt;--name jenkins-blueocean&lt;/code&gt; 选项（另请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#accessing-the-jenkins-blue-ocean-docker-container&#34;&gt;访问 Jenkins/Blue Ocean Docker 容器&lt;/a&gt;），您可以简单地使用 &lt;code&gt;docker container logs&lt;/code&gt; 命令：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container logs jenkins-blueocean
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;访问-jenkins-家目录&#34;&gt;访问 Jenkins 家目录&lt;/h4&gt;
+&lt;p&gt;您可能需要访问 Jenkins 家目录。例如，在 &lt;code&gt;workspace&lt;/code&gt; 子目录中检查 Jenkins 构建的详细信息。&lt;/p&gt;
+&lt;p&gt;如果您将 Jenkins 家目录（&lt;code&gt;/var/jenkins_home&lt;/code&gt;）映射到计算机的本地文件系统上的目录（即，在 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#downloading-and-running-jenkins-in-docker&#34;&gt;上面&lt;/a&gt; 的 &lt;code&gt;docker container run …&lt;/code&gt; 命令），那么您可以通过计算机的常规终端/命令提示符访问该目录的内容。&lt;/p&gt;
+&lt;p&gt;除此之外，如果您在 &lt;code&gt;docker container run …&lt;/code&gt; 命令中指定了 &lt;code&gt;--volume jenkins-data:/var/jenkins_home&lt;/code&gt; 选项，您可以使用 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_exec/&#34;&gt;&lt;code&gt;docker container exec&lt;/code&gt;&lt;/a&gt; 命令通过 &lt;code&gt;jenkinsci/blueocean&lt;/code&gt; 容器的终端/命令提示符访问 Jenkins 家目录的内容：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container exec -it &amp;lt;docker-container-name&amp;gt; bash
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#accessing-the-jenkins-console-log-through-docker-logs&#34;&gt;如上所述&lt;/a&gt;，您的 &lt;code&gt;&amp;lt;docker-container-name&amp;gt;&lt;/code&gt; 可以使用 &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/container_ls/&#34;&gt;&lt;code&gt;docker container ls&lt;/code&gt;&lt;/a&gt; 命令获取。如果您在上面的 &lt;code&gt;docker container run …&lt;/code&gt; 命令中指定了 &lt;code&gt;--name jenkins-blueocean&lt;/code&gt; 选项（另请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#accessing-the-jenkins-blue-ocean-docker-container&#34;&gt;访问 Jenkins/Blue Ocean Docker 容器&lt;/a&gt;），您可以简单地使用 &lt;code&gt;docker container exec&lt;/code&gt; 命令：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker container exec -it jenkins-blueocean bash
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;post-installation-setup-wizard&#34;&gt;Post-installation setup wizard&lt;/h2&gt;
+&lt;p&gt;After downloading, installing and running Jenkins using one of the procedures above, the post-installation setup wizard begins.&lt;/p&gt;
+&lt;p&gt;This setup wizard takes you through a few quick &amp;ldquo;one-off&amp;rdquo; steps to unlock Jenkins, customize it with plugins and create the first administrator user through which you can continue accessing Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;unlocking-jenkins&#34;&gt;Unlocking Jenkins&lt;/h3&gt;
+&lt;p&gt;When you first access a new Jenkins instance, you are asked to unlock it using an automatically-generated password.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Browse to &lt;code&gt;http://localhost:8080&lt;/code&gt; (or whichever port you configured for Jenkins when installing it) and wait until the &lt;strong&gt;Unlock Jenkins&lt;/strong&gt; page appears.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.jenkins.io/doc/book/resources/tutorials/setup-jenkins-01-unlock-jenkins-page.jpg&#34; alt=&#34;Unlock Jenkins page&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;From the Jenkins console log output, copy the automatically-generated alphanumeric password (between the 2 sets of asterisks).&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.jenkins.io/doc/book/resources/tutorials/setup-jenkins-02-copying-initial-admin-password.png&#34; alt=&#34;Copying initial admin password&#34;&gt;
+&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The command: &lt;code&gt;sudo cat /var/lib/jenkins/secrets/initialAdminPassword&lt;/code&gt; will print the password at console.&lt;/li&gt;
+&lt;li&gt;If you are running Jenkins in Docker using the official &lt;code&gt;jenkins/jenkins&lt;/code&gt; image you can use &lt;code&gt;sudo docker exec ${CONTAINER_ID or CONTAINER_NAME} cat /var/jenkins_home/secrets/initialAdminPassword&lt;/code&gt; to print the password in the console without having to exec into the container.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;On the &lt;strong&gt;Unlock Jenkins&lt;/strong&gt; page, paste this password into the &lt;strong&gt;Administrator password&lt;/strong&gt; field and click &lt;strong&gt;Continue&lt;/strong&gt;.
+&lt;strong&gt;Notes:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If you ran Jenkins in Docker in detached mode, you can access the Jenkins console log from the Docker logs (&lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#accessing-the-jenkins-console-log-through-docker-logs&#34;&gt;above&lt;/a&gt;).&lt;/li&gt;
+&lt;li&gt;The Jenkins console log indicates the location (in the Jenkins home directory) where this password can also be obtained. This password must be entered in the setup wizard on new Jenkins installations before you can access Jenkins’s main UI. This password also serves as the default admininstrator account’s password (with username &amp;ldquo;admin&amp;rdquo;) if you happen to skip the subsequent user-creation step in the setup wizard.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;customizing-jenkins-with-plugins&#34;&gt;Customizing Jenkins with plugins&lt;/h3&gt;
+&lt;p&gt;After &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#unlocking-jenkins&#34;&gt;unlocking Jenkins&lt;/a&gt;, the &lt;strong&gt;Customize Jenkins&lt;/strong&gt; page appears. Here you can install any number of useful plugins as part of your initial setup.&lt;/p&gt;
+&lt;p&gt;Click one of the two options shown:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Install suggested plugins&lt;/strong&gt; - to install the recommended set of plugins, which are based on most common use cases.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Select plugins to install&lt;/strong&gt; - to choose which set of plugins to initially install. When you first access the plugin selection page, the suggested plugins are selected by default.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you are not sure what plugins you need, choose &lt;strong&gt;Install suggested plugins&lt;/strong&gt;. You can install (or remove) additional Jenkins plugins at a later point in time via the &lt;a href=&#34;https://www.jenkins.io/doc/book/managing&#34;&gt;&lt;strong&gt;Manage Jenkins&lt;/strong&gt;&lt;/a&gt; &amp;gt; &lt;a href=&#34;https://www.jenkins.io/doc/book/managing/plugins/&#34;&gt;&lt;strong&gt;Manage Plugins&lt;/strong&gt;&lt;/a&gt; page in Jenkins.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The setup wizard shows the progression of Jenkins being configured and your chosen set of Jenkins plugins being installed. This process may take a few minutes.&lt;/p&gt;
+&lt;h3 id=&#34;creating-the-first-administrator-user&#34;&gt;Creating the first administrator user&lt;/h3&gt;
+&lt;p&gt;Finally, after &lt;a href=&#34;https://www.jenkins.io/doc/book/installing/#customizing-jenkins-with-plugins&#34;&gt;customizing Jenkins with plugins&lt;/a&gt;, Jenkins asks you to create your first administrator user.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;When the &lt;strong&gt;Create First Admin User&lt;/strong&gt; page appears, specify the details for your administrator user in the respective fields and click &lt;strong&gt;Save and Finish&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;When the &lt;strong&gt;Jenkins is ready&lt;/strong&gt; page appears, click &lt;strong&gt;Start using Jenkins&lt;/strong&gt;.
+&lt;strong&gt;Notes:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;This page may indicate &lt;strong&gt;Jenkins is almost ready!&lt;/strong&gt; instead and if so, click &lt;strong&gt;Restart&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;If the page does not automatically refresh after a minute, use your web browser to refresh the page manually.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;If required, log in to Jenkins with the credentials of the user you just created and you are ready to start using Jenkins!&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;From this point on, the Jenkins UI is only accessible by providing valid username and password credentials.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;offline-jenkins-installation&#34;&gt;Offline Jenkins Installation&lt;/h2&gt;
+&lt;p&gt;This section describes how to install Jenkins on a machine that does not have an internet connection.&lt;/p&gt;
+&lt;p&gt;To install Jenkins itself, download the appropriate war file and transfer it to your machine.&lt;/p&gt;
+&lt;p&gt;Plugins are a different matter, due to dependency requirements.&lt;/p&gt;
+&lt;p&gt;The recommended approach is to use &lt;a href=&#34;https://github.com/jenkinsci/plugin-installation-manager-tool&#34;&gt;Plugin Installation Manager Tool&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you want to transfer the individual plugins, you’ll need to retrieve all dependencies as well. There are several dependency retrieval scripts and tools on Github. For example:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/jenkinsci/docker/blob/master/install-plugins.sh&#34;&gt;install-plugins.sh&lt;/a&gt; - Bash script for managing plugins from the official Docker image for Jenkins&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/samrocketman/jenkins-bootstrap-shared&#34;&gt;samrocketman/jenkins-bootstrap-shared&lt;/a&gt; - Java is required; packages Jenkins and plugins into an immutable package installer. Supported formats include: RPM, DEB, Docker. Can proxy Jenkins and plugins through Nexus or Artifactory since Gradle is used to assemble plugins.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;jenkins-parameters&#34;&gt;Jenkins Parameters&lt;/h2&gt;
+&lt;p&gt;Jenkins initialization can also be controlled by run time parameters passed as arguments. Command line arguments can adjust networking, security, monitoring, and other settings.&lt;/p&gt;
+&lt;h3 id=&#34;networking-parameters&#34;&gt;Networking parameters&lt;/h3&gt;
+&lt;p&gt;Jenkins networking configuration is generally controlled by command line arguments. The networking configuration areguments are:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Command Line Parameter&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--httpPort=$HTTP_PORT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Runs Jenkins listener on port $HTTP_PORT using standard &lt;em&gt;http&lt;/em&gt; protocol. The default is port 8080. To disable (because you’re using &lt;em&gt;https&lt;/em&gt;), use port &lt;code&gt;-1&lt;/code&gt;. This option does not impact the root URL being generated within Jenkins logic (UI, JNLP files, etc.). It is defined by the Jenkins URL specified in the global configuration.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--httpListenAddress=$HTTP_HOST&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Binds Jenkins to the IP address represented by $HTTP_HOST. The default is 0.0.0.0 — i.e. listening on all available interfaces. For example, to only listen for requests from localhost, you could use: &lt;code&gt;--httpListenAddress=127.0.0.1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--httpsPort=$HTTPS_PORT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Uses HTTPS protocol on port $HTTPS_PORT. This option does not impact the root URL being generated within Jenkins logic (UI, JNLP files, etc.). It is defined by the Jenkins URL specified in the global configuration.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--httpsListenAddress=$HTTPS_HOST&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Binds Jenkins to listen for HTTPS requests on the IP address represented by $HTTPS_HOST.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--http2Port=$HTTP_PORT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Uses HTTP/2 protocol on port $HTTP_PORT. This option does not impact the root URL being generated within Jenkins logic (UI, JNLP files, etc.). It is defined by the Jenkins URL specified in the global configuration.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--http2ListenAddress=$HTTPS_HOST&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Binds Jenkins to listen for HTTP/2 requests on the IP address represented by $HTTPS_HOST.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--prefix=$PREFIX&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Runs Jenkins to include the $PREFIX at the end of the URL. For example, set &lt;em&gt;&amp;ndash;prefix=/jenkins&lt;/em&gt; to make Jenkins accessible at &lt;em&gt;http://myServer:8080/jenkins&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--ajp13Port=$AJP_PORT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Runs Jenkins listener on port $AJP_PORT using standard &lt;em&gt;AJP13&lt;/em&gt; protocol. The default is port 8009. To disable (because you’re using &lt;em&gt;https&lt;/em&gt;), use port &lt;code&gt;-1&lt;/code&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--ajp13ListenAddress=$AJP_ADDR&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Binds Jenkins to the IP address represented by $AJP_HOST. The default is 0.0.0.0 — i.e. listening on all available interfaces.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--sessionTimeout=$TIMEOUT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Sets the http session timeout value to $SESSION_TIMEOUT minutes. Default to what webapp specifies, and then to 60 minutes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;miscellaneous-parameters&#34;&gt;Miscellaneous parameters&lt;/h3&gt;
+&lt;p&gt;Other Jenkins initialization configuration is also controlled by command line arguments. The miscellaneous configuration arguments are:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Command Line Parameter&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--argumentsRealm.passwd.$USER=$PASS&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Assigns the password for user $USER. If Jenkins security is enabled, you must log in as a user who has an &lt;em&gt;admin&lt;/em&gt; role to configure Jenkins.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--argumentsRealm.roles.$USER=admin&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Assigns user $USER the admin role. The user can configure Jenkins even if security is enabled in Jenkins. See &lt;a href=&#34;https://www.jenkins.io/doc/book/system-administration/security/&#34;&gt;Securing Jenkins&lt;/a&gt; for more information.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;--useJmx&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Enable &lt;a href=&#34;https://www.eclipse.org/jetty/documentation/current/jmx-chapter.html&#34;&gt;Jetty Java Management Extension (JMX)&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Jenkins passes all command line parameters to the Winstone servlet container. More information about Jenkins Winstone command line parameters is available from the &lt;a href=&#34;https://github.com/jenkinsci/winstone#command-line-options&#34;&gt;Winstone Command Line Parameter Reference&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Be Careful with Command Line Parameters&lt;/strong&gt; Jenkins ignores command line parameters it doesn’t understand instead of producing an error. Be careful when using command line parameters and make sure you have the correct spelling. For example, the parameter needed for defining the Jenkins administrative user is &lt;code&gt;--argument**s**Realm&lt;/code&gt; and not &lt;code&gt;--argumentRealm&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;jenkins-properties&#34;&gt;Jenkins properties&lt;/h3&gt;
+&lt;p&gt;Some Jenkins behaviors are configured with Java properties. Java properties are set from the command line that started Jenkins. Property assignments use the form &lt;code&gt;-DsomeName=someValue&lt;/code&gt; to assign the value &lt;code&gt;someValue&lt;/code&gt; to the property named &lt;code&gt;someName&lt;/code&gt;. For example, to assign the value &lt;code&gt;true&lt;/code&gt; to a property &lt;code&gt;testName&lt;/code&gt;, the command line argument would be &lt;code&gt;-DtestName=true&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Refer to the detailed list of &lt;a href=&#34;https://www.jenkins.io/doc/book/managing/system-properties/#Featurescontrolledbysystemproperties-PropertiesinJenkinsCore&#34;&gt;Jenkins properties&lt;/a&gt; for more information.&lt;/p&gt;
+&lt;h2 id=&#34;configuring-http&#34;&gt;Configuring HTTP&lt;/h2&gt;
+&lt;h3 id=&#34;https-with-an-existing-certificate&#34;&gt;HTTPS with an existing certificate&lt;/h3&gt;
+&lt;p&gt;If you’re setting up Jenkins using the built-in Winstone server and want to use an existing certificate for HTTPS:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;--httpPort=-1 \
+--httpsPort=443 \
+--httpsKeyStore=path/to/keystore \
+--httpsKeyStorePassword=keystorePassword
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The keystore should be in JKS format (as created by the JDK &amp;lsquo;keytool&amp;rsquo;) and the keystore and target key must have the same password. (Placing the keystore arguments after Jenkins-specific parameters does not seem to work; either they are not forwarded to Winstone or Winstone ignores them coming after unknown parameters. So, make sure they are adjacent to the working &lt;code&gt;--httpsPort&lt;/code&gt; argument.)&lt;/p&gt;
+&lt;p&gt;If your keystore contains multiple certificates (e.g. you are using CA signed certificate) Jenkins might end-up using a incorrect one. In this case you can &lt;a href=&#34;http://stackoverflow.com/questions/7528944/convert-ca-signed-jks-keystore-to-pem&#34;&gt;convert the keystore to PEM&lt;/a&gt; and use following command line options:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;--httpPort=-1 \
+--httpsPort=443 \
+--httpsCertificate=path/to/cert \
+--httpsPrivateKey=path/to/privatekey
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;using-http2&#34;&gt;Using HTTP/2&lt;/h3&gt;
+&lt;p&gt;The &lt;a href=&#34;https://tools.ietf.org/html/rfc7540&#34;&gt;HTTP/2 protocol&lt;/a&gt; allows web servers to reduce latency over encrypted connections by pipelining requests, multiplexing requests, and allowing servers to push in some cases before receiving a client request for the data. The Jetty server used by Jenkins supports HTTP/2 with the addition of the Application-Layer Protocol Negotiation (ALPN) TLS extension. The ALPN TLS extension is connected to the specific Jetty version and has specific requirements depending on the Java version.&lt;/p&gt;
+&lt;h4 id=&#34;java-11-java-8u252-and-later&#34;&gt;Java 11, Java 8u252, and later&lt;/h4&gt;
+&lt;p&gt;Java 11, Java 8 update 252 and Java 8 versions after update 252 can run the ALPN TLS extension by installing the Jetty ALPN java server jar and passing it as a java command line argument. Steps to install the extension are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Identify the Jetty version included in your Jenkins server by searching the Jenkins startup log for the string &lt;code&gt;org.eclipse.jetty.server.Server#doStart&lt;/code&gt;. For example:
+&lt;code&gt;org.eclipse.jetty.server.Server#doStart: jetty-9.4.27.v20200227&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Locate the Java version on the &amp;ldquo;System Information&amp;rdquo; page of &amp;ldquo;Manage Jenkins&amp;rdquo; to confirm it is Java 11 or 8u252 (or later)&lt;/li&gt;
+&lt;li&gt;Download the &lt;a href=&#34;https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-alpn-java-server&#34;&gt;jetty-alpn-java-server&lt;/a&gt; with the version number matching the Jetty version bundled with your Jenkins version&lt;/li&gt;
+&lt;li&gt;Place the jetty-alpn-java-server.jar file in a directory accessible to the JVM&lt;/li&gt;
+&lt;li&gt;Add &lt;code&gt;--extraLibFolder=/path/to/extra/lib/folder&lt;/code&gt; to the Java command line arguments that start Jenkins&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;java --extraLibFolder=/opt/java/jetty-alpn-java-server-9.4.27.v20200227.jar \
+    -jar target/jenkins.war \
+    --http2Port=9090
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;java-8u242-and-earlier&#34;&gt;Java 8u242 and earlier&lt;/h4&gt;
+&lt;p&gt;Java 8 update 242 and earlier can run the ALPN TLS extension by installing the Jetty ALPN boot library corresponding to the &lt;em&gt;exact OpenJDK version&lt;/em&gt; you are using into the Java boot classpath. Steps to install the extension are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Identify the Java version running your Jenkins server from the &amp;ldquo;Manage Jenkins&amp;rdquo; → &amp;ldquo;System Information&amp;rdquo; page&lt;/li&gt;
+&lt;li&gt;Find the &lt;a href=&#34;https://www.eclipse.org/jetty/documentation/current/alpn-chapter.html#alpn-versions&#34;&gt;boot library&lt;/a&gt; for your OpenJDK version&lt;/li&gt;
+&lt;li&gt;Download the matching &lt;a href=&#34;https://repo1.maven.org/maven2/org/mortbay/jetty/alpn/alpn-boot/&#34;&gt;alpn-boot.jar&lt;/a&gt; file to a directory accessible to the JVM&lt;/li&gt;
+&lt;li&gt;Add the alpn-boot.jar to the JVM boot classpath by adding &lt;code&gt;-Xbootclasspath/p:/path/to/alpn-boot.jar&lt;/code&gt; to the Java command line arguments that start Jenkins&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;java -Xbootclasspath/p:/opt/java/alpn-boot-8.1.13.v20181017.jar \
+    -jar target/jenkins.war \
+    --http2Port=9090
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;https-certificates-with-windows&#34;&gt;HTTPS certificates with Windows&lt;/h3&gt;
+&lt;p&gt;These instructions use a stock Jenkins installation on Windows Server. The instructions assume a certificate signed by a Certificate Authority such as Digicert. If you are making your own certificate skip steps 3, 4, and 5.&lt;/p&gt;
+&lt;p&gt;This process utilizes Java’s keytool. Use the Java &lt;code&gt;keytool&lt;/code&gt; included with your Java installation.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 1&lt;/strong&gt;: Create a new keystore on your server. This will place a &amp;lsquo;keystore&amp;rsquo; file in your current directory.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\&amp;gt;keytool -genkeypair -keysize 2048 -keyalg RSA -alias jenkins -keystore keystore
+Enter keystore password:
+Re-enter new password:
+What is your first and last name?
+[Unknown]: server.example.com
+What is the name of your organizational unit?
+[Unknown]: A Unit
+What is the name of your organization?
+[Unknown]: A Company
+What is the name of your City or Locality?
+[Unknown]: A City
+What is the name of your State or Province?
+[Unknown]: A State
+What is the two-letter country code for this unit?
+[Unknown]: US
+Is CN=server.example.com, OU=A Unit, O=A Company, L=A City, ST=A State, C=US correct?
+[no]: yes
+
+Enter key password for &amp;lt;jenkins&amp;gt;
+(RETURN if same as keystore password):
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 2&lt;/strong&gt;: Verify the keystore was created (your fingerprint will vary)&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\&amp;gt;keytool -list -keystore keystore
+Enter keystore password:
+
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+jenkins, May 6, 2015, PrivateKeyEntry,
+Certificate fingerprint (SHA1): AA:AA:AA:AA:AA:AA:AA:AA:AA:AA ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 3&lt;/strong&gt;: Create the certificate request. This will create a &amp;lsquo;certreq.csr&amp;rsquo; file in your current directory.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\&amp;gt;keytool -certreq -alias jenkins -keyalg RSA ^
+-file certreq.csr ^
+-ext SAN=dns:server-name,dns:server-name.your.company.com ^
+-keystore keystore
+Enter keystore password:
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 4&lt;/strong&gt;: Use the contents of the &lt;code&gt;certreq.csr&lt;/code&gt; file to generate a certificate from your certificate provider. Request a SHA-1 certificate (SHA-2 is untested but will likely work). If using DigiCert, download the resulting certificate as Other format &amp;ldquo;a .p7b bundle of all the certs in a .p7b file&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 5&lt;/strong&gt;: Add the resulting .p7b into the keystore you created above.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\&amp;gt;keytool -import ^
+-alias jenkins ^
+-trustcacerts ^
+-file response_from_digicert.p7b ^
+-keystore keystore
+Enter keystore password:
+Certificate reply was installed in keystore
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 6&lt;/strong&gt;: Copy the &amp;lsquo;keystore&amp;rsquo; file to your Jenkins secrets directory. On a stock installation, this will be at&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\Program Files (x86)\Jenkins\secrets
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 7&lt;/strong&gt;: Modify the &lt;arguments&gt; section of your &lt;code&gt;C:\Program Files (x86)\Jenkins\jenkins.xml&lt;/code&gt; file to reflect the new certificate. Note: This example disables http via &lt;code&gt;--httpPort=-1&lt;/code&gt; and places the server on &lt;code&gt;8443&lt;/code&gt; via &lt;code&gt;--httpsPort=8443&lt;/code&gt;.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;lt;arguments&amp;gt;
+  -Xrs
+  -Xmx256m
+  -Dhudson.lifecycle=hudson.lifecycle.WindowsServiceLifecycle
+  -jar &amp;#34;%BASE%\jenkins.war&amp;#34;
+  --httpPort=-1
+  --httpsPort=8443
+  --httpsKeyStore=&amp;#34;%BASE%\secrets\keystore&amp;#34;
+  --httpsKeyStorePassword=your.password.here
+&amp;lt;/arguments&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 8&lt;/strong&gt;: Restart the jenkins service to initialize the new configuration.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;net stop jenkins
+net start jenkins
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Step 9&lt;/strong&gt;: After 30-60 seconds, Jenkins will have completed the startup process and you should be able to access the website at &lt;em&gt;&lt;a href=&#34;https://server.example.com:8443&#34;&gt;https://server.example.com:8443&lt;/a&gt;&lt;/em&gt;. Verify the certificate looks good via your browser’s tools. If the service terminates immediately, there’s an error somewhere in your configuration. Useful error information can be found in:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\Program Files (x86)\Jenkins\jenkins.err.log
+C:\Program Files (x86)\Jenkins\jenkins.out.log
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: User Handbook Overview</title>
+      <link>/docs/cicd/jenkins/user-handbook/overview/</link>
+      <pubDate>Sun, 19 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/cicd/jenkins/user-handbook/overview/</guid>
+      <description>
+        
+        
+        &lt;h1 id=&#34;用户手册概述&#34;&gt;用户手册概述&lt;/h1&gt;
+&lt;p&gt;此页面提供了《Jenkins 用户手册》中文档的概述。&lt;/p&gt;
+&lt;p&gt;如果您想启动并运行 Jenkins，请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/installing&#34;&gt;安装 Jenkins&lt;/a&gt;，以获取有关如何在支持的所选平台上安装 Jenkins 的过程。&lt;/p&gt;
+&lt;p&gt;如果您是典型的 Jenkins 用户（任何技能水平），并且想进一步了解 Jenkins 的用法，请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/using&#34;&gt;使用 Jenkins&lt;/a&gt;。另请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/pipeline&#34;&gt;Pipeline&lt;/a&gt; 和 &lt;a href=&#34;https://www.jenkins.io/doc/book/blueocean&#34;&gt;Blue Ocean&lt;/a&gt; 章节，以获有关这些 Jenkins 核心特性的更多信息。&lt;/p&gt;
+&lt;p&gt;如果您是 Jenkins 管理员，并且想了解有关管理 Jenkins 节点和实例的更多信息，请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/managing&#34;&gt;管理 Jenkins&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;如果您是系统管理员，并且想学习如何备份、恢复和维护 Jenkins 服务器和节点，请参阅 &lt;a href=&#34;https://www.jenkins.io/doc/book/system-administration&#34;&gt;Jenkins 系统管理&lt;/a&gt;。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>
